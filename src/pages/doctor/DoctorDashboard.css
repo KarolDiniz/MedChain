@@ -1,0 +1,176 @@
+.dashboard {
+  max-width: 1000px;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  font-size: 1.75rem;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-header p {
+  color: var(--color-text-light);
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--color-surface);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.dashboard-stat-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.dashboard-stat-icon--primary {
+  background: rgba(13, 115, 119, 0.12);
+  color: var(--color-primary);
+}
+
+.dashboard-stat-icon--secondary {
+  background: rgba(50, 224, 196, 0.2);
+  color: var(--color-primary);
+}
+
+.dashboard-stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.dashboard-stat-label {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+.dashboard-section {
+  margin-bottom: 2rem;
+}
+
+.dashboard-section h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+.dashboard-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.dashboard-shortcut:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.dashboard-shortcut-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dashboard-table-wrapper {
+  overflow-x: auto;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-table th {
+  font-weight: 600;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+}
+
+.dashboard-link {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.dashboard-link:hover {
+  text-decoration: underline;
+}
+
+.dashboard-blockchain-info {
+  margin-top: 2rem;
+}
+
+.blockchain-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.blockchain-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.blockchain-badge strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.blockchain-badge p {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}

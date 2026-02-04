@@ -1,0 +1,11 @@
+.medical-records-page {
+  max-width: 1000px;
+}
+
+.hash-cell {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: rgba(13, 115, 119, 0.08);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}

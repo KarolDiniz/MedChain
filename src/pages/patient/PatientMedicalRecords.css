@@ -1,0 +1,117 @@
+.patient-records {
+  max-width: 800px;
+}
+
+.records-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.record-accordion-item {
+  overflow: hidden;
+}
+
+.record-accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.record-accordion-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.record-hash-badge {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--color-primary);
+}
+
+.record-accordion-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--color-text-light);
+}
+
+.record-accordion-body {
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.record-doctor {
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: var(--color-text-light);
+}
+
+.record-section {
+  margin-bottom: 1.25rem;
+}
+
+.record-section h4 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-primary);
+}
+
+.record-block {
+  padding: 1rem;
+  background: var(--color-background);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.record-block .record-date {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.5rem;
+}
+
+.prescriptions-list {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--color-border);
+}
+
+.prescriptions-list div {
+  margin-top: 0.25rem;
+}
+
+.file-block .file-format {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.record-blockchain {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(13, 115, 119, 0.08);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.record-blockchain-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.record-blockchain code {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
