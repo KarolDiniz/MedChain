@@ -4,23 +4,15 @@
 
 .record-detail-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
+  position: relative;
 }
 
-.blockchain-info {
-  display: flex;
-  align-items: center;
-}
-
-.blockchain-badge-small {
-  font-size: 0.85rem;
-  padding: 0.35rem 0.75rem;
-  background: rgba(13, 115, 119, 0.1);
-  color: var(--color-primary);
-  border-radius: 8px;
+.record-detail-header-center {
+  text-align: center;
 }
 
 .tabs {
@@ -58,6 +50,90 @@
 
 .tab-content .section-header {
   margin-bottom: 1rem;
+}
+
+.tab-content .section-header--with-sort {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tab-content .section-header--with-sort h2 {
+  margin: 0;
+}
+
+.tab-content .section-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tab-content .sort-dropdown-wrap {
+  position: relative;
+}
+
+.tab-content .sort-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.tab-content .sort-trigger-btn:hover,
+.tab-content .sort-trigger-btn--open {
+  border-color: var(--color-primary);
+  background: rgba(13, 115, 119, 0.08);
+  color: var(--color-primary);
+}
+
+.tab-content .sort-dropdown-list {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  min-width: 200px;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+}
+
+.tab-content .sort-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 0.88rem;
+  text-align: left;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tab-content .sort-dropdown-item:hover {
+  background: rgba(13, 115, 119, 0.1);
+}
+
+.tab-content .sort-dropdown-item--active {
+  background: rgba(13, 115, 119, 0.15);
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 .items-list {
