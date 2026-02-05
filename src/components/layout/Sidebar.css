@@ -76,12 +76,6 @@
   margin-bottom: 0.75rem;
 }
 
-.sidebar-user-avatar {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  color: var(--color-primary);
-}
 
 .sidebar-user-info {
   display: flex;

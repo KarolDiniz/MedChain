@@ -1,6 +1,6 @@
-import { User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Card } from '../../components/common/Card';
+import { Avatar } from '../../components/common/Avatar';
 import './PatientProfile.css';
 
 const GENDER_LABELS = { FEMALE: 'Feminino', MALE: 'Masculino', OTHER: 'Outro' };
@@ -18,11 +18,15 @@ export function PatientProfile() {
 
       <Card>
         <div className="profile-avatar">
-          <span className="profile-avatar-icon">
-            <User size={64} strokeWidth={1.5} />
-          </span>
+          <Avatar
+            userId={user?.id}
+            isDoctor={false}
+            size={96}
+            editable
+            variant="profile"
+          />
         </div>
-        <h2>{user?.full_name}</h2>
+        <h2 className="profile-name">{user?.full_name}</h2>
         <div className="detail-grid">
           <div className="detail-item">
             <span className="detail-label">E-mail</span>

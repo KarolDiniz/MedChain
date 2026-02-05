@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../common/Button';
+import { Avatar } from '../common/Avatar';
 import './Sidebar.css';
 
 const doctorNavItems = [
@@ -57,13 +58,13 @@ export function Sidebar() {
       </nav>
       <div className="sidebar-footer">
         <div className="sidebar-user">
-          <span className="sidebar-user-avatar">
-            {isDoctor() ? (
-              <Stethoscope size={28} strokeWidth={2} />
-            ) : (
-              <User size={28} strokeWidth={2} />
-            )}
-          </span>
+          <Avatar
+            userId={user?.id}
+            isDoctor={isDoctor()}
+            size={40}
+            editable
+            variant="sidebar"
+          />
           <div className="sidebar-user-info">
             <span className="sidebar-user-name">{user?.full_name}</span>
             <span className="sidebar-user-role">{isDoctor() ? 'Doutor' : 'Paciente'}</span>
