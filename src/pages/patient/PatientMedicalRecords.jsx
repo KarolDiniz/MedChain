@@ -40,7 +40,7 @@ export function PatientMedicalRecords() {
                   onClick={() => setExpandedId(isExpanded ? null : mr.id)}
                 >
                   <div className="record-accordion-title">
-                    <span className="record-hash-badge">#{mr.hash?.slice(0, 8)}...</span>
+                    <span className="record-id-badge">{mr.id}</span>
                     <span>{new Date(mr.created_date).toLocaleDateString('pt-BR')}</span>
                   </div>
                   <span className="record-accordion-icon">
@@ -126,9 +126,9 @@ export function PatientMedicalRecords() {
                     <div className="record-blockchain">
                       <span className="record-blockchain-label">
                         <Link2 size={16} strokeWidth={2} />
-                        Registro blockchain
+                        Auditoria
                       </span>
-                      <code>Hash: {mr.hash?.slice(0, 16)}...</code>
+                      <p className="record-blockchain-note">Cada item (consulta, diagnóstico, atestado, arquivo) possui hash próprio para verificação de integridade.</p>
                     </div>
                   </div>
                 )}

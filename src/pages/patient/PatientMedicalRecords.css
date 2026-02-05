@@ -31,7 +31,8 @@
   gap: 1rem;
 }
 
-.record-hash-badge {
+.record-hash-badge,
+.record-id-badge {
   font-family: var(--font-mono);
   font-size: 0.9rem;
   color: var(--color-primary);
@@ -114,4 +115,11 @@
   margin-top: 0.25rem;
   font-family: var(--font-mono);
   font-size: 0.8rem;
+}
+
+.record-blockchain-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  line-height: 1.4;
 }

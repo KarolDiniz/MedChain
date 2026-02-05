@@ -23,30 +23,6 @@
   border-radius: 8px;
 }
 
-.record-hash-card {
-  margin-bottom: 1.5rem;
-}
-
-.hash-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.hash-label {
-  font-size: 0.85rem;
-  color: var(--color-text-light);
-}
-
-.hash-value {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  word-break: break-all;
-  background: rgba(13, 115, 119, 0.06);
-  padding: 0.5rem;
-  border-radius: 6px;
-}
-
 .tabs {
   display: flex;
   flex-wrap: wrap;
@@ -159,5 +135,40 @@
 .file-hash {
   font-family: var(--font-mono);
   font-size: 0.8rem;
+  color: var(--color-text-light);
+}
+
+/* Hash por tipo (auditoria) em cada item do prontuário */
+.item-hash-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(13, 115, 119, 0.06);
+  border-radius: 6px;
+  border-left: 3px solid var(--color-primary);
+}
+
+.hash-type-prefix {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  min-width: 2.5rem;
+}
+
+.hash-type-prefix[data-type="con"] { color: #0d7377; }
+.hash-type-prefix[data-type="dia"] { color: #2d6a4f; }
+.hash-type-prefix[data-type="pre"] { color: #40916c; }
+.hash-type-prefix[data-type="cert"] { color: #1b4332; }
+.hash-type-prefix[data-type="file"] { color: #52b788; }
+.hash-type-prefix[data-type="mr"] { color: #081c15; }
+
+.item-hash-value {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  word-break: break-all;
   color: var(--color-text-light);
 }

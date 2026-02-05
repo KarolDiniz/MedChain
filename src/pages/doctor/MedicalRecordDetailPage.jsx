@@ -13,6 +13,7 @@ import {
 } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
+import { getHashTypePrefix } from '../../utils/hashUtils';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
 import { PrescriptionModal } from '../../components/doctor/PrescriptionModal';
@@ -56,13 +57,26 @@ export function MedicalRecordDetailPage() {
     { id: 'files', label: 'Arquivos', count: record.files?.length || 0 },
   ];
 
+  const prefixToLabel = { con: 'Consulta', dia: 'Diagnóstico', cert: 'Atestado', file: 'Arquivo' };
+  const HashBadge = ({ hash, title }) => {
+    if (!hash) return null;
+    const prefix = getHashTypePrefix(hash);
+    const label = prefixToLabel[prefix] || title || 'Hash';
+    return (
+      <div className="item-hash-badge" title={`Hash de auditoria — ${label}`}>
+        <span className="hash-type-prefix" data-type={prefix}>{prefix || '—'}</span>
+        <code className="item-hash-value">{hash}</code>
+      </div>
+    );
+  };
+
   return (
     <div className="record-detail-page">
       <header className="page-header">
         <Link to="/doctor/medical-records" className="back-link">← Voltar aos prontuários</Link>
         <div className="record-detail-header">
           <div>
-            <h1>Prontuário #{record.hash?.slice(0, 12)}...</h1>
+            <h1>Prontuário — {patient?.full_name}</h1>
             <p>Paciente: {patient?.full_name} | Médico: {doctor?.full_name}</p>
           </div>
           <div className="blockchain-info">
@@ -70,13 +84,6 @@ export function MedicalRecordDetailPage() {
           </div>
         </div>
       </header>
-
-      <Card className="record-hash-card">
-        <div className="hash-info">
-          <span className="hash-label">Hash do prontuário (auditoria)</span>
-          <code className="hash-value">{record.hash}</code>
-        </div>
-      </Card>
 
       <div className="tabs">
         {tabs.map((tab) => (
@@ -121,6 +128,7 @@ export function MedicalRecordDetailPage() {
                         + Prescrição
                       </Button>
                     </div>
+                    {c.hash && <HashBadge hash={c.hash} title="Consulta" />}
                     <div className="consultation-body">
                       <div><strong>Queixa principal:</strong> {c.chief_complaint}</div>
                       <div><strong>História:</strong> {c.history_of_present_illness}</div>
@@ -168,6 +176,7 @@ export function MedicalRecordDetailPage() {
                     <span className="diagnostic-date">
                       {new Date(d.issue_date).toLocaleDateString('pt-BR')}
                     </span>
+                    {d.hash && <HashBadge hash={d.hash} title="Diagnóstico" />}
                     <div><strong>Descrição:</strong> {d.description}</div>
                     <div><strong>Resultado:</strong> {d.result}</div>
                   </Card>
@@ -197,6 +206,7 @@ export function MedicalRecordDetailPage() {
                     <span className="cert-date">
                       {new Date(cert.created_date).toLocaleDateString('pt-BR')}
                     </span>
+                    {cert.hash && <HashBadge hash={cert.hash} title="Atestado" />}
                     <div><strong>Finalidade:</strong> {cert.purpose}</div>
                     <div><strong>Dias de afastamento:</strong> {cert.period_of_leave}</div>
                   </Card>
@@ -225,7 +235,7 @@ export function MedicalRecordDetailPage() {
                   <Card key={f.id} className="file-card">
                     <span className="file-format">{f.format}</span>
                     <div className="file-desc">{f.description}</div>
-                    <code className="file-hash">#{f.hash?.slice(0, 8)}...</code>
+                    {f.hash && <HashBadge hash={f.hash} title="Arquivo" />}
                   </Card>
                 ))}
               </div>

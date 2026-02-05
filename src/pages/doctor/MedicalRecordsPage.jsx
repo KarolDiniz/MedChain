@@ -55,7 +55,7 @@ export function MedicalRecordsPage() {
                   return (
                     <tr key={mr.id}>
                       <td>
-                        <code className="hash-cell">#{mr.hash?.slice(0, 12)}...</code>
+                        <code className="record-id-cell">{mr.id}</code>
                       </td>
                       <td>{patient?.full_name || '-'}</td>
                       <td>{new Date(mr.created_date).toLocaleDateString('pt-BR')}</td>

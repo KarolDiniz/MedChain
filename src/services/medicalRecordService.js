@@ -1,6 +1,5 @@
 import { MOCK_PATIENTS, MOCK_MEDICAL_RECORDS, MOCK_DOCTORS } from '../data/mockData';
-
-const generateHash = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+import { generateHashForType, HASH_TYPES } from '../utils/hashUtils';
 
 // Pacientes - gerenciados pelo doutor
 export function getPatientsByDoctor(doctorId) {
@@ -56,20 +55,19 @@ export function getMedicalRecordById(id) {
 }
 
 export function addMedicalRecord(doctorId, patientId) {
+  const created = new Date().toISOString();
   const newRecord = {
     id: `mr-${Date.now()}`,
     patient_id: patientId,
     doctor_id: doctorId,
-    hash: generateHash(),
-    created_date: new Date().toISOString(),
-    updated_date: new Date().toISOString(),
+    created_date: created,
+    updated_date: created,
     consultations: [],
     diagnostics: [],
     medical_certificates: [],
     files: [],
     blockchain_node: {
-      hash: generateHash(),
-      timestamp: new Date().toISOString(),
+      timestamp: created,
     },
   };
   MOCK_MEDICAL_RECORDS.push(newRecord);
@@ -79,13 +77,22 @@ export function addMedicalRecord(doctorId, patientId) {
 export function addConsultation(recordId, data) {
   const record = MOCK_MEDICAL_RECORDS.find(mr => mr.id === recordId);
   if (!record) return null;
-  const newConsultation = {
-    id: `cons-${Date.now()}`,
+  const created = new Date().toISOString();
+  const consultationPayload = {
     chief_complaint: data.chief_complaint,
     history_of_present_illness: data.history_of_present_illness,
     diagnosis: data.diagnosis,
     treatment_plan: data.treatment_plan,
-    created_date: new Date().toISOString(),
+    created,
+  };
+  const newConsultation = {
+    id: `cons-${Date.now()}`,
+    hash: generateHashForType(HASH_TYPES.CONSULTATION, consultationPayload),
+    chief_complaint: data.chief_complaint,
+    history_of_present_illness: data.history_of_present_illness,
+    diagnosis: data.diagnosis,
+    treatment_plan: data.treatment_plan,
+    created_date: created,
     prescriptions: [],
   };
   record.consultations.push(newConsultation);
@@ -96,12 +103,16 @@ export function addConsultation(recordId, data) {
 export function addDiagnostic(recordId, data) {
   const record = MOCK_MEDICAL_RECORDS.find(mr => mr.id === recordId);
   if (!record) return null;
+  const created = new Date().toISOString();
+  const issueDate = data.issue_date || created;
+  const diagnosticPayload = { description: data.description, issue_date: issueDate, result: data.result, created };
   const newDiagnostic = {
     id: `diag-${Date.now()}`,
+    hash: generateHashForType(HASH_TYPES.DIAGNOSTIC, diagnosticPayload),
     description: data.description,
-    issue_date: data.issue_date || new Date().toISOString(),
+    issue_date: issueDate,
     result: data.result,
-    created_date: new Date().toISOString(),
+    created_date: created,
   };
   record.diagnostics.push(newDiagnostic);
   record.updated_date = new Date().toISOString();
@@ -127,11 +138,14 @@ export function addPrescription(consultationId, recordId, data) {
 export function addMedicalCertificate(recordId, data) {
   const record = MOCK_MEDICAL_RECORDS.find(mr => mr.id === recordId);
   if (!record) return null;
+  const created = new Date().toISOString();
+  const certPayload = { purpose: data.purpose, period_of_leave: data.period_of_leave, created };
   const newCert = {
     id: `cert-${Date.now()}`,
+    hash: generateHashForType(HASH_TYPES.CERTIFICATE, certPayload),
     purpose: data.purpose,
     period_of_leave: data.period_of_leave,
-    created_date: new Date().toISOString(),
+    created_date: created,
   };
   record.medical_certificates.push(newCert);
   record.updated_date = new Date().toISOString();
@@ -141,12 +155,13 @@ export function addMedicalCertificate(recordId, data) {
 export function addFile(recordId, data) {
   const record = MOCK_MEDICAL_RECORDS.find(mr => mr.id === recordId);
   if (!record) return null;
+  const filePayload = { url: data.url, format: data.format || 'PDF', description: data.description || '' };
   const newFile = {
     id: `file-${Date.now()}`,
     url: data.url || '#',
     format: data.format || 'PDF',
     description: data.description || '',
-    hash: generateHash(),
+    hash: generateHashForType(HASH_TYPES.FILE, filePayload),
   };
   record.files.push(newFile);
   record.updated_date = new Date().toISOString();

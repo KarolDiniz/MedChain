@@ -94,7 +94,7 @@ export function PatientDetailPage() {
               <Link key={mr.id} to={`/doctor/medical-records/${mr.id}`} className="record-card-link">
                 <Card className="record-card">
                   <div className="record-card-header">
-                    <span className="record-hash">#{mr.hash?.slice(0, 8)}...</span>
+                    <span className="record-id">{mr.id}</span>
                     <span className="record-date">
                       {new Date(mr.created_date).toLocaleDateString('pt-BR')}
                     </span>

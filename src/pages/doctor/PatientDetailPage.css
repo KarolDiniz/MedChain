@@ -81,7 +81,8 @@
   margin-bottom: 0.75rem;
 }
 
-.record-hash {
+.record-hash,
+.record-id {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   color: var(--color-primary);
