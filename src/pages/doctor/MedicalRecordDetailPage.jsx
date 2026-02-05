@@ -5,9 +5,7 @@ import {
   getMedicalRecordById,
   getPatientById,
   getDoctorById,
-  addConsultation,
   addDiagnostic,
-  addPrescription,
   addMedicalCertificate,
   addFile,
 } from '../../services/medicalRecordService';
@@ -16,7 +14,6 @@ import { Button } from '../../components/common/Button';
 import { getHashTypePrefix } from '../../utils/hashUtils';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
-import { PrescriptionModal } from '../../components/doctor/PrescriptionModal';
 import { CertificateModal } from '../../components/doctor/CertificateModal';
 import { FileModal } from '../../components/doctor/FileModal';
 import './MedicalRecordDetailPage.css';
@@ -28,8 +25,6 @@ export function MedicalRecordDetailPage() {
   const [activeTab, setActiveTab] = useState('consultations');
   const [showConsultationModal, setShowConsultationModal] = useState(false);
   const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
-  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
-  const [prescriptionConsultationId, setPrescriptionConsultationId] = useState(null);
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const [showFileModal, setShowFileModal] = useState(false);
 
@@ -44,11 +39,6 @@ export function MedicalRecordDetailPage() {
 
   const patient = getPatientById(record.patient_id);
   const doctor = getDoctorById(record.doctor_id);
-
-  const openPrescriptionModal = (consultationId) => {
-    setPrescriptionConsultationId(consultationId);
-    setShowPrescriptionModal(true);
-  };
 
   const tabs = [
     { id: 'consultations', label: 'Consultas', count: record.consultations?.length || 0 },
@@ -120,13 +110,6 @@ export function MedicalRecordDetailPage() {
                       <span className="consultation-date">
                         {new Date(c.created_date).toLocaleDateString('pt-BR')}
                       </span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => openPrescriptionModal(c.id)}
-                      >
-                        + Prescrição
-                      </Button>
                     </div>
                     {c.hash && <HashBadge hash={c.hash} title="Consulta" />}
                     <div className="consultation-body">
@@ -256,20 +239,6 @@ export function MedicalRecordDetailPage() {
           recordId={record.id}
           onClose={() => setShowDiagnosticModal(false)}
           onSaved={() => setShowDiagnosticModal(false)}
-        />
-      )}
-      {showPrescriptionModal && prescriptionConsultationId && (
-        <PrescriptionModal
-          recordId={record.id}
-          consultationId={prescriptionConsultationId}
-          onClose={() => {
-            setShowPrescriptionModal(false);
-            setPrescriptionConsultationId(null);
-          }}
-          onSaved={() => {
-            setShowPrescriptionModal(false);
-            setPrescriptionConsultationId(null);
-          }}
         />
       )}
       {showCertificateModal && (

@@ -95,6 +95,14 @@ export function addConsultation(recordId, data) {
     created_date: created,
     prescriptions: [],
   };
+  const prescriptionItems = data.prescription_items?.filter((i) => i?.medication_name?.trim()) || [];
+  if (prescriptionItems.length > 0) {
+    newConsultation.prescriptions.push({
+      id: `presc-${Date.now()}`,
+      issue_date: created,
+      items: prescriptionItems,
+    });
+  }
   record.consultations.push(newConsultation);
   record.updated_date = new Date().toISOString();
   return newConsultation;

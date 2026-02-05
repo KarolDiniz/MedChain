@@ -5,6 +5,8 @@ import { Input } from '../common/Input';
 import { Card } from '../common/Card';
 import './Modal.css';
 
+const initialPrescriptionItem = () => ({ medication_name: '', dosage: '', frequency: '', treatment_duration: '' });
+
 export function ConsultationModal({ recordId, onClose, onSaved }) {
   const [form, setForm] = useState({
     chief_complaint: '',
@@ -12,14 +14,31 @@ export function ConsultationModal({ recordId, onClose, onSaved }) {
     diagnosis: '',
     treatment_plan: '',
   });
+  const [prescriptionItems, setPrescriptionItems] = useState([initialPrescriptionItem()]);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const addPrescriptionItem = () => {
+    setPrescriptionItems((prev) => [...prev, initialPrescriptionItem()]);
+  };
+
+  const updatePrescriptionItem = (index, field, value) => {
+    setPrescriptionItems((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      return next;
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    addConsultation(recordId, form);
+    const items = prescriptionItems.filter((i) => i.medication_name?.trim());
+    addConsultation(recordId, {
+      ...form,
+      prescription_items: items.length > 0 ? items : undefined,
+    });
     onSaved();
   };
 
@@ -59,9 +78,49 @@ export function ConsultationModal({ recordId, onClose, onSaved }) {
               rows={3}
             />
           </div>
+
+          <div className="consultation-modal-prescription">
+            <h3 className="prescription-section-title">Prescrição (opcional)</h3>
+            <p className="prescription-section-hint">A prescrição é registrada junto com a consulta e não poderá ser alterada depois.</p>
+            {prescriptionItems.map((item, i) => (
+              <div key={i} className="prescription-item">
+                <h4>Medicamento {i + 1}</h4>
+                <Input
+                  label="Nome do medicamento"
+                  value={item.medication_name}
+                  onChange={(e) => updatePrescriptionItem(i, 'medication_name', e.target.value)}
+                  placeholder="Ex: Paracetamol 750mg"
+                />
+                <div className="form-row">
+                  <Input
+                    label="Dosagem"
+                    value={item.dosage}
+                    onChange={(e) => updatePrescriptionItem(i, 'dosage', e.target.value)}
+                    placeholder="1 comprimido"
+                  />
+                  <Input
+                    label="Frequência"
+                    value={item.frequency}
+                    onChange={(e) => updatePrescriptionItem(i, 'frequency', e.target.value)}
+                    placeholder="8/8h"
+                  />
+                </div>
+                <Input
+                  label="Duração do tratamento"
+                  value={item.treatment_duration}
+                  onChange={(e) => updatePrescriptionItem(i, 'treatment_duration', e.target.value)}
+                  placeholder="5 dias"
+                />
+              </div>
+            ))}
+            <Button type="button" variant="outline" size="sm" onClick={addPrescriptionItem}>
+              + Adicionar medicamento
+            </Button>
+          </div>
+
           <div className="modal-actions">
             <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
-            <Button type="submit">Registrar</Button>
+            <Button type="submit">Registrar consulta</Button>
           </div>
         </form>
       </Card>
