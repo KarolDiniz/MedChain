@@ -41,7 +41,6 @@ export function MedicalRecordsPage() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Hash</th>
                   <th>Paciente</th>
                   <th>Data</th>
                   <th>Consultas</th>
@@ -54,9 +53,6 @@ export function MedicalRecordsPage() {
                   const patient = patients.find((p) => p.id === mr.patient_id);
                   return (
                     <tr key={mr.id}>
-                      <td>
-                        <code className="record-id-cell">{mr.id}</code>
-                      </td>
                       <td>{patient?.full_name || '-'}</td>
                       <td>{new Date(mr.created_date).toLocaleDateString('pt-BR')}</td>
                       <td>{mr.consultations?.length || 0}</td>
