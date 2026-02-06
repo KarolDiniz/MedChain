@@ -199,6 +199,11 @@
   gap: 0.5rem;
 }
 
+.file-date {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
 .file-format {
   font-weight: 600;
   color: var(--color-primary);

@@ -117,7 +117,10 @@ export function PatientMedicalRecords() {
                         <h4>Arquivos</h4>
                         {mr.files.map((f) => (
                           <div key={f.id} className="record-block file-block">
-                            <span className="file-format">{f.format}</span> - {f.description}
+                            {f.created_date && (
+                              <span className="record-date">{new Date(f.created_date).toLocaleDateString('pt-BR')}</span>
+                            )}
+                            <span className="file-format">{f.format}</span> — {f.description}
                           </div>
                         ))}
                       </section>

@@ -339,6 +339,9 @@ export function MedicalRecordDetailPage() {
               <div className="items-list files-grid">
                 {sortedFiles.map((f) => (
                   <Card key={f.id} className="file-card">
+                    {f.created_date && (
+                      <span className="file-date">{new Date(f.created_date).toLocaleDateString('pt-BR')}</span>
+                    )}
                     <span className="file-format">{f.format}</span>
                     <div className="file-desc">{f.description}</div>
                     {f.hash && <HashBadge hash={f.hash} title="Arquivo" />}

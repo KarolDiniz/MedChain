@@ -154,6 +154,7 @@ export const MOCK_MEDICAL_RECORDS = [
         url: '/documents/exame.pdf',
         format: 'PDF',
         description: 'Resultado hemograma',
+        created_date: created55,
         hash: generateHashForType(HASH_TYPES.FILE, { url: '/documents/exame.pdf', format: 'PDF', description: 'Resultado hemograma' }),
       },
     ],
