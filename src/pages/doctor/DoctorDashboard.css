@@ -1,13 +1,54 @@
 .dashboard {
-  max-width: 1100px;
+  max-width: 1400px;
   padding-bottom: 3rem;
+}
+
+/* ----- Two-column layout: left = content, right = charts ----- */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+  }
+}
+
+.dashboard-left-column {
+  min-width: 0;
+}
+
+.dashboard-charts-column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.dashboard-charts-column .dashboard-section {
+  margin-bottom: 1.25rem;
+}
+
+.dashboard-charts-column .dashboard-blockchain-section {
+  margin-bottom: 0;
+}
+
+@media (min-width: 960px) {
+  .dashboard-charts-column {
+    position: sticky;
+    top: 1.5rem;
+  }
 }
 
 /* ----- Hero ----- */
 .dashboard-hero {
   position: relative;
-  margin-bottom: 2.5rem;
-  padding: 2rem 0;
+  margin-bottom: 1.5rem;
+  padding: 2rem 0 0;
   overflow: hidden;
 }
 
@@ -55,7 +96,7 @@
   top: -40%;
   right: -10%;
   width: 55%;
-  max-width: 420px;
+  max-width: 320px;
   aspect-ratio: 1;
   background: linear-gradient(
     135deg,
@@ -67,12 +108,18 @@
   pointer-events: none;
 }
 
+@media (min-width: 960px) {
+  .dashboard-hero-accent {
+    max-width: 280px;
+  }
+}
+
 /* ----- Stats ----- */
 .dashboard-stats {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1.25rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .dashboard-stat-card {
@@ -243,21 +290,140 @@
   box-shadow: 0 4px 12px rgba(13, 115, 119, 0.15);
 }
 
-/* ----- Grid (activity + patients) ----- */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+/* ----- Shortcuts section (inside left column) ----- */
+.dashboard-left-column .dashboard-shortcuts-section {
+  margin-bottom: 2rem;
 }
 
-@media (min-width: 900px) {
-  .dashboard-grid {
-    grid-template-columns: 340px 1fr;
-  }
+/* ----- Chart (right column) ----- */
+.dashboard-chart-card {
+  padding: 1.5rem 1.25rem;
+}
 
-  .dashboard-patients-section {
-    grid-column: 1 / -1;
+/* Vertical bar chart (consultas por semana) */
+.dashboard-chart-card--vertical {
+  padding: 1.25rem 1rem 1rem;
+}
+
+.dashboard-chart-vertical {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0.5rem;
+  height: 160px;
+  margin-bottom: 0.75rem;
+}
+
+.dashboard-chart-vertical-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.dashboard-chart-vertical-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.35rem;
+  flex-shrink: 0;
+}
+
+.dashboard-chart-vertical-bar-inner {
+  flex: 1;
+  width: 100%;
+  max-width: 44px;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.dashboard-chart-vertical-bar {
+  width: 100%;
+  min-height: 4px;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+  transition: height 0.4s ease;
+}
+
+.dashboard-chart-vertical-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.dashboard-chart-vertical-label {
+  flex: 1;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  text-align: center;
+  min-width: 0;
+}
+
+/* Horizontal bar chart */
+.dashboard-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dashboard-chart-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 2.25rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (min-width: 960px) {
+  .dashboard-chart-row {
+    grid-template-columns: 95px 1fr 2.5rem;
+    gap: 1rem;
   }
+}
+
+.dashboard-chart-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.dashboard-chart-bar-wrap {
+  height: 28px;
+  background: var(--color-background);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dashboard-chart-bar {
+  height: 100%;
+  border-radius: 8px;
+  min-width: 4px;
+  transition: width 0.5s ease;
+}
+
+.dashboard-chart-bar--primary {
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+}
+
+.dashboard-chart-bar--secondary {
+  background: linear-gradient(90deg, var(--color-secondary) 0%, rgba(50, 224, 196, 0.7) 100%);
+}
+
+.dashboard-chart-bar--accent {
+  background: linear-gradient(90deg, var(--color-accent) 0%, rgba(91, 141, 239, 0.75) 100%);
+}
+
+.dashboard-chart-bar--success {
+  background: linear-gradient(90deg, var(--color-success) 0%, rgba(0, 184, 148, 0.8) 100%);
+}
+
+.dashboard-chart-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: right;
 }
 
 /* ----- Activity ----- */
@@ -516,3 +682,4 @@
     grid-template-columns: 1fr;
   }
 }
+
