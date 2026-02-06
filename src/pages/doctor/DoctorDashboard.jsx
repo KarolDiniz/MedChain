@@ -162,6 +162,16 @@ export function DoctorDashboard() {
 
   return (
     <div className="dashboard">
+      <div className="dashboard-accent dashboard-accent--hero" aria-hidden />
+      <div className="dashboard-accent dashboard-accent--bottom-left" aria-hidden />
+      <div className="dashboard-accent dashboard-accent--top-right" aria-hidden />
+      <div className="dashboard-accent dashboard-accent--bottom-right" aria-hidden />
+      <div className="dashboard-accent dashboard-accent--mid-left dashboard-accent--tone-accent" aria-hidden />
+      <div className="dashboard-accent dashboard-accent--mid-right dashboard-accent--tone-success" aria-hidden />
+      <div className="dashboard-accent dashboard-accent--center-left dashboard-accent--tone-warm" aria-hidden />
+      <div className="dashboard-accent dashboard-accent--center-right dashboard-accent--tone-info" aria-hidden />
+      <div className="dashboard-accent dashboard-accent--top-left dashboard-accent--tone-secondary" aria-hidden />
+      <div className="dashboard-accent dashboard-accent--stats-area dashboard-accent--tone-soft" aria-hidden />
       <div className="dashboard-layout">
         <div className="dashboard-left-column">
           <header className="dashboard-hero">
