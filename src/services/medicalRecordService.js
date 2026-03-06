@@ -43,6 +43,7 @@ export async function addPatient(doctorId, patientData) {
     gender: patientData.gender === 'FEMALE' ? 1 : patientData.gender === 'MALE' ? 0 : 2,
     email: patientData.email,
     phone: patientData.cellphone || patientData.phone,
+    password: patientData.password,
     status: 1,
     address_street: patientData.address?.street || '',
     address_number: patientData.address?.number || '',

@@ -15,6 +15,7 @@ export function PatientModal({ doctorId, onClose, onSaved }) {
   const [form, setForm] = useState({
     full_name: '',
     email: '',
+    password: '',
     cellphone: '',
     birth_date: '',
     gender: 'OTHER',
@@ -67,12 +68,13 @@ export function PatientModal({ doctorId, onClose, onSaved }) {
         </div>
         {error && <p className="modal-error" style={{ color: 'var(--danger)' }}>{error}</p>}
         <p className="modal-note">
-          O paciente será cadastrado com senha padrão <strong>12345</strong> para acesso.
+          O paciente poderá fazer login com o e-mail e a senha cadastrados.
         </p>
         <form onSubmit={handleSubmit} className="modal-form">
           <h3>Dados pessoais</h3>
           <Input label="Nome completo" name="full_name" value={form.full_name} onChange={handleChange} required />
           <Input label="E-mail" name="email" type="email" value={form.email} onChange={handleChange} required />
+          <Input label="Senha" name="password" type="password" value={form.password} onChange={handleChange} required minLength={6} placeholder="Mínimo 6 caracteres" />
           <Input label="Telefone" name="cellphone" value={form.cellphone} onChange={handleChange} placeholder="(11) 99999-9999" />
           <Input label="Data de nascimento" name="birth_date" type="date" value={form.birth_date} onChange={handleChange} />
           <div className="input-group">
