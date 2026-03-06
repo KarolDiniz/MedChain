@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { MOCK_DOCTORS, MOCK_PATIENTS } from '../data/mockData';
+import { authApi } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -20,47 +20,46 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const login = (email, password, userType) => {
-    const collection = userType === 'doctor' ? MOCK_DOCTORS : MOCK_PATIENTS;
-    const found = collection.find(u => u.email === email && u.password === password);
-    if (found) {
-      const userData = { ...found };
-      delete userData.password;
+  const login = async (email, password, userType) => {
+    try {
+      const res = await authApi.login(email, password);
+      const userData = {
+        ...res.user,
+        type: res.user.role === 'doctor' ? 'doctor' : 'patient',
+        access_token: res.access_token,
+        refresh_token: res.refresh_token,
+      };
       setUser(userData);
       localStorage.setItem('medchain_user', JSON.stringify(userData));
       return { success: true };
+    } catch (err) {
+      const msg = err?.data?.detail || err?.message || 'E-mail ou senha incorretos.';
+      return { success: false, error: msg };
     }
-    return { success: false, error: 'E-mail ou senha incorretos.' };
   };
 
-  const registerDoctor = (data) => {
-    const exists = MOCK_DOCTORS.some(d => d.email === data.email);
-    if (exists) return { success: false, error: 'E-mail já cadastrado.' };
-    
-    const newDoctor = {
-      id: `doc-${Date.now()}`,
-      type: 'doctor',
-      full_name: data.full_name,
-      email: data.email,
-      password: data.password,
-      status: 'ACTIVE',
-      CRM: data.CRM,
-      specialty: data.specialty,
-      created_date: new Date().toISOString(),
-      updated_date: new Date().toISOString(),
-    };
-    
-    MOCK_DOCTORS.push(newDoctor);
-    const userData = { ...newDoctor };
-    delete userData.password;
-    setUser(userData);
-    localStorage.setItem('medchain_user', JSON.stringify(userData));
-    return { success: true };
+  const registerDoctor = async (data) => {
+    try {
+      const res = await authApi.registerDoctor(data);
+      const userData = {
+        ...res.user,
+        type: 'doctor',
+        access_token: res.access_token,
+        refresh_token: res.refresh_token,
+      };
+      setUser(userData);
+      localStorage.setItem('medchain_user', JSON.stringify(userData));
+      return { success: true };
+    } catch (err) {
+      const msg = err?.data?.detail || err?.message || 'Erro ao cadastrar.';
+      return { success: false, error: typeof msg === 'string' ? msg : JSON.stringify(msg) };
+    }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('medchain_user');
+    authApi.logout().catch(() => {});
   };
 
   const isDoctor = () => user?.type === 'doctor';

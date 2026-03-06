@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, Search, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,9 +10,19 @@ import './PatientsPage.css';
 
 export function PatientsPage() {
   const { user } = useAuth();
-  const patients = getPatientsByDoctor(user?.id) || [];
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const load = async () => {
+      const list = await getPatientsByDoctor(user?.id || user?.public_id);
+      setPatients(list || []);
+      setLoading(false);
+    };
+    load();
+  }, [user?.id, user?.public_id]);
 
   const filteredPatients = useMemo(() => {
     if (!searchQuery.trim()) return patients;
@@ -38,7 +48,11 @@ export function PatientsPage() {
       </header>
 
       <Card>
-        {patients.length === 0 ? (
+        {loading ? (
+          <div className="empty-state">
+            <p>Carregando...</p>
+          </div>
+        ) : patients.length === 0 ? (
           <div className="empty-state">
             <span className="empty-state-icon">
               <Users size={48} strokeWidth={1.5} />
@@ -119,7 +133,10 @@ export function PatientsPage() {
         <PatientModal
           doctorId={user?.id}
           onClose={() => setShowModal(false)}
-          onSaved={() => setShowModal(false)}
+          onSaved={() => {
+          setShowModal(false);
+          getPatientsByDoctor(user?.id || user?.public_id).then(setPatients);
+        }}
         />
       )}
     </div>

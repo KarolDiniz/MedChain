@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Users,
@@ -60,9 +61,25 @@ function buildLastWeeks(count) {
 
 export function DoctorDashboard() {
   const { user } = useAuth();
-  const doctor = user?.id ? getDoctorById(user.id) : null;
-  const patients = getPatientsByDoctor(user?.id) || [];
-  const medicalRecords = getMedicalRecordsByDoctor(user?.id) || [];
+  const [doctor, setDoctor] = useState(null);
+  const [patients, setPatients] = useState([]);
+  const [medicalRecords, setMedicalRecords] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const docId = user?.id || user?.public_id;
+      if (!docId) return;
+      const [d, p, mr] = await Promise.all([
+        getDoctorById(docId),
+        getPatientsByDoctor(docId),
+        getMedicalRecordsByDoctor(docId),
+      ]);
+      setDoctor(d);
+      setPatients(p || []);
+      setMedicalRecords(mr || []);
+    };
+    load();
+  }, [user?.id, user?.public_id]);
 
   const totalConsultations = medicalRecords.reduce(
     (acc, mr) => acc + (mr.consultations?.length || 0),

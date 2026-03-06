@@ -15,11 +15,11 @@ export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     const userType = mode === 'patient' ? 'patient' : 'doctor';
-    const result = login(email, password, userType);
+    const result = await login(email, password, userType);
     if (result.success) {
       navigate(userType === 'doctor' ? '/doctor' : '/patient');
     } else {

@@ -24,9 +24,23 @@ export function MedicalRecordsPage() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const patientId = searchParams.get('patient');
-  const patients = getPatientsByDoctor(user?.id) || [];
-  const records = getMedicalRecordsByDoctor(user?.id) || [];
+  const [patients, setPatients] = useState([]);
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      const [p, r] = await Promise.all([
+        getPatientsByDoctor(user?.id || user?.public_id),
+        getMedicalRecordsByDoctor(user?.id || user?.public_id),
+      ]);
+      setPatients(p || []);
+      setRecords(r || []);
+      setLoading(false);
+    };
+    load();
+  }, [user?.id, user?.public_id]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState(SORT_RECENT);
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
@@ -43,6 +57,7 @@ export function MedicalRecordsPage() {
   }, []);
 
   const filteredRecords = useMemo(() => {
+    if (loading) return [];
     let list = records;
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
@@ -67,7 +82,7 @@ export function MedicalRecordsPage() {
       return sortOrder === SORT_NAME_ASC ? cmp : -cmp;
     });
     return sorted;
-  }, [records, patients, searchQuery, sortOrder]);
+  }, [records, patients, searchQuery, sortOrder, loading]);
 
   return (
     <div className="medical-records-page">

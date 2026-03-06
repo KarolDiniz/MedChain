@@ -41,10 +41,21 @@ export function PatientModal({ doctorId, onClose, onSaved }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addPatient(doctorId, form);
-    onSaved();
+    setError('');
+    setSaving(true);
+    try {
+      await addPatient(doctorId, form);
+      onSaved();
+    } catch (err) {
+      setError(err?.message || 'Erro ao cadastrar paciente.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -54,6 +65,7 @@ export function PatientModal({ doctorId, onClose, onSaved }) {
           <h2>Novo Paciente</h2>
           <button type="button" className="modal-close" onClick={onClose}>×</button>
         </div>
+        {error && <p className="modal-error" style={{ color: 'var(--danger)' }}>{error}</p>}
         <p className="modal-note">
           O paciente será cadastrado com senha padrão <strong>12345</strong> para acesso.
         </p>
@@ -86,7 +98,7 @@ export function PatientModal({ doctorId, onClose, onSaved }) {
 
           <div className="modal-actions">
             <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
-            <Button type="submit">Cadastrar</Button>
+            <Button type="submit" disabled={saving}>{saving ? 'Salvando...' : 'Cadastrar'}</Button>
           </div>
         </form>
       </Card>

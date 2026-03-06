@@ -1,24 +1,38 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getPatientById,
   getMedicalRecordsByDoctor,
-  getMedicalRecordById,
 } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import './PatientDetailPage.css';
 
-const GENDER_LABELS = { FEMALE: 'Feminino', MALE: 'Masculino', OTHER: 'Outro' };
+const GENDER_LABELS = { FEMALE: 'Feminino', MALE: 'Masculino', OTHER: 'Outro', 0: 'Masculino', 1: 'Feminino', 2: 'Outro' };
 
 export function PatientDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
-  const patient = getPatientById(id);
-  const allRecords = getMedicalRecordsByDoctor(user?.id) || [];
-  const records = allRecords.filter((r) => r.patient_id === id);
+  const [patient, setPatient] = useState(null);
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!patient || patient.doctor_id !== user?.id) {
+  useEffect(() => {
+    const load = async () => {
+      const [p, allRecords] = await Promise.all([
+        getPatientById(id),
+        getMedicalRecordsByDoctor(user?.id || user?.public_id),
+      ]);
+      setPatient(p);
+      setRecords((allRecords || []).filter((r) => String(r.patient_id || r.patient?.public_id) === String(id)));
+      setLoading(false);
+    };
+    load();
+  }, [id, user?.id, user?.public_id]);
+
+  if (loading) return <div className="patient-detail"><p>Carregando...</p></div>;
+  if (!patient) {
     return (
       <div className="patient-detail">
         <p>Paciente não encontrado.</p>

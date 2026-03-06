@@ -24,18 +24,18 @@ export function RegisterPage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     if (form.password !== form.confirmPassword) {
       setError('As senhas não coincidem.');
       return;
     }
-    if (form.password.length < 5) {
-      setError('A senha deve ter pelo menos 5 caracteres.');
+    if (form.password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
       return;
     }
-    const result = registerDoctor(form);
+    const result = await registerDoctor(form);
     if (result.success) {
       navigate('/doctor');
     } else {
