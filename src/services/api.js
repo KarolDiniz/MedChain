@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api/v1' : 'http://localhost:8000/api/v1');
+// Em desenvolvimento usa o proxy do Vite (/api/v1) para evitar CORS e "Failed to fetch"
+const API_URL = import.meta.env.DEV ? '/api/v1' : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1');
 
 function getToken() {
   const user = localStorage.getItem('medchain_user');
@@ -48,6 +49,14 @@ export const authApi = {
       full_name: data.full_name,
       email: data.email,
       password: data.password,
+      CRM: data.CRM,
+      specialty: data.specialty,
+    }),
+
+  completeDoctor: (data) =>
+    api.post('/auth/complete-doctor', {
+      email: data.email,
+      full_name: data.full_name,
       CRM: data.CRM,
       specialty: data.specialty,
     }),

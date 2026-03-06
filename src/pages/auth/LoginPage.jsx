@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stethoscope, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -12,17 +12,30 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [redirectTo, setRedirectTo] = useState(null);
+  const { user, login } = useAuth();
   const navigate = useNavigate();
+
+  // Navega apenas quando o contexto tiver o user com o type correto (evita race condition)
+  useEffect(() => {
+    if (!redirectTo || !user) return;
+    const expectedType = redirectTo === '/doctor' ? 'doctor' : 'patient';
+    if (user.type === expectedType) {
+      navigate(redirectTo, { replace: true });
+    }
+  }, [redirectTo, user?.type, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    const result = await login(email, password);
-    if (result.success) {
-      navigate(result.type === 'doctor' ? '/doctor' : '/patient');
-    } else {
-      setError(result.error);
+    setLoading(true);
+    try {
+      const result = await login(email, password);
+      if (result.success) setRedirectTo(result.type === 'doctor' ? '/doctor' : '/patient');
+      else setError(result.error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,6 +92,7 @@ export function LoginPage() {
                   setEmail('');
                   setPassword('');
                   setError('');
+                  setRedirectTo(null);
                 }}
               >
                 ← Voltar
@@ -121,8 +135,8 @@ export function LoginPage() {
                   required
                   error={error}
                 />
-                <Button type="submit" size="lg" className="login-submit">
-                  Entrar
+                <Button type="submit" size="lg" className="login-submit" disabled={loading}>
+                  {loading ? 'Entrando...' : 'Entrar'}
                 </Button>
               </form>
               <p className="login-demo">

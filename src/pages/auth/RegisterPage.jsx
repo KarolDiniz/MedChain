@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Stethoscope } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -17,8 +17,17 @@ export function RegisterPage() {
     specialty: '',
   });
   const [error, setError] = useState('');
-  const { registerDoctor } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [redirectTo, setRedirectTo] = useState(null);
+  const { user, registerDoctor } = useAuth();
   const navigate = useNavigate();
+
+  // Navega apenas quando o contexto tiver o user com type doctor (evita race condition)
+  useEffect(() => {
+    if (redirectTo && user?.type === 'doctor') {
+      navigate(redirectTo, { replace: true });
+    }
+  }, [redirectTo, user?.type, navigate]);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -35,12 +44,13 @@ export function RegisterPage() {
       setError('A senha deve ter pelo menos 6 caracteres.');
       return;
     }
-    const result = await registerDoctor(form);
-    if (result.success) {
-      // Aguarda o contexto atualizar (setUser) antes de navegar, evitando redirect para /patient
-      setTimeout(() => navigate('/doctor', { replace: true }), 0);
-    } else {
-      setError(result.error);
+    setLoading(true);
+    try {
+      const result = await registerDoctor(form);
+      if (result.success) setRedirectTo('/doctor');
+      else setError(result.error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -103,7 +113,7 @@ export function RegisterPage() {
               type="password"
               value={form.password}
               onChange={handleChange}
-              placeholder="Mínimo 5 caracteres"
+              placeholder="Mínimo 6 caracteres"
               required
             />
             <Input
@@ -116,8 +126,8 @@ export function RegisterPage() {
               required
               error={error}
             />
-            <Button type="submit" size="lg" className="register-submit">
-              Cadastrar
+            <Button type="submit" size="lg" className="register-submit" disabled={loading}>
+              {loading ? 'Cadastrando...' : 'Cadastrar'}
             </Button>
           </form>
           <p className="register-login">

@@ -3,6 +3,26 @@ import { authApi } from '../services/api';
 
 const AuthContext = createContext(null);
 
+function buildUserData(res, type) {
+  return {
+    ...res.user,
+    type,
+    access_token: res.access_token,
+    refresh_token: res.refresh_token,
+  };
+}
+
+function parseApiError(err) {
+  const raw = err?.data?.detail ?? err?.message ?? '';
+  if (Array.isArray(raw)) return raw[0]?.msg ?? String(raw);
+  return typeof raw === 'string' ? raw : (raw?.msg ?? JSON.stringify(raw));
+}
+
+function isAlreadyExistsError(msg) {
+  const s = String(msg || '').toLowerCase();
+  return s.includes('ja existe') || s.includes('already exists');
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,36 +45,43 @@ export function AuthProvider({ children }) {
       const res = await authApi.login(email, password);
       const role = (res.user?.role || '').toLowerCase();
       const type = role === 'doctor' ? 'doctor' : 'patient';
-      const userData = {
-        ...res.user,
-        type,
-        access_token: res.access_token,
-        refresh_token: res.refresh_token,
-      };
+      const userData = buildUserData(res, type);
       setUser(userData);
       localStorage.setItem('medchain_user', JSON.stringify(userData));
       return { success: true, type };
     } catch (err) {
-      const msg = err?.data?.detail || err?.message || 'E-mail ou senha incorretos.';
-      return { success: false, error: msg };
+      if (err?.message === 'Failed to fetch') {
+        return { success: false, error: 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.' };
+      }
+      return { success: false, error: parseApiError(err) || 'E-mail ou senha incorretos.' };
     }
   };
 
   const registerDoctor = async (data) => {
     try {
       const res = await authApi.registerDoctor(data);
-      const userData = {
-        ...res.user,
-        type: 'doctor',
-        access_token: res.access_token,
-        refresh_token: res.refresh_token,
-      };
+      const userData = buildUserData(res, 'doctor');
       setUser(userData);
       localStorage.setItem('medchain_user', JSON.stringify(userData));
-      return { success: true };
+      return { success: true, type: 'doctor' };
     } catch (err) {
-      const msg = err?.data?.detail || err?.message || 'Erro ao cadastrar.';
-      return { success: false, error: typeof msg === 'string' ? msg : JSON.stringify(msg) };
+      const msgStr = parseApiError(err);
+      if (isAlreadyExistsError(msgStr)) {
+        try {
+          await authApi.completeDoctor(data);
+          const loginRes = await authApi.login(data.email, data.password);
+          const userData = buildUserData(loginRes, 'doctor');
+          setUser(userData);
+          localStorage.setItem('medchain_user', JSON.stringify(userData));
+          return { success: true, type: 'doctor' };
+        } catch (completeErr) {
+          return { success: false, error: parseApiError(completeErr) || 'Erro ao completar cadastro.' };
+        }
+      }
+      if (err?.message === 'Failed to fetch') {
+        return { success: false, error: 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.' };
+      }
+      return { success: false, error: msgStr || 'Erro ao cadastrar.' };
     }
   };
 
