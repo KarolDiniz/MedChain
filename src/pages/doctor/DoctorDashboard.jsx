@@ -64,19 +64,30 @@ export function DoctorDashboard() {
   const [doctor, setDoctor] = useState(null);
   const [patients, setPatients] = useState([]);
   const [medicalRecords, setMedicalRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       const docId = user?.id || user?.public_id;
-      if (!docId) return;
-      const [d, p, mr] = await Promise.all([
-        getDoctorById(docId),
-        getPatientsByDoctor(docId),
-        getMedicalRecordsByDoctor(docId),
-      ]);
-      setDoctor(d);
-      setPatients(p || []);
-      setMedicalRecords(mr || []);
+      if (!docId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const [d, p, mr] = await Promise.all([
+          getDoctorById(docId),
+          getPatientsByDoctor(docId),
+          getMedicalRecordsByDoctor(docId),
+        ]);
+        setDoctor(d);
+        setPatients(p || []);
+        setMedicalRecords(mr || []);
+      } catch {
+        setPatients([]);
+        setMedicalRecords([]);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, [user?.id, user?.public_id]);
@@ -126,7 +137,8 @@ export function DoctorDashboard() {
   ];
   const contentMax = Math.max(...contentData.map((d) => d.value), 1);
 
-  const firstName = user?.full_name?.split(' ').slice(1).join(' ') || user?.full_name || 'Médico';
+  const displayName = doctor?.full_name || user?.full_name || user?.username || 'Médico';
+  const firstName = displayName.split(' ')[0] || displayName;
   const specialty = doctor?.specialty || 'Medicina';
 
   const stats = [
@@ -156,17 +168,43 @@ export function DoctorDashboard() {
     },
   ];
 
+  const getPatientName = (patientId) => {
+    const p = patients.find((x) => (x.patient_public_id || x.uid || x.id) === String(patientId));
+    return p?.full_name || 'Paciente';
+  };
+
   const recentActivity = medicalRecords
     .flatMap((mr) => {
-      const patient = patients.find((p) => p.id === mr.patient_id);
-      const name = patient?.full_name || 'Paciente';
-      return (mr.consultations || []).slice(-1).map((c) => ({
-        id: `${mr.id}-${c.id}`,
-        type: 'consultation',
-        title: c.chief_complaint || 'Consulta',
-        patientName: name,
-        date: c.created_date || mr.updated_date,
-      }));
+      const patientName = getPatientName(mr.patient_id);
+      const items = [];
+      (mr.consultations || []).forEach((c) => {
+        items.push({
+          id: `con-${mr.id}-${c.id}`,
+          type: 'consultation',
+          title: c.chief_complaint || 'Consulta',
+          patientName,
+          date: c.created_date || mr.updated_date,
+        });
+      });
+      (mr.diagnostics || []).forEach((d) => {
+        items.push({
+          id: `dia-${mr.id}-${d.id}`,
+          type: 'diagnostic',
+          title: d.description || 'Diagnóstico',
+          patientName,
+          date: d.issue_date || d.created_date || mr.updated_date,
+        });
+      });
+      (mr.medical_certificates || []).forEach((cert) => {
+        items.push({
+          id: `cert-${mr.id}-${cert.id}`,
+          type: 'certificate',
+          title: cert.purpose || 'Atestado',
+          patientName,
+          date: cert.created_date || mr.updated_date,
+        });
+      });
+      return items;
     })
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 5);
@@ -176,6 +214,18 @@ export function DoctorDashboard() {
     day: 'numeric',
     month: 'long',
   });
+
+  const patientLinkId = (p) => p.uid || p.patient_public_id || p.id;
+
+  if (loading) {
+    return (
+      <div className="dashboard">
+        <div className="dashboard-layout">
+          <p className="dashboard-loading">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard">
@@ -302,7 +352,7 @@ export function DoctorDashboard() {
                           <td>{p.email}</td>
                           <td>{p.cellphone}</td>
                           <td>
-                            <Link to={`/doctor/patients/${p.id}`} className="dashboard-link">
+                            <Link to={`/doctor/patients/${patientLinkId(p)}`} className="dashboard-link">
                               Ver <ChevronRight size={16} strokeWidth={2} />
                             </Link>
                           </td>

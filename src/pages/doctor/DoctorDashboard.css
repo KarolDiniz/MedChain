@@ -15,6 +15,12 @@
   box-shadow: var(--shadow-lg);
 }
 
+.dashboard-loading {
+  padding: 3rem;
+  text-align: center;
+  color: var(--color-text-light);
+}
+
 /* ----- Animações de entrada ----- */
 @keyframes dashboard-fade-in-up {
   from {

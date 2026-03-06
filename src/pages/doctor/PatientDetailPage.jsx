@@ -25,7 +25,8 @@ export function PatientDetailPage() {
         getMedicalRecordsByDoctor(user?.id || user?.public_id),
       ]);
       setPatient(p);
-      setRecords((allRecords || []).filter((r) => String(r.patient_id || r.patient?.public_id) === String(id)));
+      const patientIdForFilter = p?.patient_public_id || p?.uid || id;
+      setRecords((allRecords || []).filter((r) => String(r.patient_id) === String(patientIdForFilter)));
       setLoading(false);
     };
     load();
