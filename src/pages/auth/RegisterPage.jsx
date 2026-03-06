@@ -37,7 +37,8 @@ export function RegisterPage() {
     }
     const result = await registerDoctor(form);
     if (result.success) {
-      navigate('/doctor');
+      // Aguarda o contexto atualizar (setUser) antes de navegar, evitando redirect para /patient
+      setTimeout(() => navigate('/doctor', { replace: true }), 0);
     } else {
       setError(result.error);
     }

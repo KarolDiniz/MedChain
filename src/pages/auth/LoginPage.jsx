@@ -18,10 +18,9 @@ export function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    const userType = mode === 'patient' ? 'patient' : 'doctor';
-    const result = await login(email, password, userType);
+    const result = await login(email, password);
     if (result.success) {
-      navigate(userType === 'doctor' ? '/doctor' : '/patient');
+      navigate(result.type === 'doctor' ? '/doctor' : '/patient');
     } else {
       setError(result.error);
     }
@@ -55,7 +54,7 @@ export function LoginPage() {
                     <User size={32} strokeWidth={1.5} />
                   </span>
                   <span className="login-option-title">Sou Paciente</span>
-                  <span className="login-option-desc">Acessar meus prontuários</span>
+                  <span className="login-option-desc">Somente login (cadastro pelo médico)</span>
                 </button>
                 <button
                   type="button"
@@ -97,6 +96,11 @@ export function LoginPage() {
                   >
                     Cadastre-se como doutor
                   </button>
+                </p>
+              )}
+              {mode === 'patient' && (
+                <p className="login-subtitle login-subtitle--info">
+                  Pacientes só podem fazer login. O cadastro é feito pelo médico.
                 </p>
               )}
               <form onSubmit={handleLogin} className="login-form">

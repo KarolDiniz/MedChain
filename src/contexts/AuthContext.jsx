@@ -20,18 +20,20 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const login = async (email, password, userType) => {
+  const login = async (email, password) => {
     try {
       const res = await authApi.login(email, password);
+      const role = (res.user?.role || '').toLowerCase();
+      const type = role === 'doctor' ? 'doctor' : 'patient';
       const userData = {
         ...res.user,
-        type: res.user.role === 'doctor' ? 'doctor' : 'patient',
+        type,
         access_token: res.access_token,
         refresh_token: res.refresh_token,
       };
       setUser(userData);
       localStorage.setItem('medchain_user', JSON.stringify(userData));
-      return { success: true };
+      return { success: true, type };
     } catch (err) {
       const msg = err?.data?.detail || err?.message || 'E-mail ou senha incorretos.';
       return { success: false, error: msg };
