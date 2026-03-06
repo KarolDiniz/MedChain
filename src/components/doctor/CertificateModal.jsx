@@ -4,11 +4,13 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import './Modal.css';
 
-export function CertificateModal({ recordId, onClose, onSaved }) {
+export function CertificateModal({ doctorId, patientId, onClose, onSaved }) {
   const [form, setForm] = useState({
     purpose: '',
     period_of_leave: '',
   });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -17,13 +19,22 @@ export function CertificateModal({ recordId, onClose, onSaved }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addMedicalCertificate(recordId, {
-      purpose: form.purpose,
-      period_of_leave: parseInt(form.period_of_leave, 10) || 0,
-    });
-    onSaved();
+    if (!doctorId || !patientId) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await addMedicalCertificate(doctorId, patientId, {
+        purpose: form.purpose,
+        period_of_leave: parseInt(form.period_of_leave, 10) || 0,
+      });
+      onSaved();
+    } catch (err) {
+      setError(err?.message || 'Erro ao emitir atestado.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -34,6 +45,7 @@ export function CertificateModal({ recordId, onClose, onSaved }) {
           <button type="button" className="modal-close" onClick={onClose}>×</button>
         </div>
         <form onSubmit={handleSubmit} className="modal-form">
+          {error && <p className="modal-error">{error}</p>}
           <Input
             label="Finalidade"
             name="purpose"
@@ -52,8 +64,8 @@ export function CertificateModal({ recordId, onClose, onSaved }) {
             required
           />
           <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
-            <Button type="submit">Emitir atestado</Button>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
+            <Button type="submit" disabled={saving}>{saving ? 'Salvando...' : 'Emitir atestado'}</Button>
           </div>
         </form>
       </div>

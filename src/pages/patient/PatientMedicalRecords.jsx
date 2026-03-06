@@ -1,14 +1,57 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ClipboardList, ChevronDown, ChevronUp, Link2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getMedicalRecordsByPatient, getDoctorById } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import './PatientMedicalRecords.css';
 
+function DoctorName({ doctorId }) {
+  const [name, setName] = useState('-');
+  useEffect(() => {
+    if (!doctorId) return;
+    getDoctorById(doctorId).then((d) => setName(d?.full_name || '-'));
+  }, [doctorId]);
+  return <>{name}</>;
+}
+
 export function PatientMedicalRecords() {
   const { user } = useAuth();
-  const records = getMedicalRecordsByPatient(user?.id) || [];
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
+
+  const patientId = user?.patient_public_id || user?.id || user?.uid;
+
+  useEffect(() => {
+    const load = async () => {
+      if (!patientId) {
+        setRecords([]);
+        setLoading(false);
+        return;
+      }
+      try {
+        const list = await getMedicalRecordsByPatient(patientId);
+        setRecords(list || []);
+      } catch {
+        setRecords([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [patientId]);
+
+  if (loading) {
+    return (
+      <div className="patient-records">
+        <header className="page-header">
+          <h1>Meus Prontuários</h1>
+          <p>Carregando...</p>
+        </header>
+        <Card><div className="empty-state"><p>Carregando prontuários...</p></div></Card>
+      </div>
+    );
+  }
 
   return (
     <div className="patient-records">
@@ -30,7 +73,6 @@ export function PatientMedicalRecords() {
       ) : (
         <div className="records-accordion">
           {records.map((mr) => {
-            const doctor = getDoctorById(mr.doctor_id);
             const isExpanded = expandedId === mr.id;
             return (
               <Card key={mr.id} className="record-accordion-item">
@@ -40,8 +82,8 @@ export function PatientMedicalRecords() {
                   onClick={() => setExpandedId(isExpanded ? null : mr.id)}
                 >
                   <div className="record-accordion-title">
-                    <span className="record-id-badge">{mr.id}</span>
-                    <span>{new Date(mr.created_date).toLocaleDateString('pt-BR')}</span>
+                    <span className="record-id-badge">{String(mr.id).slice(0, 8)}</span>
+                    <span>{mr.created_date ? new Date(mr.created_date).toLocaleDateString('pt-BR') : '-'}</span>
                   </div>
                   <span className="record-accordion-icon">
                     {isExpanded ? (
@@ -53,7 +95,7 @@ export function PatientMedicalRecords() {
                 </button>
                 {isExpanded && (
                   <div className="record-accordion-body">
-                    <p className="record-doctor">Médico: {doctor?.full_name}</p>
+                    <p className="record-doctor">Médico: <DoctorName doctorId={mr.doctor_id} /></p>
 
                     {mr.consultations?.length > 0 && (
                       <section className="record-section">

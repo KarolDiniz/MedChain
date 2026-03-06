@@ -1,21 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { addMedicalRecord } from '../../services/medicalRecordService';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../common/Button';
-import { Input } from '../common/Input';
 import { Card } from '../common/Card';
 import './Modal.css';
 
 export function MedicalRecordModal({ doctorId, patients, preselectedPatientId, onClose, onSaved }) {
-  const [patientId, setPatientId] = useState(preselectedPatientId || (patients[0]?.id || ''));
+  const patientPublicId = (p) => p.patient_public_id || p.uid || p.id;
+  const [patientId, setPatientId] = useState('');
+  useEffect(() => {
+    if (!preselectedPatientId) {
+      setPatientId(patients[0] ? (patients[0].patient_public_id || patients[0].uid || patients[0].id) : '');
+      return;
+    }
+    const found = patients.find(
+      (p) => p.uid === preselectedPatientId || p.patient_public_id === preselectedPatientId || p.id === preselectedPatientId
+    );
+    setPatientId(found ? (found.patient_public_id || found.uid || found.id) : preselectedPatientId);
+  }, [patients, preselectedPatientId]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!patientId) return;
-    const record = addMedicalRecord(doctorId, patientId);
-    onSaved();
-    navigate(`/doctor/medical-records/${record.id}`);
+    if (!patientId || !doctorId) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const recordId = await addMedicalRecord(doctorId, patientId, 'consultation', {
+        chief_complaint: '',
+        history_of_present_illness: '',
+        diagnosis: '',
+        treatment_plan: '',
+      });
+      onSaved();
+      if (recordId) {
+        navigate(`/doctor/medical-records/${recordId}`);
+      }
+    } catch (err) {
+      setError(err?.message || 'Erro ao criar prontuário.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -30,6 +57,7 @@ export function MedicalRecordModal({ doctorId, patients, preselectedPatientId, o
           são gerados automaticamente.
         </p>
         <form onSubmit={handleSubmit} className="modal-form">
+          {error && <p className="modal-error">{error}</p>}
           <div className="input-group">
             <label className="input-label">Paciente *</label>
             <select
@@ -40,7 +68,7 @@ export function MedicalRecordModal({ doctorId, patients, preselectedPatientId, o
             >
               <option value="">Selecione um paciente</option>
               {patients.map((p) => (
-                <option key={p.id} value={p.id}>{p.full_name} - {p.email}</option>
+                <option key={p.uid || p.id} value={patientPublicId(p)}>{p.full_name} - {p.email}</option>
               ))}
             </select>
           </div>
@@ -50,8 +78,8 @@ export function MedicalRecordModal({ doctorId, patients, preselectedPatientId, o
             </p>
           )}
           <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
-            <Button type="submit" disabled={patients.length === 0}>Criar Prontuário</Button>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
+            <Button type="submit" disabled={patients.length === 0 || saving}>{saving ? 'Criando...' : 'Criar Prontuário'}</Button>
           </div>
         </form>
       </Card>

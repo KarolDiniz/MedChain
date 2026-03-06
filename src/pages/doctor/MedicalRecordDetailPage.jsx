@@ -6,9 +6,9 @@ import {
   getMedicalRecordById,
   getPatientById,
   getDoctorById,
+  getMedicalRecordsByDoctor,
   addDiagnostic,
   addMedicalCertificate,
-  addFile,
 } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
@@ -34,7 +34,10 @@ const SORT_OPTIONS = [
 export function MedicalRecordDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
-  const record = getMedicalRecordById(id);
+  const [record, setRecord] = useState(null);
+  const [patient, setPatient] = useState(null);
+  const [doctor, setDoctor] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('consultations');
   const [showConsultationModal, setShowConsultationModal] = useState(false);
   const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
@@ -44,7 +47,64 @@ export function MedicalRecordDetailPage() {
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const sortDropdownRef = useRef(null);
 
-  if (!record || record.doctor_id !== user?.id) {
+  const doctorId = user?.id || user?.public_id;
+
+  const loadData = async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const initial = await getMedicalRecordById(id);
+      if (!initial) {
+        setRecord(null);
+        setLoading(false);
+        return;
+      }
+      const isAuthorized = String(initial.doctor_id) === String(doctorId);
+      if (!isAuthorized) {
+        setRecord(null);
+        setLoading(false);
+        return;
+      }
+      const [recordsForDoctor, p, d] = await Promise.all([
+        getMedicalRecordsByDoctor(doctorId),
+        getPatientById(initial.patient_id),
+        getDoctorById(initial.doctor_id),
+      ]);
+      const group = recordsForDoctor.find(
+        (r) => String(r.patient_id) === String(initial.patient_id)
+      ) || initial;
+      setRecord(group);
+      setPatient(p);
+      setDoctor(d);
+    } catch {
+      setRecord(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [id, doctorId]);
+
+  const handleSaved = () => {
+    setShowConsultationModal(false);
+    setShowDiagnosticModal(false);
+    setShowCertificateModal(false);
+    setShowFileModal(false);
+    loadData();
+  };
+
+  if (loading) {
+    return (
+      <div className="record-detail-page">
+        <p>Carregando...</p>
+        <Link to="/doctor/medical-records">← Voltar</Link>
+      </div>
+    );
+  }
+
+  if (!record || String(record.doctor_id) !== String(doctorId)) {
     return (
       <div>
         <p>Prontuário não encontrado.</p>
@@ -52,9 +112,6 @@ export function MedicalRecordDetailPage() {
       </div>
     );
   }
-
-  const patient = getPatientById(record.patient_id);
-  const doctor = getDoctorById(record.doctor_id);
 
   const tabs = [
     { id: 'consultations', label: 'Consultas', count: record.consultations?.length || 0 },
@@ -355,30 +412,33 @@ export function MedicalRecordDetailPage() {
 
       {showConsultationModal && (
         <ConsultationModal
-          recordId={record.id}
+          doctorId={record.doctor_id}
+          patientId={record.patient_id}
           onClose={() => setShowConsultationModal(false)}
-          onSaved={() => setShowConsultationModal(false)}
+          onSaved={handleSaved}
         />
       )}
       {showDiagnosticModal && (
         <DiagnosticModal
-          recordId={record.id}
+          doctorId={record.doctor_id}
+          patientId={record.patient_id}
           onClose={() => setShowDiagnosticModal(false)}
-          onSaved={() => setShowDiagnosticModal(false)}
+          onSaved={handleSaved}
         />
       )}
       {showCertificateModal && (
         <CertificateModal
-          recordId={record.id}
+          doctorId={record.doctor_id}
+          patientId={record.patient_id}
           onClose={() => setShowCertificateModal(false)}
-          onSaved={() => setShowCertificateModal(false)}
+          onSaved={handleSaved}
         />
       )}
       {showFileModal && (
         <FileModal
-          recordId={record.id}
+          patientId={record.patient_id}
           onClose={() => setShowFileModal(false)}
-          onSaved={() => setShowFileModal(false)}
+          onSaved={handleSaved}
         />
       )}
     </div>

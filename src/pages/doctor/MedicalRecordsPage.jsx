@@ -62,14 +62,14 @@ export function MedicalRecordsPage() {
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
       list = records.filter((mr) => {
-        const patient = patients.find((p) => p.id === mr.patient_id);
+        const patient = patients.find((p) => (p.patient_public_id || p.id) === mr.patient_id);
         const name = (patient?.full_name || '').toLowerCase();
         const email = (patient?.email || '').toLowerCase();
         const dateStr = new Date(mr.created_date).toLocaleDateString('pt-BR');
         return name.includes(q) || email.includes(q) || dateStr.includes(q);
       });
     }
-    const getPatientName = (mr) => (patients.find((p) => p.id === mr.patient_id)?.full_name || '').toLowerCase();
+    const getPatientName = (mr) => (patients.find((p) => (p.patient_public_id || p.id) === mr.patient_id)?.full_name || '').toLowerCase();
     const sorted = [...list].sort((a, b) => {
       if (sortOrder === SORT_RECENT || sortOrder === SORT_OLDEST) {
         const da = new Date(a.created_date).getTime();
@@ -184,7 +184,7 @@ export function MedicalRecordsPage() {
                     </tr>
                   ) : (
                     filteredRecords.map((mr) => {
-                      const patient = patients.find((p) => p.id === mr.patient_id);
+                      const patient = patients.find((p) => (p.patient_public_id || p.id) === mr.patient_id);
                       return (
                         <tr key={mr.id}>
                           <td>{patient?.full_name || '-'}</td>

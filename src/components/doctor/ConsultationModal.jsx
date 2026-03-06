@@ -7,7 +7,7 @@ import './Modal.css';
 
 const initialPrescriptionItem = () => ({ medication_name: '', dosage: '', frequency: '', treatment_duration: '' });
 
-export function ConsultationModal({ recordId, onClose, onSaved }) {
+export function ConsultationModal({ doctorId, patientId, onClose, onSaved }) {
   const [form, setForm] = useState({
     chief_complaint: '',
     history_of_present_illness: '',
@@ -15,6 +15,8 @@ export function ConsultationModal({ recordId, onClose, onSaved }) {
     treatment_plan: '',
   });
   const [prescriptionItems, setPrescriptionItems] = useState([initialPrescriptionItem()]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -32,14 +34,23 @@ export function ConsultationModal({ recordId, onClose, onSaved }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const items = prescriptionItems.filter((i) => i.medication_name?.trim());
-    addConsultation(recordId, {
-      ...form,
-      prescription_items: items.length > 0 ? items : undefined,
-    });
-    onSaved();
+    if (!doctorId || !patientId) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const items = prescriptionItems.filter((i) => i.medication_name?.trim());
+      await addConsultation(doctorId, patientId, {
+        ...form,
+        prescription_items: items.length > 0 ? items : undefined,
+      });
+      onSaved();
+    } catch (err) {
+      setError(err?.message || 'Erro ao registrar consulta.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -50,6 +61,7 @@ export function ConsultationModal({ recordId, onClose, onSaved }) {
           <button type="button" className="modal-close" onClick={onClose}>×</button>
         </div>
         <form onSubmit={handleSubmit} className="modal-form">
+          {error && <p className="modal-error">{error}</p>}
           <Input
             label="Queixa principal"
             name="chief_complaint"
@@ -119,8 +131,8 @@ export function ConsultationModal({ recordId, onClose, onSaved }) {
           </div>
 
           <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
-            <Button type="submit">Registrar consulta</Button>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
+            <Button type="submit" disabled={saving}>{saving ? 'Salvando...' : 'Registrar consulta'}</Button>
           </div>
         </form>
       </Card>

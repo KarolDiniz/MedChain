@@ -4,21 +4,28 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import './Modal.css';
 
-export function FileModal({ recordId, onClose, onSaved }) {
-  const [form, setForm] = useState({
-    description: '',
-    format: 'PDF',
-    url: '#',
-  });
+export function FileModal({ patientId, onClose, onSaved }) {
+  const [description, setDescription] = useState('');
+  const [file, setFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addFile(recordId, form);
-    onSaved();
+    if (!patientId || !file) {
+      setError('Selecione um arquivo (PDF, PNG ou JPEG).');
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      await addFile(patientId, file, description);
+      onSaved();
+    } catch (err) {
+      setError(err?.message || 'Erro ao enviar arquivo.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -29,29 +36,29 @@ export function FileModal({ recordId, onClose, onSaved }) {
           <button type="button" className="modal-close" onClick={onClose}>×</button>
         </div>
         <p className="modal-note">
-          Em ambiente de demonstração, o arquivo é registrado com descrição e formato. O hash é gerado para auditoria.
+          Envie arquivos em PDF, PNG ou JPEG. O hash é gerado para auditoria na blockchain.
         </p>
         <form onSubmit={handleSubmit} className="modal-form">
+          {error && <p className="modal-error">{error}</p>}
           <Input
             label="Descrição"
             name="description"
-            value={form.description}
-            onChange={handleChange}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             placeholder="Ex: Resultado hemograma"
-            required
           />
           <div className="input-group">
-            <label className="input-label">Formato</label>
-            <select name="format" value={form.format} onChange={handleChange} className="input-field">
-              <option value="PDF">PDF</option>
-              <option value="PNG">PNG</option>
-              <option value="JPG">JPG</option>
-              <option value="DOC">DOC</option>
-            </select>
+            <label className="input-label">Arquivo *</label>
+            <input
+              type="file"
+              accept=".pdf,.png,.jpg,.jpeg"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              className="input-field"
+            />
           </div>
           <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
-            <Button type="submit">Registrar</Button>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
+            <Button type="submit" disabled={saving || !file}>{saving ? 'Enviando...' : 'Enviar'}</Button>
           </div>
         </form>
       </div>

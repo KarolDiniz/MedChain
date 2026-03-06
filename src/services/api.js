@@ -80,7 +80,7 @@ export const patientsApi = {
 };
 
 export const medicalRecordsApi = {
-  list: (type) => api.get(type ? `/?type=${type}` : '/medical-records/'),
+  list: (type) => api.get(type ? `/medical-records/?type=${type}` : '/medical-records/'),
   get: (id) => api.get(`/medical-records/${id}/`),
   create: (data) => api.post('/medical-records/', data),
 };
