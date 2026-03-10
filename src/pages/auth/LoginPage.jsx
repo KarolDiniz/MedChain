@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stethoscope, User, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import humanBlockchainImg from '../../assets/human-blockchain-saude.png';
 import './LoginPage.css';
 
 export function LoginPage() {
@@ -51,8 +52,28 @@ export function LoginPage() {
       <div className="login-bg">
         <div className="login-bg-gradient" />
         <div className="login-bg-mesh" />
+        {/* Vetores tecnológicos sutis */}
+        <svg className="login-bg-vectors" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+          <defs>
+            <pattern id="techGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(50,224,196,0.05)" strokeWidth="0.3" />
+            </pattern>
+            <pattern id="dotNet" width="15" height="15" patternUnits="userSpaceOnUse">
+              <circle cx="7.5" cy="7.5" r="0.4" fill="rgba(91,141,239,0.06)" />
+            </pattern>
+          </defs>
+          <rect width="100" height="100" fill="url(#techGrid)" />
+          <rect width="100" height="100" fill="url(#dotNet)" />
+          <line x1="0" y1="30" x2="100" y2="30" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
+          <line x1="0" y1="70" x2="100" y2="70" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
+          <line x1="20" y1="0" x2="20" y2="100" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
+          <line x1="80" y1="0" x2="80" y2="100" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
+          <path d="M0,50 Q25,30 50,50 T100,50" fill="none" className="bg-curve" stroke="rgba(91,141,239,0.05)" strokeWidth="0.4" />
+          <path d="M0,80 Q50,60 100,80" fill="none" className="bg-curve" stroke="rgba(50,224,196,0.04)" strokeWidth="0.4" />
+          <polygon points="0,0 100,0 50,100" fill="none" stroke="rgba(50,224,196,0.03)" strokeWidth="0.3" className="bg-poly" />
+        </svg>
         <div className="login-bg-particles">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(24)].map((_, i) => (
             <div key={i} className="login-particle" style={{ '--i': i }} />
           ))}
         </div>
@@ -61,58 +82,81 @@ export function LoginPage() {
 
       <div className="login-panel">
         <div className="login-panel-bg" aria-hidden />
+        {/* Pontos de luz espalhados no painel */}
+        <div className="login-panel-dots" aria-hidden>
+          {[
+            { t: 5, l: 8 }, { t: 12, l: 45 }, { t: 22, l: 85 }, { t: 35, l: 15 },
+            { t: 48, l: 72 }, { t: 55, l: 32 }, { t: 68, l: 92 }, { t: 78, l: 55 },
+            { t: 88, l: 22 }, { t: 8, l: 65 }, { t: 18, l: 28 }, { t: 42, l: 48 },
+            { t: 62, l: 12 }, { t: 72, l: 78 }, { t: 95, l: 42 }, { t: 3, l: 35 },
+            { t: 28, l: 92 }, { t: 52, l: 8 }, { t: 82, l: 65 }, { t: 15, l: 58 },
+            { t: 38, l: 25 }, { t: 58, l: 85 }, { t: 75, l: 38 }, { t: 92, l: 72 },
+            { t: 7, l: 22 }, { t: 45, l: 55 }, { t: 65, l: 28 }, { t: 25, l: 75 },
+            { t: 85, l: 48 }, { t: 33, l: 12 }, { t: 52, l: 88 }, { t: 18, l: 42 },
+            { t: 72, l: 52 }, { t: 95, l: 18 }, { t: 12, l: 92 }, { t: 58, l: 35 },
+            { t: 38, l: 68 }, { t: 82, l: 22 }, { t: 5, l: 58 }, { t: 48, l: 5 },
+            { t: 68, l: 75 }, { t: 28, l: 38 }, { t: 88, l: 65 },
+          ].map((pos, i) => (
+            <div key={i} className="login-panel-dot" style={{ '--pt': pos.t, '--pl': pos.l, '--pi': i }} />
+          ))}
+        </div>
         <aside className="login-illustration" aria-hidden>
-        <svg
-          viewBox="0 0 500 500"
-          className="login-illus-svg"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <linearGradient id="medGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#32e0c4" />
-              <stop offset="100%" stopColor="#0d7377" />
-            </linearGradient>
-            <linearGradient id="medGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#5b8def" />
-              <stop offset="100%" stopColor="#32e0c4" />
-            </linearGradient>
-          </defs>
-          <g className="login-illus-nodes">
-            <circle cx="120" cy="100" r="8" fill="url(#medGrad1)" opacity="0.9" className="node n1" />
-            <circle cx="180" cy="140" r="8" fill="url(#medGrad1)" opacity="0.8" className="node n2" />
-            <circle cx="250" cy="100" r="10" fill="url(#medGrad1)" opacity="0.95" className="node n3" />
-            <circle cx="320" cy="140" r="8" fill="url(#medGrad1)" opacity="0.8" className="node n4" />
-            <circle cx="380" cy="100" r="8" fill="url(#medGrad1)" opacity="0.9" className="node n5" />
-            <circle cx="100" cy="250" r="6" fill="url(#medGrad2)" opacity="0.7" className="node n6" />
-            <circle cx="400" cy="250" r="6" fill="url(#medGrad2)" opacity="0.7" className="node n7" />
-          </g>
-          <g className="login-illus-lines">
-            <line x1="128" y1="104" x2="172" y2="136" stroke="url(#medGrad1)" strokeWidth="2" opacity="0.5" className="conn" />
-            <line x1="188" y1="136" x2="242" y2="104" stroke="url(#medGrad1)" strokeWidth="2" opacity="0.5" className="conn" />
-            <line x1="258" y1="104" x2="312" y2="136" stroke="url(#medGrad1)" strokeWidth="2" opacity="0.5" className="conn" />
-            <line x1="328" y1="136" x2="372" y2="104" stroke="url(#medGrad1)" strokeWidth="2" opacity="0.5" className="conn" />
-          </g>
-          <g className="login-illus-cross" transform="translate(250, 250)">
-            <rect x="-20" y="-60" width="40" height="120" rx="8" fill="url(#medGrad1)" className="cross-v" />
-            <rect x="-60" y="-20" width="120" height="40" rx="8" fill="url(#medGrad1)" className="cross-h" />
-            <circle cx="0" cy="0" r="24" fill="#0a2e2c" stroke="url(#medGrad1)" strokeWidth="3" className="cross-center" />
-            <path d="M-8 0 L-2 6 L8 -6" stroke="#32e0c4" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" className="cross-check" />
-          </g>
-          <path
-            d="M80 350 L120 330 L160 350 L200 290 L240 350 L280 310 L320 350 L360 330 L400 350 L420 340"
-            stroke="url(#medGrad2)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-            opacity="0.9"
-            className="login-illus-heartbeat"
-          />
-          <ellipse cx="250" cy="250" rx="180" ry="180" stroke="rgba(50,224,196,0.15)" strokeWidth="1" fill="none" className="ring r1" />
-          <ellipse cx="250" cy="250" rx="220" ry="220" stroke="rgba(91,141,239,0.1)" strokeWidth="1" fill="none" className="ring r2" />
-        </svg>
-      </aside>
+          <div className="login-illus-wrapper">
+            <img
+              src={humanBlockchainImg}
+              alt=""
+              className="login-illus-img"
+            />
+            {/* Partículas flutuantes */}
+            <div className="login-illus-particles">
+              {[...Array(30)].map((_, i) => (
+                <div key={i} className="login-illus-particle" style={{ '--pi': i }} />
+              ))}
+            </div>
+            {/* Nós blockchain + linhas conectando */}
+            <svg className="login-illus-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="blockchainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#32e0c4" />
+                  <stop offset="100%" stopColor="#5b8def" />
+                </linearGradient>
+                <filter id="nodeGlow">
+                  <feGaussianBlur stdDeviation="0.5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <g className="login-illus-lines">
+                <line x1="15" y1="20" x2="45" y2="35" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c1" />
+                <line x1="50" y1="40" x2="75" y2="25" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c2" />
+                <line x1="25" y1="55" x2="55" y2="70" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c3" />
+                <line x1="60" y1="75" x2="85" y2="60" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c4" />
+                <line x1="20" y1="45" x2="80" y2="50" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c5" />
+                <line x1="35" y1="15" x2="70" y2="55" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c6" />
+              </g>
+            </svg>
+            {/* Pontos luminosos pulsando - pequenos e espalhados */}
+            <div className="login-illus-dots">
+              {[
+                { t: 8, l: 15 }, { t: 18, l: 72 }, { t: 25, l: 28 }, { t: 42, l: 85 },
+                { t: 55, l: 12 }, { t: 68, l: 45 }, { t: 12, l: 55 }, { t: 35, l: 18 },
+                { t: 75, l: 78 }, { t: 88, l: 32 }, { t: 5, l: 90 }, { t: 48, l: 62 },
+                { t: 22, l: 42 }, { t: 62, l: 8 }, { t: 82, l: 55 }, { t: 38, l: 88 },
+                { t: 3, l: 38 }, { t: 45, l: 5 }, { t: 92, l: 68 }, { t: 15, l: 92 },
+                { t: 58, l: 35 }, { t: 72, l: 18 }, { t: 28, l: 75 }, { t: 95, l: 48 },
+                { t: 8, l: 58 }, { t: 52, l: 82 }, { t: 38, l: 25 }, { t: 85, l: 12 },
+                { t: 18, l: 35 }, { t: 65, l: 72 }, { t: 42, l: 48 }, { t: 78, l: 92 },
+                { t: 32, l: 8 }, { t: 52, l: 45 }, { t: 88, l: 78 }, { t: 12, l: 38 },
+                { t: 68, l: 22 }, { t: 35, l: 82 }, { t: 95, l: 15 }, { t: 5, l: 65 },
+                { t: 72, l: 52 }, { t: 48, l: 28 }, { t: 22, l: 88 }, { t: 82, l: 42 },
+              ].map((pos, i) => (
+                <div key={i} className="login-illus-dot" style={{ '--dt': pos.t, '--dl': pos.l, '--di': i }} />
+              ))}
+            </div>
+          </div>
+        </aside>
 
       <div className="login-wrapper">
         <div className="login-container login-fade-in">

@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1rem;
   position: relative;
   overflow: hidden;
 }
@@ -20,16 +20,18 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 1100px;
-  padding: 2rem;
+  max-width: 1200px;
+  padding: 1.25rem;
   animation: panelFadeIn 0.7s ease-out;
 }
 
 @media (min-width: 900px) {
   .login-panel {
     flex-direction: row;
-    gap: 3rem;
-    padding: 2.5rem 3rem;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    align-items: stretch;
+    justify-content: space-between;
   }
 }
 
@@ -59,6 +61,40 @@
   border: 1px solid rgba(50, 224, 196, 0.12);
   box-shadow: 0 0 30px rgba(50, 224, 196, 0.08);
   pointer-events: none;
+}
+
+/* Pontos de luz espalhados no painel */
+.login-panel-dots {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.login-panel-dot {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(50, 224, 196, 0.6);
+  border-radius: 50%;
+  top: calc(var(--pt, 50) * 1%);
+  left: calc(var(--pl, 50) * 1%);
+  transform: translate(-50%, -50%);
+  animation: panelDotPulse 3s ease-in-out infinite;
+  animation-delay: calc(var(--pi) * 0.1s);
+  box-shadow: 0 0 4px rgba(50, 224, 196, 0.5);
+}
+
+.login-panel-dot:nth-child(even) {
+  background: rgba(91, 141, 239, 0.5);
+  box-shadow: 0 0 4px rgba(91, 141, 239, 0.4);
+}
+
+@keyframes panelDotPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
 }
 
 @keyframes panelFadeIn {
@@ -186,22 +222,82 @@
   );
 }
 
+/* Vetores tecnológicos sutis no background */
+.login-bg-vectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.login-bg-vectors .bg-line {
+  stroke: rgba(50, 224, 196, 0.04);
+  stroke-width: 1;
+  animation: bgLineFade 6s ease-in-out infinite;
+}
+
+.login-bg-vectors .bg-line:nth-child(3) { animation-delay: 0.5s; }
+.login-bg-vectors .bg-line:nth-child(4) { animation-delay: 1s; }
+.login-bg-vectors .bg-line:nth-child(5) { animation-delay: 1.5s; }
+.login-bg-vectors .bg-line:nth-child(6) { animation-delay: 2s; }
+
+@keyframes bgLineFade {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+.login-bg-vectors .bg-curve {
+  stroke: rgba(91, 141, 239, 0.04);
+  stroke-width: 0.5;
+  stroke-dasharray: 5 10;
+  animation: bgCurveMove 12s linear infinite;
+}
+
+.login-bg-vectors .bg-curve:nth-of-type(2) {
+  animation-duration: 15s;
+  animation-direction: reverse;
+}
+
+@keyframes bgCurveMove {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 30; }
+}
+
+.login-bg-vectors .bg-poly {
+  opacity: 0.5;
+  animation: bgPolyPulse 8s ease-in-out infinite;
+}
+
+@keyframes bgPolyPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
 /* --- Illustration --- */
 .login-illustration {
   position: relative;
   z-index: 2;
-  flex: 1;
+  flex: 1.4;
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 480px;
+  min-width: 0;
   animation: illusFadeIn 0.8s ease-out 0.2s both;
+}
+
+@media (min-width: 900px) {
+  .login-illustration {
+    min-height: 520px;
+  }
 }
 
 @media (max-width: 899px) {
   .login-illustration {
-    max-height: 280px;
+    max-height: 320px;
     margin-bottom: 1rem;
+    flex: 1;
   }
 }
 
@@ -216,97 +312,137 @@
   }
 }
 
-.login-illus-svg {
+/* Wrapper da ilustração principal */
+.login-illus-wrapper {
+  position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Imagem principal - humano wireframe + blockchain */
+.login-illus-img {
+  width: 100%;
+  max-width: 100%;
   height: auto;
-  filter: drop-shadow(0 0 60px rgba(50, 224, 196, 0.2));
+  object-fit: contain;
+  filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.3));
+  position: relative;
+  z-index: 1;
 }
 
-/* Illustration: blockchain nodes pulse */
-.login-illus-nodes .node {
-  animation: nodePulse 2.5s ease-in-out infinite;
+/* Partículas flutuantes ao redor da imagem */
+.login-illus-particles {
+  position: absolute;
+  inset: -10%;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
 }
 
-.login-illus-nodes .node.n1 { animation-delay: 0s; }
-.login-illus-nodes .node.n2 { animation-delay: 0.2s; }
-.login-illus-nodes .node.n3 { animation-delay: 0.4s; }
-.login-illus-nodes .node.n4 { animation-delay: 0.6s; }
-.login-illus-nodes .node.n5 { animation-delay: 0.8s; }
-.login-illus-nodes .node.n6 { animation-delay: 0.3s; }
-.login-illus-nodes .node.n7 { animation-delay: 0.7s; }
-
-@keyframes nodePulse {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.2); opacity: 1; }
+.login-illus-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(50, 224, 196, 0.5);
+  border-radius: 50%;
+  top: calc((var(--pi) * 3.3) % 100%);
+  left: calc((var(--pi) * 4.7) % 100%);
+  animation: illusParticleFloat 8s ease-in-out infinite;
+  animation-delay: calc(var(--pi) * -0.25s);
+  box-shadow: 0 0 6px rgba(50, 224, 196, 0.6);
 }
 
-/* Illustration: connection lines */
-.login-illus-lines .conn {
-  stroke-dasharray: 80;
-  stroke-dashoffset: 80;
-  animation: lineDraw 3s ease-in-out infinite;
+.login-illus-particle:nth-child(odd) {
+  background: rgba(91, 141, 239, 0.5);
+  box-shadow: 0 0 6px rgba(91, 141, 239, 0.5);
+  animation-duration: 10s;
 }
 
-.login-illus-lines .conn:nth-child(1) { animation-delay: 0s; }
-.login-illus-lines .conn:nth-child(2) { animation-delay: 0.3s; }
-.login-illus-lines .conn:nth-child(3) { animation-delay: 0.6s; }
-.login-illus-lines .conn:nth-child(4) { animation-delay: 0.9s; }
-
-@keyframes lineDraw {
-  0%, 100% { stroke-dashoffset: 80; opacity: 0.3; }
-  50% { stroke-dashoffset: 0; opacity: 0.7; }
+@keyframes illusParticleFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(8px, -12px) scale(1.2);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-6px, -24px) scale(0.9);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(10px, -18px) scale(1.1);
+    opacity: 0.7;
+  }
 }
 
-/* Illustration: medical cross - glow pulse */
-.login-illus-cross {
-  animation: crossGlow 3s ease-in-out infinite;
+/* Overlay SVG: nós blockchain + linhas */
+.login-illus-overlay {
+  position: absolute;
+  inset: -5%;
+  width: 110%;
+  height: 110%;
+  z-index: 2;
+  pointer-events: none;
 }
 
-@keyframes crossGlow {
-  0%, 100% { filter: drop-shadow(0 0 0 rgba(50, 224, 196, 0.3)); }
-  50% { filter: drop-shadow(0 0 12px rgba(50, 224, 196, 0.6)); }
+.login-illus-overlay .conn {
+  stroke: url(#blockchainGrad);
+  stroke-width: 0.3;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: connDrawFade 4s ease-in-out infinite;
 }
 
-.login-illus-cross .cross-v,
-.login-illus-cross .cross-h {
-  transition: filter 0.3s;
+.login-illus-overlay .conn.c1 { animation-delay: 0s; }
+.login-illus-overlay .conn.c2 { animation-delay: 0.7s; }
+.login-illus-overlay .conn.c3 { animation-delay: 1.4s; }
+.login-illus-overlay .conn.c4 { animation-delay: 2.1s; }
+.login-illus-overlay .conn.c5 { animation-delay: 2.8s; }
+.login-illus-overlay .conn.c6 { animation-delay: 3.5s; }
+
+@keyframes connDrawFade {
+  0%, 100% { stroke-dashoffset: 20; opacity: 0.15; }
+  30% { stroke-dashoffset: 0; opacity: 0.6; }
+  70% { stroke-dashoffset: 0; opacity: 0.6; }
 }
 
-.login-illus-cross:hover .cross-v,
-.login-illus-cross:hover .cross-h {
-  filter: drop-shadow(0 0 8px rgba(50, 224, 196, 0.6));
+/* Pontos luminosos pulsando - pequenos e espalhados uniformemente */
+.login-illus-dots {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
 }
 
-/* Illustration: heartbeat line */
-.login-illus-heartbeat {
-  stroke-dasharray: 400;
-  stroke-dashoffset: 400;
-  animation: heartbeatDraw 2.5s ease-in-out infinite;
+.login-illus-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(50, 224, 196, 0.85);
+  border-radius: 50%;
+  top: calc(var(--dt, 50) * 1%);
+  left: calc(var(--dl, 50) * 1%);
+  transform: translate(-50%, -50%);
+  animation: dotPulse 2.5s ease-in-out infinite;
+  animation-delay: calc(var(--di) * 0.12s);
+  box-shadow: 0 0 6px rgba(50, 224, 196, 0.7);
 }
 
-@keyframes heartbeatDraw {
-  0% { stroke-dashoffset: 400; opacity: 0.5; }
-  40% { stroke-dashoffset: 0; opacity: 0.95; }
-  60% { stroke-dashoffset: 0; opacity: 0.95; }
-  100% { stroke-dashoffset: -400; opacity: 0.5; }
+.login-illus-dot:nth-child(even) {
+  background: rgba(91, 141, 239, 0.8);
+  box-shadow: 0 0 6px rgba(91, 141, 239, 0.6);
 }
 
-/* Illustration: orbiting rings */
-.login-illus-svg .ring.r1 {
-  animation: ringRotate 20s linear infinite;
-  transform-origin: center;
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
 }
 
-.login-illus-svg .ring.r2 {
-  animation: ringRotate 25s linear infinite reverse;
-  transform-origin: center;
-}
-
-@keyframes ringRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
 
 /* --- Wrapper & Container --- */
 .login-wrapper {
@@ -315,6 +451,14 @@
   width: 100%;
   max-width: 420px;
   flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 900px) {
+  .login-wrapper {
+    justify-content: flex-end;
+  }
 }
 
 .login-container {
@@ -686,11 +830,13 @@
   .login-logo-icon,
   .login-submit,
   .login-illustration,
-  .login-illus-nodes .node,
-  .login-illus-lines .conn,
-  .login-illus-cross,
-  .login-illus-heartbeat,
-  .login-illus-svg .ring {
+  .login-illus-particle,
+  .login-illus-overlay .conn,
+  .login-illus-dot,
+  .login-panel-dot,
+  .login-bg-vectors .bg-line,
+  .login-bg-vectors .bg-curve,
+  .login-bg-vectors .bg-poly {
     animation: none !important;
     transition-duration: 0.15s !important;
   }
@@ -703,7 +849,7 @@
 /* --- Responsive --- */
 @media (max-width: 899px) {
   .login-panel {
-    padding: 1.5rem;
+    padding: 1rem;
   }
 
   .login-page {
