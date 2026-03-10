@@ -34,38 +34,34 @@
     justify-content: space-between;
   }
 
-  /* Paciente: imagem à esquerda, login à direita */
+  /* Paciente: login à esquerda, imagem à direita - imagem invertida quando à direita */
   .login-illustration--patient {
-    order: 1;
-    transform: scale(1);
-  }
-  .login-wrapper--patient {
-    order: 2;
-    justify-content: flex-end;
-    transition: justify-content 0.55s cubic-bezier(0.33, 1, 0.68, 1);
-  }
-
-  /* Doutor: login à esquerda, imagem à direita - imagem invertida horizontalmente (sem animar o invertimento) */
-  .login-illustration--doctor {
     order: 2;
     transform: scaleX(-1);
     transition: opacity 0.55s cubic-bezier(0.33, 1, 0.68, 1),
       max-width 0.45s cubic-bezier(0.33, 1, 0.68, 1),
       margin 0.45s ease;
   }
-  .login-wrapper--doctor {
+  .login-wrapper--patient {
     order: 1;
     justify-content: flex-start;
     transition: justify-content 0.55s cubic-bezier(0.33, 1, 0.68, 1);
   }
 
-  /* Durante o swap: imagem some 100% primeiro, depois surge do outro lado */
-  .login-panel--swapping .login-illustration--patient {
-    transform: translateX(20px) scale(0.5);
-    opacity: 0;
+  /* Doutor: login à direita, imagem à esquerda */
+  .login-illustration--doctor {
+    order: 1;
+    transform: scale(1);
   }
+  .login-wrapper--doctor {
+    order: 2;
+    justify-content: flex-end;
+    transition: justify-content 0.55s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  /* Durante o swap: imagem apenas fica mais transparente até sumir 100% */
+  .login-panel--swapping .login-illustration--patient,
   .login-panel--swapping .login-illustration--doctor {
-    transform: translateX(-20px) scale(0.5);
     opacity: 0;
   }
   /* Login só desliza depois que a imagem sumir 100% */
@@ -348,14 +344,13 @@
   }
 }
 
-/* Ilustração - transição fluida ao trocar Paciente/Doutor */
+/* Ilustração - transição fluida (inversão scaleX é instantânea) */
 .login-illustration {
   --ease-smooth: cubic-bezier(0.33, 1, 0.68, 1);
   transition: opacity 0.55s var(--ease-smooth),
-    transform 0.55s var(--ease-smooth),
     max-width 0.45s var(--ease-smooth),
     margin 0.45s var(--ease-smooth);
-  will-change: transform;
+  will-change: opacity;
 }
 
 .login-illustration--hidden {
