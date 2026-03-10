@@ -33,10 +33,11 @@
     align-items: stretch;
     justify-content: space-between;
   }
-
   /* Paciente: login à esquerda, imagem à direita - imagem invertida quando à direita */
   .login-illustration--patient {
     order: 2;
+    flex: 1 1 0;
+    min-width: 0;
     transform: scaleX(-1);
     transition: opacity 0.55s cubic-bezier(0.33, 1, 0.68, 1),
       max-width 0.45s cubic-bezier(0.33, 1, 0.68, 1),
@@ -54,6 +55,8 @@
   /* Doutor: login à direita, imagem à esquerda */
   .login-illustration--doctor {
     order: 1;
+    flex: 1 1 0;
+    min-width: 0;
     transform: scale(1);
   }
   .login-wrapper--doctor {
@@ -71,25 +74,17 @@
     opacity: 0;
     transition-duration: 0.2s;
   }
-  /* Painel desliza até o lado oposto (~metade do painel de 1200px) */
+  /* Deslize exato: distância ilustração(712) + gap(20) = 732px — painel fica onde terminou */
   .login-panel--swapping .login-wrapper--patient {
-    transform: translateX(620px);
+    transform: translateX(732px);
     transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
     transition-delay: 200ms;
-    -webkit-transform: translateX(670px);
-    -moz-transform: translateX(670px);
-    -ms-transform: translateX(670px);
-    -o-transform: translateX(670px);
-}
+  }
   .login-panel--swapping .login-wrapper--doctor {
-    transform: translateX(-670px);
+    transform: translateX(-732px);
     transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
     transition-delay: 200ms;
-    -webkit-transform: translateX(-670px);
-    -moz-transform: translateX(-670px);
-    -ms-transform: translateX(-670px);
-    -o-transform: translateX(-670px);
-}
+  }
   /* Sem transição no estado normal – ao remover swapping, o layout troca instantaneamente */
   .login-wrapper--patient,
   .login-wrapper--doctor {
@@ -536,6 +531,7 @@
 @media (min-width: 900px) {
   .login-wrapper {
     justify-content: flex-end;
+    min-width: 420px;
   }
 
   .login-wrapper--full {

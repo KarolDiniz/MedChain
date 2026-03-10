@@ -302,6 +302,11 @@ export function LoginPage() {
             </button>
           </form>
 
+          {userType === 'patient' && (
+            <p className="login-register-hint" style={{ visibility: 'hidden' }} aria-hidden>
+              Não tem conta? Cadastre-se como paciente
+            </p>
+          )}
           {userType === 'doctor' && (
             <p className="login-register-hint">
               Não tem conta?{' '}
