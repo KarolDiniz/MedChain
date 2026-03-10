@@ -12,6 +12,66 @@
   overflow: hidden;
 }
 
+/* --- Panel: retângulo envolvente com borda e sombra --- */
+.login-panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
+  padding: 2rem;
+  animation: panelFadeIn 0.7s ease-out;
+}
+
+@media (min-width: 900px) {
+  .login-panel {
+    flex-direction: row;
+    gap: 3rem;
+    padding: 2.5rem 3rem;
+  }
+}
+
+.login-panel-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(10, 28, 42, 0.6);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.55),
+    0 0 40px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+}
+
+/* Borda externa com leve glow tecnológico */
+.login-panel::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: 1;
+  border-radius: 30px;
+  border: 1px solid rgba(50, 224, 196, 0.12);
+  box-shadow: 0 0 30px rgba(50, 224, 196, 0.08);
+  pointer-events: none;
+}
+
+@keyframes panelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* --- Background --- */
 .login-bg {
   position: absolute;
@@ -126,33 +186,157 @@
   );
 }
 
+/* --- Illustration --- */
+.login-illustration {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 480px;
+  animation: illusFadeIn 0.8s ease-out 0.2s both;
+}
+
+@media (max-width: 899px) {
+  .login-illustration {
+    max-height: 280px;
+    margin-bottom: 1rem;
+  }
+}
+
+@keyframes illusFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.login-illus-svg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  filter: drop-shadow(0 0 60px rgba(50, 224, 196, 0.2));
+}
+
+/* Illustration: blockchain nodes pulse */
+.login-illus-nodes .node {
+  animation: nodePulse 2.5s ease-in-out infinite;
+}
+
+.login-illus-nodes .node.n1 { animation-delay: 0s; }
+.login-illus-nodes .node.n2 { animation-delay: 0.2s; }
+.login-illus-nodes .node.n3 { animation-delay: 0.4s; }
+.login-illus-nodes .node.n4 { animation-delay: 0.6s; }
+.login-illus-nodes .node.n5 { animation-delay: 0.8s; }
+.login-illus-nodes .node.n6 { animation-delay: 0.3s; }
+.login-illus-nodes .node.n7 { animation-delay: 0.7s; }
+
+@keyframes nodePulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Illustration: connection lines */
+.login-illus-lines .conn {
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+  animation: lineDraw 3s ease-in-out infinite;
+}
+
+.login-illus-lines .conn:nth-child(1) { animation-delay: 0s; }
+.login-illus-lines .conn:nth-child(2) { animation-delay: 0.3s; }
+.login-illus-lines .conn:nth-child(3) { animation-delay: 0.6s; }
+.login-illus-lines .conn:nth-child(4) { animation-delay: 0.9s; }
+
+@keyframes lineDraw {
+  0%, 100% { stroke-dashoffset: 80; opacity: 0.3; }
+  50% { stroke-dashoffset: 0; opacity: 0.7; }
+}
+
+/* Illustration: medical cross - glow pulse */
+.login-illus-cross {
+  animation: crossGlow 3s ease-in-out infinite;
+}
+
+@keyframes crossGlow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(50, 224, 196, 0.3)); }
+  50% { filter: drop-shadow(0 0 12px rgba(50, 224, 196, 0.6)); }
+}
+
+.login-illus-cross .cross-v,
+.login-illus-cross .cross-h {
+  transition: filter 0.3s;
+}
+
+.login-illus-cross:hover .cross-v,
+.login-illus-cross:hover .cross-h {
+  filter: drop-shadow(0 0 8px rgba(50, 224, 196, 0.6));
+}
+
+/* Illustration: heartbeat line */
+.login-illus-heartbeat {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: heartbeatDraw 2.5s ease-in-out infinite;
+}
+
+@keyframes heartbeatDraw {
+  0% { stroke-dashoffset: 400; opacity: 0.5; }
+  40% { stroke-dashoffset: 0; opacity: 0.95; }
+  60% { stroke-dashoffset: 0; opacity: 0.95; }
+  100% { stroke-dashoffset: -400; opacity: 0.5; }
+}
+
+/* Illustration: orbiting rings */
+.login-illus-svg .ring.r1 {
+  animation: ringRotate 20s linear infinite;
+  transform-origin: center;
+}
+
+.login-illus-svg .ring.r2 {
+  animation: ringRotate 25s linear infinite reverse;
+  transform-origin: center;
+}
+
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* --- Wrapper & Container --- */
 .login-wrapper {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   max-width: 420px;
+  flex-shrink: 0;
 }
 
 .login-container {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 22px;
   padding: 2.5rem;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+    0 4px 24px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.3s ease;
 }
 
 .login-container:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 12px 48px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(50, 224, 196, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 8px 40px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(50, 224, 196, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .login-fade-in {
@@ -217,9 +401,10 @@
 
 .login-tagline {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.55);
   font-weight: 400;
   line-height: 1.5;
+  letter-spacing: 0.01em;
 }
 
 /* --- Type Selector (Paciente | Doutor) --- */
@@ -465,15 +650,31 @@
   text-shadow: 0 0 12px rgba(50, 224, 196, 0.4);
 }
 
-.login-demo {
+/* Trust badge (substitui demo) */
+.login-trust-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   margin-top: 1.5rem;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.35);
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
   text-align: center;
+  background: rgba(50, 224, 196, 0.06);
+  border-radius: 12px;
+  border: 1px solid rgba(50, 224, 196, 0.1);
+  animation: trustFade 0.5s ease-out;
 }
 
-.login-demo strong {
-  color: rgba(255, 255, 255, 0.5);
+@keyframes trustFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.login-trust-icon {
+  font-size: 1rem;
+  filter: grayscale(0);
 }
 
 /* --- Acessibilidade --- */
@@ -483,7 +684,13 @@
   .login-type-indicator,
   .login-message,
   .login-logo-icon,
-  .login-submit {
+  .login-submit,
+  .login-illustration,
+  .login-illus-nodes .node,
+  .login-illus-lines .conn,
+  .login-illus-cross,
+  .login-illus-heartbeat,
+  .login-illus-svg .ring {
     animation: none !important;
     transition-duration: 0.15s !important;
   }
@@ -494,9 +701,23 @@
 }
 
 /* --- Responsive --- */
+@media (max-width: 899px) {
+  .login-panel {
+    padding: 1.5rem;
+  }
+
+  .login-page {
+    padding-top: 2rem;
+  }
+}
+
 @media (max-width: 480px) {
   .login-page {
     padding: 1rem;
+  }
+
+  .login-illustration {
+    max-height: 220px;
   }
 
   .login-container {

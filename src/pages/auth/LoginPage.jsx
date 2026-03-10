@@ -59,6 +59,61 @@ export function LoginPage() {
         <div className="login-bg-grid" />
       </div>
 
+      <div className="login-panel">
+        <div className="login-panel-bg" aria-hidden />
+        <aside className="login-illustration" aria-hidden>
+        <svg
+          viewBox="0 0 500 500"
+          className="login-illus-svg"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient id="medGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#32e0c4" />
+              <stop offset="100%" stopColor="#0d7377" />
+            </linearGradient>
+            <linearGradient id="medGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#5b8def" />
+              <stop offset="100%" stopColor="#32e0c4" />
+            </linearGradient>
+          </defs>
+          <g className="login-illus-nodes">
+            <circle cx="120" cy="100" r="8" fill="url(#medGrad1)" opacity="0.9" className="node n1" />
+            <circle cx="180" cy="140" r="8" fill="url(#medGrad1)" opacity="0.8" className="node n2" />
+            <circle cx="250" cy="100" r="10" fill="url(#medGrad1)" opacity="0.95" className="node n3" />
+            <circle cx="320" cy="140" r="8" fill="url(#medGrad1)" opacity="0.8" className="node n4" />
+            <circle cx="380" cy="100" r="8" fill="url(#medGrad1)" opacity="0.9" className="node n5" />
+            <circle cx="100" cy="250" r="6" fill="url(#medGrad2)" opacity="0.7" className="node n6" />
+            <circle cx="400" cy="250" r="6" fill="url(#medGrad2)" opacity="0.7" className="node n7" />
+          </g>
+          <g className="login-illus-lines">
+            <line x1="128" y1="104" x2="172" y2="136" stroke="url(#medGrad1)" strokeWidth="2" opacity="0.5" className="conn" />
+            <line x1="188" y1="136" x2="242" y2="104" stroke="url(#medGrad1)" strokeWidth="2" opacity="0.5" className="conn" />
+            <line x1="258" y1="104" x2="312" y2="136" stroke="url(#medGrad1)" strokeWidth="2" opacity="0.5" className="conn" />
+            <line x1="328" y1="136" x2="372" y2="104" stroke="url(#medGrad1)" strokeWidth="2" opacity="0.5" className="conn" />
+          </g>
+          <g className="login-illus-cross" transform="translate(250, 250)">
+            <rect x="-20" y="-60" width="40" height="120" rx="8" fill="url(#medGrad1)" className="cross-v" />
+            <rect x="-60" y="-20" width="120" height="40" rx="8" fill="url(#medGrad1)" className="cross-h" />
+            <circle cx="0" cy="0" r="24" fill="#0a2e2c" stroke="url(#medGrad1)" strokeWidth="3" className="cross-center" />
+            <path d="M-8 0 L-2 6 L8 -6" stroke="#32e0c4" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" className="cross-check" />
+          </g>
+          <path
+            d="M80 350 L120 330 L160 350 L200 290 L240 350 L280 310 L320 350 L360 330 L400 350 L420 340"
+            stroke="url(#medGrad2)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+            opacity="0.9"
+            className="login-illus-heartbeat"
+          />
+          <ellipse cx="250" cy="250" rx="180" ry="180" stroke="rgba(50,224,196,0.15)" strokeWidth="1" fill="none" className="ring r1" />
+          <ellipse cx="250" cy="250" rx="220" ry="220" stroke="rgba(91,141,239,0.1)" strokeWidth="1" fill="none" className="ring r2" />
+        </svg>
+      </aside>
+
       <div className="login-wrapper">
         <div className="login-container login-fade-in">
           <header className="login-header">
@@ -166,11 +221,12 @@ export function LoginPage() {
             </p>
           )}
 
-          <p className="login-demo">
-            Demo: use senha <strong>12345</strong> para qualquer usuário
-            cadastrado
+          <p className="login-trust-badge">
+            <span className="login-trust-icon" aria-hidden>🔒</span>
+            Sua saúde protegida por tecnologia blockchain
           </p>
         </div>
+      </div>
       </div>
     </div>
   );
