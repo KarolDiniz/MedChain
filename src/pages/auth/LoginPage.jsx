@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stethoscope, User, Mail, Lock } from 'lucide-react';
 import { PolygonBackground, createTheme } from 'polygon-background';
@@ -38,6 +38,40 @@ export function LoginPage() {
   });
   const { user, login, registerDoctor } = useAuth();
   const navigate = useNavigate();
+
+  const panelDots = useMemo(() => {
+    const dots = [];
+    for (let i = 0; i < 72; i++) {
+      const a = (i * 137.508) % 360;
+      const r = 35 + ((i * 41 + 17) % 25);
+      const t = 50 + r * Math.sin((a * Math.PI) / 180) + ((i * 7) % 11) - 5;
+      const l = 50 + r * Math.cos((a * Math.PI) / 180) + ((i * 13) % 9) - 4;
+      dots.push({
+        t: Math.max(2, Math.min(98, t)),
+        l: Math.max(2, Math.min(98, l)),
+        s: 1 + ((i * 23 + i) % 4),
+        lum: 0.35 + ((i * 67 + 31) % 8) / 12,
+      });
+    }
+    return dots;
+  }, []);
+
+  const illusDots = useMemo(() => {
+    const dots = [];
+    for (let i = 0; i < 110; i++) {
+      const a = (i * 99.73 + 127) % 360;
+      const r = 20 + ((i * 53 + 7) % 38);
+      const t = 50 + r * Math.sin((a * Math.PI) / 180) + ((i * 19) % 13) - 6;
+      const l = 50 + r * Math.cos((a * Math.PI) / 180) + ((i * 29) % 11) - 5;
+      dots.push({
+        t: Math.max(2, Math.min(98, t)),
+        l: Math.max(2, Math.min(98, l)),
+        s: 2 + ((i * 17 + i * 3) % 4),
+        lum: 0.55 + ((i * 43 + 19) % 10) / 12,
+      });
+    }
+    return dots;
+  }, []);
 
   useEffect(() => {
     if (!meshRef.current) return;
@@ -127,36 +161,18 @@ export function LoginPage() {
         <div className="login-bg-gradient" />
         <div className="login-bg-mesh" />
         <div ref={meshRef} className="login-bg-polygon-mesh" aria-hidden />
-        <div className="login-bg-particles">
-          {[...Array(24)].map((_, i) => (
-            <div key={i} className="login-particle" style={{ '--i': i }} />
-          ))}
-        </div>
         <div className="login-bg-grid" />
       </div>
 
       <div className={`login-panel ${showRegister ? 'login-panel--register' : ''} ${isSwapping ? 'login-panel--swapping' : ''}`}>
         <div className="login-panel-bg" aria-hidden />
-        {/* Pontos de luz espalhados no painel */}
         <div className="login-panel-dots" aria-hidden>
-          {[
-            { t: 5, l: 8 }, { t: 12, l: 45 }, { t: 22, l: 85 }, { t: 35, l: 15 },
-            { t: 48, l: 72 }, { t: 55, l: 32 }, { t: 68, l: 92 }, { t: 78, l: 55 },
-            { t: 88, l: 22 }, { t: 8, l: 65 }, { t: 18, l: 28 }, { t: 42, l: 48 },
-            { t: 62, l: 12 }, { t: 72, l: 78 }, { t: 95, l: 42 }, { t: 3, l: 35 },
-            { t: 28, l: 92 }, { t: 52, l: 8 }, { t: 82, l: 65 }, { t: 15, l: 58 },
-            { t: 38, l: 25 }, { t: 58, l: 85 }, { t: 75, l: 38 }, { t: 92, l: 72 },
-            { t: 7, l: 22 }, { t: 45, l: 55 }, { t: 65, l: 28 }, { t: 25, l: 75 },
-            { t: 85, l: 48 }, { t: 33, l: 12 }, { t: 52, l: 88 }, { t: 18, l: 42 },
-            { t: 72, l: 52 }, { t: 95, l: 18 }, { t: 12, l: 92 }, { t: 58, l: 35 },
-            { t: 38, l: 68 }, { t: 82, l: 22 }, { t: 5, l: 58 }, { t: 48, l: 5 },
-            { t: 68, l: 75 }, { t: 28, l: 38 }, { t: 88, l: 65 },
-            { t: 14, l: 18 }, { t: 52, l: 62 }, { t: 78, l: 32 }, { t: 42, l: 78 },
-            { t: 6, l: 52 }, { t: 92, l: 88 }, { t: 35, l: 48 }, { t: 65, l: 5 },
-            { t: 22, l: 72 }, { t: 58, l: 42 }, { t: 85, l: 65 }, { t: 18, l: 12 },
-            { t: 48, l: 28 }, { t: 72, l: 92 }, { t: 32, l: 55 }, { t: 95, l: 35 },
-          ].map((pos, i) => (
-            <div key={i} className="login-panel-dot" style={{ '--pt': pos.t, '--pl': pos.l, '--pi': i }} />
+          {panelDots.map((d, i) => (
+            <div
+              key={i}
+              className="login-panel-dot"
+              style={{ '--pt': d.t, '--pl': d.l, '--ps': d.s, '--plum': d.lum, '--pi': i }}
+            />
           ))}
         </div>
         <aside className={`login-illustration ${showRegister ? 'login-illustration--hidden' : `login-illustration--${userType}`}`} aria-hidden>
@@ -166,12 +182,6 @@ export function LoginPage() {
               alt=""
               className="login-illus-img"
             />
-            {/* Partículas flutuantes */}
-            <div className="login-illus-particles">
-              {[...Array(30)].map((_, i) => (
-                <div key={i} className="login-illus-particle" style={{ '--pi': i }} />
-              ))}
-            </div>
             {/* Nós blockchain + linhas conectando */}
             <svg className="login-illus-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">
               <defs>
@@ -196,25 +206,13 @@ export function LoginPage() {
                 <line x1="35" y1="15" x2="70" y2="55" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c6" />
               </g>
             </svg>
-            {/* Pontos luminosos pulsando - pequenos e espalhados */}
-            <div className="login-illus-dots">
-              {[
-                { t: 8, l: 15 }, { t: 18, l: 72 }, { t: 25, l: 28 }, { t: 42, l: 85 },
-                { t: 55, l: 12 }, { t: 68, l: 45 }, { t: 12, l: 55 }, { t: 35, l: 18 },
-                { t: 75, l: 78 }, { t: 88, l: 32 }, { t: 5, l: 90 }, { t: 48, l: 62 },
-                { t: 22, l: 42 }, { t: 62, l: 8 }, { t: 82, l: 55 }, { t: 38, l: 88 },
-                { t: 3, l: 38 }, { t: 45, l: 5 }, { t: 92, l: 68 }, { t: 15, l: 92 },
-                { t: 58, l: 35 }, { t: 72, l: 18 }, { t: 28, l: 75 }, { t: 95, l: 48 },
-                { t: 8, l: 58 }, { t: 52, l: 82 }, { t: 38, l: 25 }, { t: 85, l: 12 },
-                { t: 18, l: 35 }, { t: 65, l: 72 }, { t: 42, l: 48 }, { t: 78, l: 92 },
-                { t: 32, l: 8 }, { t: 52, l: 45 }, { t: 88, l: 78 }, { t: 12, l: 38 },
-                { t: 68, l: 22 }, { t: 35, l: 82 }, { t: 95, l: 15 }, { t: 5, l: 65 },
-                { t: 72, l: 52 }, { t: 48, l: 28 }, { t: 22, l: 88 }, { t: 82, l: 42 },
-                { t: 55, l: 68 }, { t: 15, l: 22 }, { t: 78, l: 45 }, { t: 38, l: 52 },
-                { t: 92, l: 12 }, { t: 8, l: 78 }, { t: 62, l: 35 }, { t: 28, l: 85 },
-                { t: 45, l: 18 }, { t: 75, l: 62 }, { t: 18, l: 58 }, { t: 85, l: 38 },
-              ].map((pos, i) => (
-                <div key={i} className="login-illus-dot" style={{ '--dt': pos.t, '--dl': pos.l, '--di': i }} />
+            <div className="login-illus-dots" aria-hidden>
+              {illusDots.map((d, i) => (
+                <div
+                  key={i}
+                  className="login-illus-dot"
+                  style={{ '--dt': d.t, '--dl': d.l, '--ds': d.s, '--dlum': d.lum, '--di': i }}
+                />
               ))}
             </div>
           </div>
