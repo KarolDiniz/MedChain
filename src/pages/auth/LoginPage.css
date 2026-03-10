@@ -58,8 +58,8 @@
   inset: -2px;
   z-index: 1;
   border-radius: 30px;
-  border: 1px solid rgba(50, 224, 196, 0.12);
-  box-shadow: 0 0 30px rgba(50, 224, 196, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.12);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.08);
   pointer-events: none;
 }
 
@@ -77,19 +77,19 @@
   position: absolute;
   width: 2px;
   height: 2px;
-  background: rgba(50, 224, 196, 0.6);
+  background: rgba(0, 255, 255, 0.6);
   border-radius: 50%;
   top: calc(var(--pt, 50) * 1%);
   left: calc(var(--pl, 50) * 1%);
   transform: translate(-50%, -50%);
   animation: panelDotPulse 3s ease-in-out infinite;
   animation-delay: calc(var(--pi) * 0.1s);
-  box-shadow: 0 0 4px rgba(50, 224, 196, 0.5);
+  box-shadow: 0 0 4px rgba(0, 255, 255, 0.5);
 }
 
 .login-panel-dot:nth-child(even) {
-  background: rgba(91, 141, 239, 0.5);
-  box-shadow: 0 0 4px rgba(91, 141, 239, 0.4);
+  background: rgba(50, 70, 95, 0.5);
+  box-shadow: 0 0 4px rgba(50, 70, 95, 0.4);
 }
 
 @keyframes panelDotPulse {
@@ -135,17 +135,17 @@
   background-image:
     radial-gradient(
       ellipse 80% 50% at 20% 30%,
-      rgba(13, 115, 119, 0.15) 0%,
+      rgba(0, 204, 204, 0.15) 0%,
       transparent 50%
     ),
     radial-gradient(
       ellipse 60% 40% at 80% 70%,
-      rgba(50, 224, 196, 0.08) 0%,
+      rgba(0, 255, 255, 0.08) 0%,
       transparent 50%
     ),
     radial-gradient(
       ellipse 50% 30% at 50% 50%,
-      rgba(91, 141, 239, 0.06) 0%,
+      rgba(50, 70, 95, 0.06) 0%,
       transparent 60%
     );
   animation: meshPulse 8s ease-in-out infinite;
@@ -168,7 +168,7 @@
   position: absolute;
   width: 2px;
   height: 2px;
-  background: rgba(50, 224, 196, 0.4);
+  background: rgba(0, 255, 255, 0.4);
   border-radius: 50%;
   top: calc(var(--i) * 5%);
   left: calc((var(--i) * 7) % 100%);
@@ -201,12 +201,12 @@
   inset: 0;
   background-image:
     linear-gradient(
-      rgba(50, 224, 196, 0.03) 1px,
+      rgba(0, 255, 255, 0.03) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(50, 224, 196, 0.03) 1px,
+      rgba(0, 255, 255, 0.03) 1px,
       transparent 1px
     );
   background-size: 40px 40px;
@@ -233,7 +233,7 @@
 }
 
 .login-bg-vectors .bg-line {
-  stroke: rgba(50, 224, 196, 0.04);
+  stroke: rgba(0, 255, 255, 0.04);
   stroke-width: 1;
   animation: bgLineFade 6s ease-in-out infinite;
 }
@@ -249,7 +249,7 @@
 }
 
 .login-bg-vectors .bg-curve {
-  stroke: rgba(91, 141, 239, 0.04);
+  stroke: rgba(50, 70, 95, 0.04);
   stroke-width: 0.5;
   stroke-dasharray: 5 10;
   animation: bgCurveMove 12s linear infinite;
@@ -346,18 +346,18 @@
   position: absolute;
   width: 3px;
   height: 3px;
-  background: rgba(50, 224, 196, 0.5);
+  background: rgba(0, 255, 255, 0.5);
   border-radius: 50%;
   top: calc((var(--pi) * 3.3) % 100%);
   left: calc((var(--pi) * 4.7) % 100%);
   animation: illusParticleFloat 8s ease-in-out infinite;
   animation-delay: calc(var(--pi) * -0.25s);
-  box-shadow: 0 0 6px rgba(50, 224, 196, 0.6);
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.6);
 }
 
 .login-illus-particle:nth-child(odd) {
-  background: rgba(91, 141, 239, 0.5);
-  box-shadow: 0 0 6px rgba(91, 141, 239, 0.5);
+  background: rgba(50, 70, 95, 0.5);
+  box-shadow: 0 0 6px rgba(50, 70, 95, 0.5);
   animation-duration: 10s;
 }
 
@@ -423,19 +423,19 @@
   position: absolute;
   width: 3px;
   height: 3px;
-  background: rgba(50, 224, 196, 0.85);
+  background: rgba(0, 255, 255, 0.85);
   border-radius: 50%;
   top: calc(var(--dt, 50) * 1%);
   left: calc(var(--dl, 50) * 1%);
   transform: translate(-50%, -50%);
   animation: dotPulse 2.5s ease-in-out infinite;
   animation-delay: calc(var(--di) * 0.12s);
-  box-shadow: 0 0 6px rgba(50, 224, 196, 0.7);
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.7);
 }
 
 .login-illus-dot:nth-child(even) {
-  background: rgba(91, 141, 239, 0.8);
-  box-shadow: 0 0 6px rgba(91, 141, 239, 0.6);
+  background: rgba(50, 70, 95, 0.8);
+  box-shadow: 0 0 6px rgba(50, 70, 95, 0.6);
 }
 
 @keyframes dotPulse {
@@ -478,7 +478,7 @@
   transform: translateY(-2px);
   box-shadow:
     0 8px 40px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(50, 224, 196, 0.08),
+    0 0 0 1px rgba(0, 255, 255, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.1);
 }
@@ -516,11 +516,11 @@
   justify-content: center;
   width: 72px;
   height: 72px;
-  background: linear-gradient(135deg, #0d7377 0%, #32e0c4 100%);
+  background: linear-gradient(135deg, #007777 0%, #009999 100%);
   border-radius: 20px;
   color: white;
   box-shadow:
-    0 8px 24px rgba(13, 115, 119, 0.4),
+    0 8px 24px rgba(0, 119, 119, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -528,14 +528,14 @@
 .login-logo-icon:hover {
   transform: scale(1.05);
   box-shadow:
-    0 12px 32px rgba(13, 115, 119, 0.5),
+    0 12px 32px rgba(0, 119, 119, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.15) inset;
 }
 
 .login-title {
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #ffffff 0%, #a8e6cf 50%, #32e0c4 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #99ffff 50%, #00ffff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -573,11 +573,11 @@
   top: 4px;
   bottom: 4px;
   width: calc(50% - 4px);
-  background: linear-gradient(135deg, #0d7377 0%, #1a9b8f 100%);
+  background: linear-gradient(135deg, #007777 0%, #009999 100%);
   border-radius: 10px;
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
-    0 4px 12px rgba(13, 115, 119, 0.4),
+    0 4px 12px rgba(0, 119, 119, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
@@ -701,14 +701,14 @@
 }
 
 .login-input:focus {
-  border-color: rgba(50, 224, 196, 0.5);
-  box-shadow: 0 0 0 3px rgba(50, 224, 196, 0.15);
+  border-color: rgba(0, 153, 153, 0.5);
+  box-shadow: 0 0 0 3px rgba(0, 153, 153, 0.15);
   background: rgba(0, 0, 0, 0.25);
 }
 
 .login-input:focus + .login-input-icon,
 .login-input-wrap:focus-within .login-input-icon {
-  color: #32e0c4;
+  color: #00cccc;
   transform: scale(1.05);
 }
 
@@ -731,7 +731,7 @@
   font-weight: 600;
   font-family: inherit;
   color: white;
-  background: linear-gradient(135deg, #0d7377 0%, #1a9b8f 50%, #0d7377 100%);
+  background: linear-gradient(135deg, #007777 0%, #009999 50%, #007777 100%);
   background-size: 200% 100%;
   border: none;
   border-radius: 14px;
@@ -743,14 +743,14 @@
     box-shadow 0.3s ease,
     background-position 0.4s ease;
   box-shadow:
-    0 4px 20px rgba(13, 115, 119, 0.4),
+    0 4px 20px rgba(0, 119, 119, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .login-submit:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow:
-    0 8px 28px rgba(13, 115, 119, 0.5),
+    0 8px 28px rgba(0, 119, 119, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
   background-position: 100% 0;
 }
@@ -780,7 +780,7 @@
 .login-register-link {
   background: none;
   border: none;
-  color: #32e0c4;
+  color: #00cccc;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -790,8 +790,8 @@
 }
 
 .login-register-link:hover {
-  color: #5bffd9;
-  text-shadow: 0 0 12px rgba(50, 224, 196, 0.4);
+  color: #00e6e6;
+  text-shadow: 0 0 12px rgba(0, 153, 153, 0.4);
 }
 
 /* Trust badge (substitui demo) */
@@ -805,9 +805,9 @@
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.55);
   text-align: center;
-  background: rgba(50, 224, 196, 0.06);
+  background: rgba(0, 255, 255, 0.06);
   border-radius: 12px;
-  border: 1px solid rgba(50, 224, 196, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.1);
   animation: trustFade 0.5s ease-out;
 }
 

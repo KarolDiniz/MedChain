@@ -59,7 +59,7 @@ export function LoginPage() {
               <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(50,224,196,0.05)" strokeWidth="0.3" />
             </pattern>
             <pattern id="dotNet" width="15" height="15" patternUnits="userSpaceOnUse">
-              <circle cx="7.5" cy="7.5" r="0.4" fill="rgba(91,141,239,0.06)" />
+              <circle cx="7.5" cy="7.5" r="0.4" fill="rgba(50,70,95,0.06)" />
             </pattern>
           </defs>
           <rect width="100" height="100" fill="url(#techGrid)" />
@@ -68,7 +68,7 @@ export function LoginPage() {
           <line x1="0" y1="70" x2="100" y2="70" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
           <line x1="20" y1="0" x2="20" y2="100" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
           <line x1="80" y1="0" x2="80" y2="100" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
-          <path d="M0,50 Q25,30 50,50 T100,50" fill="none" className="bg-curve" stroke="rgba(91,141,239,0.05)" strokeWidth="0.4" />
+          <path d="M0,50 Q25,30 50,50 T100,50" fill="none" className="bg-curve" stroke="rgba(50,70,95,0.05)" strokeWidth="0.4" />
           <path d="M0,80 Q50,60 100,80" fill="none" className="bg-curve" stroke="rgba(50,224,196,0.04)" strokeWidth="0.4" />
           <polygon points="0,0 100,0 50,100" fill="none" stroke="rgba(50,224,196,0.03)" strokeWidth="0.3" className="bg-poly" />
         </svg>
@@ -96,6 +96,10 @@ export function LoginPage() {
             { t: 72, l: 52 }, { t: 95, l: 18 }, { t: 12, l: 92 }, { t: 58, l: 35 },
             { t: 38, l: 68 }, { t: 82, l: 22 }, { t: 5, l: 58 }, { t: 48, l: 5 },
             { t: 68, l: 75 }, { t: 28, l: 38 }, { t: 88, l: 65 },
+            { t: 14, l: 18 }, { t: 52, l: 62 }, { t: 78, l: 32 }, { t: 42, l: 78 },
+            { t: 6, l: 52 }, { t: 92, l: 88 }, { t: 35, l: 48 }, { t: 65, l: 5 },
+            { t: 22, l: 72 }, { t: 58, l: 42 }, { t: 85, l: 65 }, { t: 18, l: 12 },
+            { t: 48, l: 28 }, { t: 72, l: 92 }, { t: 32, l: 55 }, { t: 95, l: 35 },
           ].map((pos, i) => (
             <div key={i} className="login-panel-dot" style={{ '--pt': pos.t, '--pl': pos.l, '--pi': i }} />
           ))}
@@ -117,8 +121,8 @@ export function LoginPage() {
             <svg className="login-illus-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="blockchainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#32e0c4" />
-                  <stop offset="100%" stopColor="#5b8def" />
+                  <stop offset="0%" stopColor="#00ffff" />
+                  <stop offset="100%" stopColor="#32465f" />
                 </linearGradient>
                 <filter id="nodeGlow">
                   <feGaussianBlur stdDeviation="0.5" result="blur" />
@@ -151,6 +155,9 @@ export function LoginPage() {
                 { t: 32, l: 8 }, { t: 52, l: 45 }, { t: 88, l: 78 }, { t: 12, l: 38 },
                 { t: 68, l: 22 }, { t: 35, l: 82 }, { t: 95, l: 15 }, { t: 5, l: 65 },
                 { t: 72, l: 52 }, { t: 48, l: 28 }, { t: 22, l: 88 }, { t: 82, l: 42 },
+                { t: 55, l: 68 }, { t: 15, l: 22 }, { t: 78, l: 45 }, { t: 38, l: 52 },
+                { t: 92, l: 12 }, { t: 8, l: 78 }, { t: 62, l: 35 }, { t: 28, l: 85 },
+                { t: 45, l: 18 }, { t: 75, l: 62 }, { t: 18, l: 58 }, { t: 85, l: 38 },
               ].map((pos, i) => (
                 <div key={i} className="login-illus-dot" style={{ '--dt': pos.t, '--dl': pos.l, '--di': i }} />
               ))}
@@ -265,10 +272,6 @@ export function LoginPage() {
             </p>
           )}
 
-          <p className="login-trust-badge">
-            <span className="login-trust-icon" aria-hidden>🔒</span>
-            Sua saúde protegida por tecnologia blockchain
-          </p>
         </div>
       </div>
       </div>
