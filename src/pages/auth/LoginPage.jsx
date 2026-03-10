@@ -56,6 +56,23 @@ export function LoginPage() {
     return dots;
   }, []);
 
+  const registerDots = useMemo(() => {
+    const dots = [];
+    for (let i = 0; i < 48; i++) {
+      const a = (i * 113.4 + 89) % 360;
+      const r = 30 + ((i * 37 + 11) % 22);
+      const t = 50 + r * Math.sin((a * Math.PI) / 180) + ((i * 5) % 9) - 4;
+      const l = 50 + r * Math.cos((a * Math.PI) / 180) + ((i * 11) % 7) - 3;
+      dots.push({
+        t: Math.max(2, Math.min(98, t)),
+        l: Math.max(2, Math.min(98, l)),
+        s: 1 + ((i * 19 + i) % 4),
+        lum: 0.3 + ((i * 53 + 23) % 7) / 10,
+      });
+    }
+    return dots;
+  }, []);
+
   const illusDots = useMemo(() => {
     const dots = [];
     for (let i = 0; i < 110; i++) {
@@ -165,7 +182,8 @@ export function LoginPage() {
       </div>
 
       <div className={`login-panel ${showRegister ? 'login-panel--register' : ''} ${isSwapping ? 'login-panel--swapping' : ''}`}>
-        <div className="login-panel-bg" aria-hidden />
+        {!showRegister && <div className="login-panel-bg" aria-hidden />}
+        {!showRegister && (
         <div className="login-panel-dots" aria-hidden>
           {panelDots.map((d, i) => (
             <div
@@ -175,6 +193,7 @@ export function LoginPage() {
             />
           ))}
         </div>
+        )}
         <aside className={`login-illustration ${showRegister ? 'login-illustration--hidden' : `login-illustration--${userType}`}`} aria-hidden>
           <div className="login-illus-wrapper">
             <img
@@ -334,96 +353,121 @@ export function LoginPage() {
         </div>
         ) : (
         <div className="login-container login-container--register login-fade-in">
-          <header className="login-header">
-            <div className="login-logo">
-              <span className="login-logo-icon">
-                <Stethoscope size={44} strokeWidth={1.8} />
-              </span>
+          <div className="login-register-dots" aria-hidden>
+            {registerDots.map((d, i) => (
+              <div
+                key={i}
+                className="login-register-dot"
+                style={{ '--rt': d.t, '--rl': d.l, '--rs': d.s, '--rlum': d.lum, '--ri': i }}
+              />
+            ))}
+          </div>
+          <header className="login-register-header">
+            <div className="login-register-logo">
+              <Stethoscope size={32} strokeWidth={1.8} />
             </div>
-            <h1 className="login-title">MedChain</h1>
-            <p className="login-tagline">Cadastro exclusivo para profissionais de saúde</p>
+            <h1 className="login-register-title">Cadastro do médico</h1>
+            <p className="login-register-subtitle">Preencha seus dados para acessar o sistema</p>
           </header>
-          <p className="login-register-note">
-            O cadastro de pacientes é realizado apenas pelo doutor, dentro do sistema.
-          </p>
+
           <form onSubmit={handleRegister} className="login-form login-form--register">
-            <div className="login-input-wrap login-input-wrap--no-icon">
-              <input
-                type="text"
-                name="full_name"
-                value={registerForm.full_name}
-                onChange={handleRegisterChange}
-                placeholder="Nome completo"
-                className="login-input"
-                required
-              />
-            </div>
-            <div className="login-input-wrap">
-              <Mail className="login-input-icon" size={20} strokeWidth={2} />
-              <input
-                type="email"
-                name="email"
-                value={registerForm.email}
-                onChange={handleRegisterChange}
-                placeholder="E-mail"
-                className="login-input"
-                required
-              />
-            </div>
-            <div className="login-input-wrap login-input-wrap--no-icon">
-              <input
-                type="text"
-                name="CRM"
-                value={registerForm.CRM}
-                onChange={handleRegisterChange}
-                placeholder="CRM (ex: 12345-SP)"
-                className="login-input"
-                required
-              />
-            </div>
-            <div className="login-input-wrap login-input-wrap--no-icon">
-              <input
-                type="text"
-                name="specialty"
-                value={registerForm.specialty}
-                onChange={handleRegisterChange}
-                placeholder="Especialidade"
-                className="login-input"
-                required
-              />
-            </div>
-            <div className="login-input-wrap">
-              <Lock className="login-input-icon" size={20} strokeWidth={2} />
-              <input
-                type="password"
-                name="password"
-                value={registerForm.password}
-                onChange={handleRegisterChange}
-                placeholder="Senha (mín. 6 caracteres)"
-                className="login-input"
-                required
-              />
-            </div>
-            <div className="login-input-wrap">
-              <Lock className="login-input-icon" size={20} strokeWidth={2} />
-              <input
-                type="password"
-                name="confirmPassword"
-                value={registerForm.confirmPassword}
-                onChange={handleRegisterChange}
-                placeholder="Confirmar senha"
-                className={`login-input ${error ? 'has-error' : ''}`}
-                required
-              />
-            </div>
+            <fieldset className="login-register-section">
+              <legend className="login-register-legend">Dados pessoais</legend>
+              <div className="login-form-grid">
+                <div className="login-input-wrap login-input-wrap--no-icon">
+                  <input
+                    type="text"
+                    name="full_name"
+                    value={registerForm.full_name}
+                    onChange={handleRegisterChange}
+                    placeholder="Nome completo"
+                    className="login-input"
+                    required
+                  />
+                </div>
+                <div className="login-input-wrap">
+                  <Mail className="login-input-icon" size={18} strokeWidth={2} />
+                  <input
+                    type="email"
+                    name="email"
+                    value={registerForm.email}
+                    onChange={handleRegisterChange}
+                    placeholder="E-mail"
+                    className="login-input"
+                    required
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset className="login-register-section">
+              <legend className="login-register-legend">Registro profissional</legend>
+              <div className="login-form-grid">
+                <div className="login-input-wrap login-input-wrap--no-icon">
+                  <input
+                    type="text"
+                    name="CRM"
+                    value={registerForm.CRM}
+                    onChange={handleRegisterChange}
+                    placeholder="CRM (ex: 12345-SP)"
+                    className="login-input"
+                    required
+                  />
+                </div>
+                <div className="login-input-wrap login-input-wrap--no-icon">
+                  <input
+                    type="text"
+                    name="specialty"
+                    value={registerForm.specialty}
+                    onChange={handleRegisterChange}
+                    placeholder="Especialidade"
+                    className="login-input"
+                    required
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset className="login-register-section">
+              <legend className="login-register-legend">Segurança</legend>
+              <div className="login-form-row">
+                <div className="login-input-wrap">
+                  <Lock className="login-input-icon" size={18} strokeWidth={2} />
+                  <input
+                    type="password"
+                    name="password"
+                    value={registerForm.password}
+                    onChange={handleRegisterChange}
+                    placeholder="Senha"
+                    className="login-input"
+                    required
+                  />
+                </div>
+                <div className="login-input-wrap">
+                  <Lock className="login-input-icon" size={18} strokeWidth={2} />
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={registerForm.confirmPassword}
+                    onChange={handleRegisterChange}
+                    placeholder="Confirmar senha"
+                    className={`login-input ${error ? 'has-error' : ''}`}
+                    required
+                  />
+                </div>
+              </div>
+            </fieldset>
+
             {error && <p className="login-error">{error}</p>}
-            <button type="submit" className="login-submit" disabled={loading}>
+
+            <button type="submit" className="login-submit login-submit--register" disabled={loading}>
               <span className="login-submit-text">
-                {loading ? 'Cadastrando...' : 'Cadastrar'}
+                {loading ? 'Cadastrando...' : 'Criar conta'}
               </span>
             </button>
           </form>
-          <p className="login-register-hint">
+
+          <p className="login-register-footer">
             Já tem conta?{' '}
             <button type="button" className="login-register-link" onClick={() => { setShowRegister(false); setError(''); }}>
               Entrar
