@@ -7,14 +7,14 @@ import humanBlockchainImg from '../../assets/human-blockchain-saude.png';
 import './LoginPage.css';
 
 const medchainTheme = createTheme('ocean', {
-  gradientStart: 'transparent',
-  gradientEnd: 'transparent',
-  backgroundColor: 'transparent',
-  strokeColor: 'rgba(0, 255, 255, 0.12)',
+  gradientStart: '#0c1e32',
+  gradientEnd: '#0d2a38',
+  backgroundColor: '#0c1e32',
+  strokeColor: 'rgba(0, 255, 255, 0.1)',
   strokeWidth: 0.35,
-  lightColor: 'rgba(0, 255, 255, 0.25)',
+  lightColor: 'rgba(0, 255, 255, 0.35)',
   pointColor: 'rgba(0, 255, 255, 0.2)',
-  fillOpacity: 0.25,
+  fillOpacity: 0.2,
 });
 
 export function LoginPage() {

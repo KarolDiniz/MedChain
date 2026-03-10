@@ -187,11 +187,11 @@
   inset: 0;
   background: linear-gradient(
     135deg,
-    #0a1628 0%,
-    #0d1f3c 25%,
-    #0f2847 50%,
-    #0d3d38 75%,
-    #0a2e2c 100%
+    #0c1e32 0%,
+    #0f2540 25%,
+    #112d4a 50%,
+    #0e3a3c 75%,
+    #0d2d35 100%
   );
   opacity: 0.97;
 }
@@ -289,7 +289,7 @@
   );
 }
 
-/* Polygonal mesh (polygon-background) - fundo transparente, vetores sobre o gradiente */
+/* Polygonal mesh (polygon-background) - gradiente e vetores */
 .login-bg-polygon-mesh {
   position: absolute;
   inset: 0;
@@ -301,7 +301,6 @@
   display: block;
   width: 100% !important;
   height: 100% !important;
-  background: transparent !important;
 }
 
 /* --- Illustration --- */
