@@ -3,8 +3,8 @@ import { User, Stethoscope, Camera } from 'lucide-react';
 import './Avatar.css';
 
 const STORAGE_KEY = 'medchain_avatar';
-const MAX_SIZE = 200; // pixels - redimensiona para economizar localStorage
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB máx no arquivo original
+const MAX_SIZE = 120; // pixels - menor para evitar estourar quota do localStorage
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB máx no arquivo original
 
 function getStorageKey(userId) {
   return `${STORAGE_KEY}_${userId}`;
@@ -20,15 +20,15 @@ function loadAvatar(userId) {
 }
 
 function saveAvatar(userId, dataUrl) {
-  if (!userId || !dataUrl) return false;
+  if (!userId || !dataUrl) return { ok: false, reason: 'no_user' };
   try {
     localStorage.setItem(getStorageKey(userId), dataUrl);
-    return true;
+    return { ok: true };
   } catch (e) {
     if (e.name === 'QuotaExceededError') {
-      console.warn('Espaço no navegador insuficiente para salvar a foto.');
+      return { ok: false, reason: 'quota' };
     }
-    return false;
+    return { ok: false, reason: 'unknown' };
   }
 }
 
@@ -57,7 +57,7 @@ function resizeImage(file) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, width, height);
 
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
       resolve(dataUrl);
     };
 
@@ -110,11 +110,18 @@ export function Avatar({ userId, isDoctor = false, size = 48, editable = true, v
     }
 
     try {
+      if (!userId) {
+        alert('Não foi possível salvar a foto. Faça login novamente.');
+        return;
+      }
       const dataUrl = await resizeImage(file);
-      if (saveAvatar(userId, dataUrl)) {
+      const result = saveAvatar(userId, dataUrl);
+      if (result.ok) {
         setAvatarUrl(dataUrl);
+      } else if (result.reason === 'quota') {
+        alert('Espaço no navegador insuficiente. Tente uma imagem menor ou limpe dados do site.');
       } else {
-        alert('Não foi possível salvar a foto. Tente uma imagem menor.');
+        alert('Não foi possível salvar a foto. Tente novamente.');
       }
     } catch (err) {
       alert(err.message || 'Erro ao processar a imagem.');

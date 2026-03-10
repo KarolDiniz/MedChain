@@ -19,7 +19,7 @@ export function PatientProfile() {
       <Card>
         <div className="profile-avatar">
           <Avatar
-            userId={user?.id}
+            userId={user?.id || user?.patient_public_id || user?.uid}
             isDoctor={false}
             size={96}
             editable
