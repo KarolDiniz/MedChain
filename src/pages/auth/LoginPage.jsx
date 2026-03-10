@@ -38,12 +38,14 @@ export function LoginPage() {
     if (type === userType) return;
     setIsSwapping(true);
     setError('');
-    // Espera a imagem sumir 100% antes de trocar a ordem
+    // Imagem some (200ms) + login desliza (280ms) = ~480ms total
+    const FADE_MS = 200;
+    const SLIDE_MS = 280;
     setTimeout(() => {
       setFormKey((k) => k + 1);
       setUserType(type);
       setIsSwapping(false);
-    }, 550);
+    }, FADE_MS + SLIDE_MS);
   };
 
   const handleRegisterChange = (e) => {
