@@ -35,15 +35,24 @@
   }
 
   /* Paciente: imagem à esquerda, login à direita */
-  .login-illustration--patient { order: 1; }
+  .login-illustration--patient {
+    order: 1;
+    transform: scale(1);
+  }
   .login-wrapper--patient {
     order: 2;
     justify-content: flex-end;
     transition: justify-content 0.55s cubic-bezier(0.33, 1, 0.68, 1);
   }
 
-  /* Doutor: login à esquerda, imagem à direita (trocam de lado) */
-  .login-illustration--doctor { order: 2; }
+  /* Doutor: login à esquerda, imagem à direita - imagem invertida horizontalmente (sem animar o invertimento) */
+  .login-illustration--doctor {
+    order: 2;
+    transform: scaleX(-1);
+    transition: opacity 0.55s cubic-bezier(0.33, 1, 0.68, 1),
+      max-width 0.45s cubic-bezier(0.33, 1, 0.68, 1),
+      margin 0.45s ease;
+  }
   .login-wrapper--doctor {
     order: 1;
     justify-content: flex-start;
@@ -59,11 +68,14 @@
     transform: translateX(-20px) scale(0.5);
     opacity: 0;
   }
+  /* Login só desliza depois que a imagem sumir 100% */
   .login-panel--swapping .login-container--patient {
     transform: translateX(-42vw);
+    transition-delay: 550ms;
   }
   .login-panel--swapping .login-container--doctor {
     transform: translateX(42vw);
+    transition-delay: 550ms;
   }
 
   .login-panel--register {
@@ -544,6 +556,7 @@
   transition: transform 0.55s var(--ease-smooth),
     box-shadow 0.4s ease,
     border-color 0.3s ease;
+  transition-delay: 0s;
   will-change: transform;
 }
 
