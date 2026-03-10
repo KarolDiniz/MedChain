@@ -38,9 +38,9 @@ export function LoginPage() {
     if (type === userType) return;
     setIsSwapping(true);
     setError('');
-    // Imagem some (200ms) + login desliza (280ms) = ~480ms total
+    // Imagem some (200ms) + login desliza (400ms) = ~600ms total
     const FADE_MS = 200;
-    const SLIDE_MS = 280;
+    const SLIDE_MS = 400;
     setTimeout(() => {
       setFormKey((k) => k + 1);
       setUserType(type);
