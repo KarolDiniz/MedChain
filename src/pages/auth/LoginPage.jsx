@@ -7,13 +7,23 @@ import './LoginPage.css';
 
 export function LoginPage() {
   const [userType, setUserType] = useState('patient'); // 'patient' | 'doctor'
+  const [isSwapping, setIsSwapping] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [redirectTo, setRedirectTo] = useState(null);
   const [formKey, setFormKey] = useState(0);
-  const { user, login } = useAuth();
+  const [registerForm, setRegisterForm] = useState({
+    full_name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    CRM: '',
+    specialty: '',
+  });
+  const { user, login, registerDoctor } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,9 +36,39 @@ export function LoginPage() {
 
   const handleTypeSwitch = (type) => {
     if (type === userType) return;
-    setFormKey((k) => k + 1);
-    setUserType(type);
+    setIsSwapping(true);
     setError('');
+    // Espera a imagem sumir 100% antes de trocar a ordem
+    setTimeout(() => {
+      setFormKey((k) => k + 1);
+      setUserType(type);
+      setIsSwapping(false);
+    }, 550);
+  };
+
+  const handleRegisterChange = (e) => {
+    setRegisterForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (registerForm.password !== registerForm.confirmPassword) {
+      setError('As senhas não coincidem.');
+      return;
+    }
+    if (registerForm.password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await registerDoctor(registerForm);
+      if (result.success) setRedirectTo('/doctor');
+      else setError(result.error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogin = async (e) => {
@@ -80,7 +120,7 @@ export function LoginPage() {
         <div className="login-bg-grid" />
       </div>
 
-      <div className="login-panel">
+      <div className={`login-panel ${showRegister ? 'login-panel--register' : ''} ${isSwapping ? 'login-panel--swapping' : ''}`}>
         <div className="login-panel-bg" aria-hidden />
         {/* Pontos de luz espalhados no painel */}
         <div className="login-panel-dots" aria-hidden>
@@ -104,7 +144,7 @@ export function LoginPage() {
             <div key={i} className="login-panel-dot" style={{ '--pt': pos.t, '--pl': pos.l, '--pi': i }} />
           ))}
         </div>
-        <aside className="login-illustration" aria-hidden>
+        <aside className={`login-illustration ${showRegister ? 'login-illustration--hidden' : `login-illustration--${userType}`}`} aria-hidden>
           <div className="login-illus-wrapper">
             <img
               src={humanBlockchainImg}
@@ -165,8 +205,9 @@ export function LoginPage() {
           </div>
         </aside>
 
-      <div className="login-wrapper">
-        <div className="login-container login-fade-in">
+      <div className={`login-wrapper ${showRegister ? 'login-wrapper--full' : `login-wrapper--${userType}`}`}>
+        {!showRegister ? (
+        <div className={`login-container login-fade-in login-container--${userType}`} data-user-type={userType}>
           <header className="login-header">
             <div className="login-logo">
               <span className="login-logo-icon">
@@ -179,7 +220,7 @@ export function LoginPage() {
             </p>
           </header>
 
-          <div className="login-type-selector">
+          <div className={`login-type-selector ${isSwapping ? 'is-disabled' : ''}`}>
             <div className="login-type-track">
               <div
                 className="login-type-indicator"
@@ -265,7 +306,7 @@ export function LoginPage() {
               <button
                 type="button"
                 className="login-register-link"
-                onClick={() => navigate('/register')}
+                onClick={() => setShowRegister(true)}
               >
                 Cadastre-se como doutor
               </button>
@@ -273,6 +314,105 @@ export function LoginPage() {
           )}
 
         </div>
+        ) : (
+        <div className="login-container login-container--register login-fade-in">
+          <header className="login-header">
+            <div className="login-logo">
+              <span className="login-logo-icon">
+                <Stethoscope size={44} strokeWidth={1.8} />
+              </span>
+            </div>
+            <h1 className="login-title">MedChain</h1>
+            <p className="login-tagline">Cadastro exclusivo para profissionais de saúde</p>
+          </header>
+          <p className="login-register-note">
+            O cadastro de pacientes é realizado apenas pelo doutor, dentro do sistema.
+          </p>
+          <form onSubmit={handleRegister} className="login-form login-form--register">
+            <div className="login-input-wrap login-input-wrap--no-icon">
+              <input
+                type="text"
+                name="full_name"
+                value={registerForm.full_name}
+                onChange={handleRegisterChange}
+                placeholder="Nome completo"
+                className="login-input"
+                required
+              />
+            </div>
+            <div className="login-input-wrap">
+              <Mail className="login-input-icon" size={20} strokeWidth={2} />
+              <input
+                type="email"
+                name="email"
+                value={registerForm.email}
+                onChange={handleRegisterChange}
+                placeholder="E-mail"
+                className="login-input"
+                required
+              />
+            </div>
+            <div className="login-input-wrap login-input-wrap--no-icon">
+              <input
+                type="text"
+                name="CRM"
+                value={registerForm.CRM}
+                onChange={handleRegisterChange}
+                placeholder="CRM (ex: 12345-SP)"
+                className="login-input"
+                required
+              />
+            </div>
+            <div className="login-input-wrap login-input-wrap--no-icon">
+              <input
+                type="text"
+                name="specialty"
+                value={registerForm.specialty}
+                onChange={handleRegisterChange}
+                placeholder="Especialidade"
+                className="login-input"
+                required
+              />
+            </div>
+            <div className="login-input-wrap">
+              <Lock className="login-input-icon" size={20} strokeWidth={2} />
+              <input
+                type="password"
+                name="password"
+                value={registerForm.password}
+                onChange={handleRegisterChange}
+                placeholder="Senha (mín. 6 caracteres)"
+                className="login-input"
+                required
+              />
+            </div>
+            <div className="login-input-wrap">
+              <Lock className="login-input-icon" size={20} strokeWidth={2} />
+              <input
+                type="password"
+                name="confirmPassword"
+                value={registerForm.confirmPassword}
+                onChange={handleRegisterChange}
+                placeholder="Confirmar senha"
+                className={`login-input ${error ? 'has-error' : ''}`}
+                required
+              />
+            </div>
+            {error && <p className="login-error">{error}</p>}
+            <button type="submit" className="login-submit" disabled={loading}>
+              <span className="login-submit-text">
+                {loading ? 'Cadastrando...' : 'Cadastrar'}
+              </span>
+            </button>
+          </form>
+          <p className="login-register-hint">
+            Já tem conta?{' '}
+            <button type="button" className="login-register-link" onClick={() => { setShowRegister(false); setError(''); }}>
+              Entrar
+            </button>
+          </p>
+        </div>
+        )}
       </div>
       </div>
     </div>

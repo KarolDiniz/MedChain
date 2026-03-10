@@ -33,6 +33,42 @@
     align-items: stretch;
     justify-content: space-between;
   }
+
+  /* Paciente: imagem à esquerda, login à direita */
+  .login-illustration--patient { order: 1; }
+  .login-wrapper--patient {
+    order: 2;
+    justify-content: flex-end;
+    transition: justify-content 0.55s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  /* Doutor: login à esquerda, imagem à direita (trocam de lado) */
+  .login-illustration--doctor { order: 2; }
+  .login-wrapper--doctor {
+    order: 1;
+    justify-content: flex-start;
+    transition: justify-content 0.55s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  /* Durante o swap: imagem some 100% primeiro, depois surge do outro lado */
+  .login-panel--swapping .login-illustration--patient {
+    transform: translateX(20px) scale(0.5);
+    opacity: 0;
+  }
+  .login-panel--swapping .login-illustration--doctor {
+    transform: translateX(-20px) scale(0.5);
+    opacity: 0;
+  }
+  .login-panel--swapping .login-container--patient {
+    transform: translateX(-42vw);
+  }
+  .login-panel--swapping .login-container--doctor {
+    transform: translateX(42vw);
+  }
+
+  .login-panel--register {
+    justify-content: center;
+  }
 }
 
 .login-panel-bg {
@@ -284,7 +320,6 @@
   align-items: center;
   justify-content: center;
   min-width: 0;
-  animation: illusFadeIn 0.8s ease-out 0.2s both;
 }
 
 @media (min-width: 900px) {
@@ -301,15 +336,27 @@
   }
 }
 
-@keyframes illusFadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Ilustração - transição fluida ao trocar Paciente/Doutor */
+.login-illustration {
+  --ease-smooth: cubic-bezier(0.33, 1, 0.68, 1);
+  transition: opacity 0.55s var(--ease-smooth),
+    transform 0.55s var(--ease-smooth),
+    max-width 0.45s var(--ease-smooth),
+    margin 0.45s var(--ease-smooth);
+  will-change: transform;
+}
+
+.login-illustration--hidden {
+  opacity: 0;
+  transform: translateX(-20px) scale(0.95);
+  max-width: 0;
+  min-width: 0;
+  width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+  flex: 0 0 0;
 }
 
 /* Wrapper da ilustração principal */
@@ -453,11 +500,18 @@
   flex-shrink: 0;
   display: flex;
   justify-content: center;
+  transition: max-width 0.5s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 @media (min-width: 900px) {
   .login-wrapper {
     justify-content: flex-end;
+  }
+
+  .login-wrapper--full {
+    max-width: 480px;
+    flex: 1;
+    justify-content: center;
   }
 }
 
@@ -474,7 +528,44 @@
   transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.3s ease;
 }
 
-.login-container:hover {
+/* Transição suave ao trocar Paciente/Doutor - movimentos opostos */
+/* Paciente: imagem → direita, login → esquerda */
+/* Doutor: imagem → esquerda, login → direita */
+.login-container--patient {
+  transform: translateX(-16px);
+}
+
+.login-container--doctor {
+  transform: translateX(16px);
+}
+
+.login-container {
+  --ease-smooth: cubic-bezier(0.33, 1, 0.68, 1);
+  transition: transform 0.55s var(--ease-smooth),
+    box-shadow 0.4s ease,
+    border-color 0.3s ease;
+  will-change: transform;
+}
+
+.login-container--patient:hover {
+  transform: translateX(-16px) translateY(-2px);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.login-container--doctor:hover {
+  transform: translateX(16px) translateY(-2px);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.login-container--register:hover {
   transform: translateY(-2px);
   box-shadow:
     0 8px 40px rgba(0, 0, 0, 0.25),
@@ -551,9 +642,31 @@
   letter-spacing: 0.01em;
 }
 
+.login-register-note {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.login-form--register {
+  gap: 1rem;
+}
+
+.login-input-wrap--no-icon .login-input {
+  padding-left: 1rem;
+}
+
 /* --- Type Selector (Paciente | Doutor) --- */
 .login-type-selector {
   margin-bottom: 1.5rem;
+}
+
+.login-type-selector.is-disabled {
+  pointer-events: none;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
 }
 
 .login-type-track {
@@ -575,7 +688,7 @@
   width: calc(50% - 4px);
   background: linear-gradient(135deg, #007777 0%, #009999 100%);
   border-radius: 10px;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.55s cubic-bezier(0.33, 1, 0.68, 1);
   box-shadow:
     0 4px 12px rgba(0, 119, 119, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -638,17 +751,17 @@
 .login-message {
   margin-bottom: 1.5rem;
   min-height: 48px;
-  animation: messageSlide 0.4s ease-out;
+  animation: messageSlide 0.5s cubic-bezier(0.33, 1, 0.68, 1) both;
 }
 
 @keyframes messageSlide {
   from {
     opacity: 0;
-    transform: translateY(-8px) scale(0.98);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
