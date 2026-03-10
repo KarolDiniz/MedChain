@@ -1,14 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stethoscope, User, Mail, Lock } from 'lucide-react';
+import { PolygonBackground, createTheme } from 'polygon-background';
 import { useAuth } from '../../contexts/AuthContext';
 import humanBlockchainImg from '../../assets/human-blockchain-saude.png';
 import './LoginPage.css';
+
+const medchainTheme = createTheme('ocean', {
+  gradientStart: 'transparent',
+  gradientEnd: 'transparent',
+  backgroundColor: 'transparent',
+  strokeColor: 'rgba(0, 255, 255, 0.12)',
+  strokeWidth: 0.35,
+  lightColor: 'rgba(0, 255, 255, 0.25)',
+  pointColor: 'rgba(0, 255, 255, 0.2)',
+  fillOpacity: 0.25,
+});
 
 export function LoginPage() {
   const [userType, setUserType] = useState('patient'); // 'patient' | 'doctor'
   const [isSwapping, setIsSwapping] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const meshRef = useRef(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,6 +38,25 @@ export function LoginPage() {
   });
   const { user, login, registerDoctor } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!meshRef.current) return;
+    const bg = new PolygonBackground(meshRef.current, {
+      theme: medchainTheme,
+      pointCount: 100,
+      speed: 0.2,
+      mouse: {
+        enabled: true,
+        mode: 'push',
+        strength: 28,
+        radius: 160,
+        springBack: 0.02,
+        velocityInfluence: 0.1,
+      },
+      interaction: { clickShockwave: false, holdGravityWell: false },
+    });
+    return () => bg.destroy();
+  }, []);
 
   useEffect(() => {
     if (!redirectTo || !user) return;
@@ -94,26 +126,7 @@ export function LoginPage() {
       <div className="login-bg">
         <div className="login-bg-gradient" />
         <div className="login-bg-mesh" />
-        {/* Vetores tecnológicos sutis */}
-        <svg className="login-bg-vectors" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
-          <defs>
-            <pattern id="techGrid" width="10" height="10" patternUnits="userSpaceOnUse">
-              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(50,224,196,0.05)" strokeWidth="0.3" />
-            </pattern>
-            <pattern id="dotNet" width="15" height="15" patternUnits="userSpaceOnUse">
-              <circle cx="7.5" cy="7.5" r="0.4" fill="rgba(50,70,95,0.06)" />
-            </pattern>
-          </defs>
-          <rect width="100" height="100" fill="url(#techGrid)" />
-          <rect width="100" height="100" fill="url(#dotNet)" />
-          <line x1="0" y1="30" x2="100" y2="30" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
-          <line x1="0" y1="70" x2="100" y2="70" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
-          <line x1="20" y1="0" x2="20" y2="100" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
-          <line x1="80" y1="0" x2="80" y2="100" stroke="rgba(50,224,196,0.04)" strokeWidth="0.5" className="bg-line" />
-          <path d="M0,50 Q25,30 50,50 T100,50" fill="none" className="bg-curve" stroke="rgba(50,70,95,0.05)" strokeWidth="0.4" />
-          <path d="M0,80 Q50,60 100,80" fill="none" className="bg-curve" stroke="rgba(50,224,196,0.04)" strokeWidth="0.4" />
-          <polygon points="0,0 100,0 50,100" fill="none" stroke="rgba(50,224,196,0.03)" strokeWidth="0.3" className="bg-poly" />
-        </svg>
+        <div ref={meshRef} className="login-bg-polygon-mesh" aria-hidden />
         <div className="login-bg-particles">
           {[...Array(24)].map((_, i) => (
             <div key={i} className="login-particle" style={{ '--i': i }} />
