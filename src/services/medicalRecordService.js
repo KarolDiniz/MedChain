@@ -20,7 +20,8 @@ function mapPatient(p) {
 
 export async function getPatientsByDoctor(doctorId) {
   try {
-    const list = await patientsApi.list();
+    if (!doctorId) return [];
+    const list = await doctorsApi.getPatients(doctorId);
     return (list || []).map(mapPatient);
   } catch {
     return [];
