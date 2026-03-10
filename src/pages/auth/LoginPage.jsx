@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stethoscope, User, Mail, Lock } from 'lucide-react';
+import { Stethoscope, User, Mail, Lock, BadgeCheck, Shield, GraduationCap } from 'lucide-react';
 import { PolygonBackground, createTheme } from 'polygon-background';
 import { useAuth } from '../../contexts/AuthContext';
 import humanBlockchainImg from '../../assets/human-blockchain-saude.png';
@@ -364,17 +364,24 @@ export function LoginPage() {
           </div>
           <header className="login-register-header">
             <div className="login-register-logo">
-              <Stethoscope size={32} strokeWidth={1.8} />
+              <Stethoscope size={26} strokeWidth={1.8} />
             </div>
-            <h1 className="login-register-title">Cadastro do médico</h1>
-            <p className="login-register-subtitle">Preencha seus dados para acessar o sistema</p>
+            <h1 className="login-register-title">Cadastro de médico</h1>
+            <p className="login-register-subtitle">
+              Junte-se ao MedChain e gerencie prontuários com integridade blockchain
+            </p>
+            <div className="login-register-divider" aria-hidden />
           </header>
 
           <form onSubmit={handleRegister} className="login-form login-form--register">
-            <fieldset className="login-register-section">
-              <legend className="login-register-legend">Dados pessoais</legend>
+            <fieldset className="login-register-section" style={{ '--stagger': 0 }}>
+              <legend className="login-register-legend">
+                <span className="login-register-legend-icon"><User size={20} strokeWidth={2} aria-hidden /></span>
+                <span>Dados pessoais</span>
+              </legend>
               <div className="login-form-grid">
-                <div className="login-input-wrap login-input-wrap--no-icon">
+                <div className="login-input-wrap">
+                  <User className="login-input-icon" size={18} strokeWidth={2} />
                   <input
                     type="text"
                     name="full_name"
@@ -400,10 +407,14 @@ export function LoginPage() {
               </div>
             </fieldset>
 
-            <fieldset className="login-register-section">
-              <legend className="login-register-legend">Registro profissional</legend>
+            <fieldset className="login-register-section" style={{ '--stagger': 1 }}>
+              <legend className="login-register-legend">
+                <span className="login-register-legend-icon"><BadgeCheck size={20} strokeWidth={2} aria-hidden /></span>
+                <span>Registro profissional</span>
+              </legend>
               <div className="login-form-grid">
-                <div className="login-input-wrap login-input-wrap--no-icon">
+                <div className="login-input-wrap">
+                  <BadgeCheck className="login-input-icon" size={18} strokeWidth={2} />
                   <input
                     type="text"
                     name="CRM"
@@ -414,7 +425,8 @@ export function LoginPage() {
                     required
                   />
                 </div>
-                <div className="login-input-wrap login-input-wrap--no-icon">
+                <div className="login-input-wrap">
+                  <GraduationCap className="login-input-icon" size={18} strokeWidth={2} />
                   <input
                     type="text"
                     name="specialty"
@@ -428,8 +440,11 @@ export function LoginPage() {
               </div>
             </fieldset>
 
-            <fieldset className="login-register-section">
-              <legend className="login-register-legend">Segurança</legend>
+            <fieldset className="login-register-section" style={{ '--stagger': 2 }}>
+              <legend className="login-register-legend">
+                <span className="login-register-legend-icon"><Shield size={20} strokeWidth={2} aria-hidden /></span>
+                <span>Segurança</span>
+              </legend>
               <div className="login-form-row">
                 <div className="login-input-wrap">
                   <Lock className="login-input-icon" size={18} strokeWidth={2} />
@@ -438,7 +453,7 @@ export function LoginPage() {
                     name="password"
                     value={registerForm.password}
                     onChange={handleRegisterChange}
-                    placeholder="Senha"
+                    placeholder="Senha (mín. 6 caracteres)"
                     className="login-input"
                     required
                   />
@@ -468,9 +483,9 @@ export function LoginPage() {
           </form>
 
           <p className="login-register-footer">
-            Já tem conta?{' '}
-            <button type="button" className="login-register-link" onClick={() => { setShowRegister(false); setError(''); }}>
-              Entrar
+            Já possui uma conta?{' '}
+            <button type="button" className="login-register-link login-register-link--back" onClick={() => { setShowRegister(false); setError(''); }}>
+              Fazer login
             </button>
           </p>
         </div>
