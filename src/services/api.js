@@ -70,6 +70,8 @@ export const doctorsApi = {
   get: (id) => api.get(`/doctors/${id}/`),
   create: (data) => api.post('/doctors/', data),
   update: (id, data) => api.put(`/doctors/${id}/`, data),
+  getDashboardStats: (doctorId) => api.get(`/doctors/${doctorId}/dashboard-stats`),
+  getPatients: (doctorId) => api.get(`/doctors/${doctorId}/patients`),
 };
 
 export const patientsApi = {

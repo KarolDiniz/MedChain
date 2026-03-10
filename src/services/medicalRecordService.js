@@ -202,6 +202,15 @@ export async function getDoctorById(id) {
   }
 }
 
+export async function getDashboardStats(doctorId) {
+  try {
+    if (!doctorId) return null;
+    return await doctorsApi.getDashboardStats(doctorId);
+  } catch {
+    return null;
+  }
+}
+
 export async function addConsultation(doctorId, patientId, data) {
   const payload = {
     type: 'consultation',

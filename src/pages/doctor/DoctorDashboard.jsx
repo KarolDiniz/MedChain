@@ -14,7 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getPatientsByDoctor, getMedicalRecordsByDoctor, getDoctorById } from '../../services/medicalRecordService';
+import { getPatientsByDoctor, getMedicalRecordsByDoctor, getDoctorById, getDashboardStats } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import './DoctorDashboard.css';
 
@@ -64,6 +64,7 @@ export function DoctorDashboard() {
   const [doctor, setDoctor] = useState(null);
   const [patients, setPatients] = useState([]);
   const [medicalRecords, setMedicalRecords] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,17 +75,20 @@ export function DoctorDashboard() {
         return;
       }
       try {
-        const [d, p, mr] = await Promise.all([
+        const [d, p, mr, st] = await Promise.all([
           getDoctorById(docId),
           getPatientsByDoctor(docId),
           getMedicalRecordsByDoctor(docId),
+          getDashboardStats(docId),
         ]);
         setDoctor(d);
         setPatients(p || []);
         setMedicalRecords(mr || []);
+        setStats(st || null);
       } catch {
         setPatients([]);
         setMedicalRecords([]);
+        setStats(null);
       } finally {
         setLoading(false);
       }
@@ -141,11 +145,11 @@ export function DoctorDashboard() {
   const firstName = displayName.split(' ')[0] || displayName;
   const specialty = doctor?.specialty || 'Medicina';
 
-  const stats = [
+  const statsCards = [
     {
       label: 'Pacientes',
       Icon: Users,
-      value: patients.length,
+      value: stats?.patients ?? patients.length,
       to: '/doctor/patients',
       color: 'primary',
       subtitle: 'cadastrados',
@@ -153,7 +157,7 @@ export function DoctorDashboard() {
     {
       label: 'Prontuários',
       Icon: FolderOpen,
-      value: medicalRecords.length,
+      value: stats?.medical_records ?? medicalRecords.length,
       to: '/doctor/medical-records',
       color: 'secondary',
       subtitle: 'ativos',
@@ -161,7 +165,7 @@ export function DoctorDashboard() {
     {
       label: 'Consultas',
       Icon: Stethoscope,
-      value: totalConsultations,
+      value: stats?.consultations ?? totalConsultations,
       to: '/doctor/medical-records',
       color: 'accent',
       subtitle: 'registradas',
@@ -261,7 +265,7 @@ export function DoctorDashboard() {
           </header>
 
           <section className="dashboard-stats" aria-label="Resumo">
-            {stats.map((stat) => {
+            {statsCards.map((stat) => {
               const StatIcon = stat.Icon;
               return (
                 <Link key={stat.label} to={stat.to} className="dashboard-stat-card">
