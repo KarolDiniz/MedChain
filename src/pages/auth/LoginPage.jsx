@@ -7,9 +7,9 @@ import humanBlockchainImg from '../../assets/human-blockchain-saude.png';
 import './LoginPage.css';
 
 const medchainTheme = createTheme('ocean', {
-  gradientStart: '#0c1e32',
-  gradientEnd: '#0d2a38',
-  backgroundColor: '#0c1e32',
+  gradientStart: '#152a45',
+  gradientEnd: '#163842',
+  backgroundColor: '#152a45',
   strokeColor: 'rgba(0, 255, 255, 0.1)',
   strokeWidth: 0.35,
   lightColor: 'rgba(0, 255, 255, 0.35)',
@@ -43,7 +43,7 @@ export function LoginPage() {
     if (!meshRef.current) return;
     const bg = new PolygonBackground(meshRef.current, {
       theme: medchainTheme,
-      pointCount: 100,
+      pointCount: 200,
       speed: 0.2,
       mouse: {
         enabled: true,

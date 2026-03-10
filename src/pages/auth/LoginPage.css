@@ -106,7 +106,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(10, 28, 42, 0.6);
+  background: rgba(10, 28, 42, 0.65);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   border-radius: 28px;
@@ -187,11 +187,11 @@
   inset: 0;
   background: linear-gradient(
     135deg,
-    #0c1e32 0%,
-    #0f2540 25%,
-    #112d4a 50%,
-    #0e3a3c 75%,
-    #0d2d35 100%
+    #152a45 0%,
+    #183555 25%,
+    #1a3f5e 50%,
+    #174a52 75%,
+    #153d48 100%
   );
   opacity: 0.97;
 }
