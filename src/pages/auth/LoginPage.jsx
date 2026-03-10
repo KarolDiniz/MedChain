@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stethoscope, User, Mail, Lock, BadgeCheck, Shield, GraduationCap } from 'lucide-react';
+import { Stethoscope, User, Mail, Lock, BadgeCheck, GraduationCap } from 'lucide-react';
 import { PolygonBackground, createTheme } from 'polygon-background';
 import { useAuth } from '../../contexts/AuthContext';
 import humanBlockchainImg from '../../assets/human-blockchain-saude.png';
@@ -51,23 +51,6 @@ export function LoginPage() {
         l: Math.max(2, Math.min(98, l)),
         s: 1 + ((i * 23 + i) % 4),
         lum: 0.35 + ((i * 67 + 31) % 8) / 12,
-      });
-    }
-    return dots;
-  }, []);
-
-  const registerDots = useMemo(() => {
-    const dots = [];
-    for (let i = 0; i < 48; i++) {
-      const a = (i * 113.4 + 89) % 360;
-      const r = 30 + ((i * 37 + 11) % 22);
-      const t = 50 + r * Math.sin((a * Math.PI) / 180) + ((i * 5) % 9) - 4;
-      const l = 50 + r * Math.cos((a * Math.PI) / 180) + ((i * 11) % 7) - 3;
-      dots.push({
-        t: Math.max(2, Math.min(98, t)),
-        l: Math.max(2, Math.min(98, l)),
-        s: 1 + ((i * 19 + i) % 4),
-        lum: 0.3 + ((i * 53 + 23) % 7) / 10,
       });
     }
     return dots;
@@ -353,32 +336,20 @@ export function LoginPage() {
         </div>
         ) : (
         <div className="login-container login-container--register login-fade-in">
-          <div className="login-register-dots" aria-hidden>
-            {registerDots.map((d, i) => (
-              <div
-                key={i}
-                className="login-register-dot"
-                style={{ '--rt': d.t, '--rl': d.l, '--rs': d.s, '--rlum': d.lum, '--ri': i }}
-              />
-            ))}
-          </div>
+          <div className="login-register-dots" aria-hidden />
           <header className="login-register-header">
             <div className="login-register-logo">
               <Stethoscope size={26} strokeWidth={1.8} />
             </div>
             <h1 className="login-register-title">Cadastro de médico</h1>
             <p className="login-register-subtitle">
-              Junte-se ao MedChain e gerencie prontuários com integridade blockchain
+              Crie sua conta para gerenciar prontuários com segurança blockchain
             </p>
-            <div className="login-register-divider" aria-hidden />
           </header>
 
           <form onSubmit={handleRegister} className="login-form login-form--register">
-            <fieldset className="login-register-section" style={{ '--stagger': 0 }}>
-              <legend className="login-register-legend">
-                <span className="login-register-legend-icon"><User size={20} strokeWidth={2} aria-hidden /></span>
-                <span>Dados pessoais</span>
-              </legend>
+            <section className="login-register-block">
+              <h3 className="login-register-block-title">Informações pessoais</h3>
               <div className="login-form-grid">
                 <div className="login-input-wrap">
                   <User className="login-input-icon" size={18} strokeWidth={2} />
@@ -405,13 +376,10 @@ export function LoginPage() {
                   />
                 </div>
               </div>
-            </fieldset>
+            </section>
 
-            <fieldset className="login-register-section" style={{ '--stagger': 1 }}>
-              <legend className="login-register-legend">
-                <span className="login-register-legend-icon"><BadgeCheck size={20} strokeWidth={2} aria-hidden /></span>
-                <span>Registro profissional</span>
-              </legend>
+            <section className="login-register-block">
+              <h3 className="login-register-block-title">Informações profissionais</h3>
               <div className="login-form-grid">
                 <div className="login-input-wrap">
                   <BadgeCheck className="login-input-icon" size={18} strokeWidth={2} />
@@ -438,14 +406,11 @@ export function LoginPage() {
                   />
                 </div>
               </div>
-            </fieldset>
+            </section>
 
-            <fieldset className="login-register-section" style={{ '--stagger': 2 }}>
-              <legend className="login-register-legend">
-                <span className="login-register-legend-icon"><Shield size={20} strokeWidth={2} aria-hidden /></span>
-                <span>Segurança</span>
-              </legend>
-              <div className="login-form-row">
+            <section className="login-register-block">
+              <h3 className="login-register-block-title">Segurança</h3>
+              <div className="login-form-grid">
                 <div className="login-input-wrap">
                   <Lock className="login-input-icon" size={18} strokeWidth={2} />
                   <input
@@ -454,7 +419,7 @@ export function LoginPage() {
                     value={registerForm.password}
                     onChange={handleRegisterChange}
                     placeholder="Senha (mín. 6 caracteres)"
-                    className="login-input"
+                    className={`login-input ${registerForm.password.length >= 6 ? 'has-success' : ''} ${registerForm.password.length > 0 && registerForm.password.length < 6 ? 'has-error' : ''}`}
                     required
                   />
                 </div>
@@ -466,20 +431,24 @@ export function LoginPage() {
                     value={registerForm.confirmPassword}
                     onChange={handleRegisterChange}
                     placeholder="Confirmar senha"
-                    className={`login-input ${error ? 'has-error' : ''}`}
+                    className={`login-input ${error && registerForm.confirmPassword ? 'has-error' : ''} ${registerForm.confirmPassword && registerForm.password === registerForm.confirmPassword && registerForm.confirmPassword.length >= 6 ? 'has-success' : ''}`}
                     required
                   />
                 </div>
               </div>
-            </fieldset>
+            </section>
 
             {error && <p className="login-error">{error}</p>}
 
             <button type="submit" className="login-submit login-submit--register" disabled={loading}>
               <span className="login-submit-text">
-                {loading ? 'Cadastrando...' : 'Criar conta'}
+                {loading ? 'Cadastrando...' : 'Criar conta médica'}
               </span>
             </button>
+
+            <p className="login-register-trust">
+              Seus dados são criptografados e protegidos por blockchain.
+            </p>
           </form>
 
           <p className="login-register-footer">
