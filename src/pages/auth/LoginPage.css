@@ -289,57 +289,19 @@
   );
 }
 
-/* Vetores tecnológicos sutis no background */
-.login-bg-vectors {
+/* Polygonal mesh (polygon-background) - fundo transparente, vetores sobre o gradiente */
+.login-bg-polygon-mesh {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.5;
-  pointer-events: none;
 }
 
-.login-bg-vectors .bg-line {
-  stroke: rgba(0, 255, 255, 0.04);
-  stroke-width: 1;
-  animation: bgLineFade 6s ease-in-out infinite;
-}
-
-.login-bg-vectors .bg-line:nth-child(3) { animation-delay: 0.5s; }
-.login-bg-vectors .bg-line:nth-child(4) { animation-delay: 1s; }
-.login-bg-vectors .bg-line:nth-child(5) { animation-delay: 1.5s; }
-.login-bg-vectors .bg-line:nth-child(6) { animation-delay: 2s; }
-
-@keyframes bgLineFade {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
-}
-
-.login-bg-vectors .bg-curve {
-  stroke: rgba(50, 70, 95, 0.04);
-  stroke-width: 0.5;
-  stroke-dasharray: 5 10;
-  animation: bgCurveMove 12s linear infinite;
-}
-
-.login-bg-vectors .bg-curve:nth-of-type(2) {
-  animation-duration: 15s;
-  animation-direction: reverse;
-}
-
-@keyframes bgCurveMove {
-  from { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: 30; }
-}
-
-.login-bg-vectors .bg-poly {
-  opacity: 0.5;
-  animation: bgPolyPulse 8s ease-in-out infinite;
-}
-
-@keyframes bgPolyPulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
+.login-bg-polygon-mesh canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
 }
 
 /* --- Illustration --- */
@@ -978,10 +940,7 @@
   .login-illus-particle,
   .login-illus-overlay .conn,
   .login-illus-dot,
-  .login-panel-dot,
-  .login-bg-vectors .bg-line,
-  .login-bg-vectors .bg-curve,
-  .login-bg-vectors .bg-poly {
+  .login-panel-dot {
     animation: none !important;
     transition-duration: 0.15s !important;
   }
