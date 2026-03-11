@@ -9,8 +9,7 @@ import { PatientsPage } from './pages/doctor/PatientsPage';
 import { PatientDetailPage } from './pages/doctor/PatientDetailPage';
 import { MedicalRecordsPage } from './pages/doctor/MedicalRecordsPage';
 import { MedicalRecordDetailPage } from './pages/doctor/MedicalRecordDetailPage';
-import { ConsultationsPage } from './pages/doctor/ConsultationsPage';
-import { BlockchainPage } from './pages/doctor/BlockchainPage';
+import { SobrePage } from './pages/doctor/SobrePage';
 import { SettingsPage } from './pages/doctor/SettingsPage';
 import { PatientProfile } from './pages/patient/PatientProfile';
 import { PatientMedicalRecords } from './pages/patient/PatientMedicalRecords';
@@ -36,8 +35,7 @@ function App() {
             <Route path="patients/:id" element={<PatientDetailPage />} />
             <Route path="medical-records" element={<MedicalRecordsPage />} />
             <Route path="medical-records/:id" element={<MedicalRecordDetailPage />} />
-            <Route path="consultations" element={<ConsultationsPage />} />
-            <Route path="blockchain" element={<BlockchainPage />} />
+            <Route path="sobre" element={<SobrePage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
 

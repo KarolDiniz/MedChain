@@ -9,7 +9,7 @@ import {
   Stethoscope,
   Moon,
   Sun,
-  Link2,
+  Info,
   Settings,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -21,8 +21,7 @@ const doctorNavItems = [
   { to: '/doctor', label: 'Dashboard', Icon: LayoutDashboard },
   { to: '/doctor/patients', label: 'Pacientes', Icon: Users },
   { to: '/doctor/medical-records', label: 'Prontuários', Icon: FolderOpen },
-  { to: '/doctor/consultations', label: 'Consultas', Icon: Stethoscope },
-  { to: '/doctor/blockchain', label: 'Blockchain', Icon: Link2 },
+  { to: '/doctor/sobre', label: 'Sobre', Icon: Info },
   { to: '/doctor/settings', label: 'Configurações', Icon: Settings },
 ];
 
