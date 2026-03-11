@@ -180,8 +180,8 @@ export async function addMedicalRecord(doctorId, patientId, type = 'consultation
   const payload = {
     type,
     data: {
-      doctor_id: doctorId,
-      patient_id: patientId,
+      doctor_id: String(doctorId || ''),
+      patient_id: String(patientId || ''),
       chief_complaint: data.chief_complaint || '',
       history_of_present_illness: data.history_of_present_illness || '',
       diagnosis: data.diagnosis || '',

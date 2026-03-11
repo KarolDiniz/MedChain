@@ -30,17 +30,26 @@ export function MedicalRecordsPage() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const load = async () => {
-      const [p, r] = await Promise.all([
-        getPatientsByDoctor(user?.id || user?.public_id),
-        getMedicalRecordsByDoctor(user?.id || user?.public_id),
-      ]);
-      setPatients(p || []);
-      setRecords(r || []);
+    const doctorId = user?.public_id || user?.id;
+    if (!doctorId) {
       setLoading(false);
+      return;
+    }
+    const load = async () => {
+      setLoading(true);
+      try {
+        const [p, r] = await Promise.all([
+          getPatientsByDoctor(doctorId),
+          getMedicalRecordsByDoctor(doctorId),
+        ]);
+        setPatients(p || []);
+        setRecords(r || []);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
-  }, [user?.id, user?.public_id]);
+  }, [user?.public_id, user?.id]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState(SORT_RECENT);
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
@@ -95,7 +104,14 @@ export function MedicalRecordsPage() {
       </header>
 
       <Card>
-        {records.length === 0 ? (
+        {loading ? (
+          <div className="empty-state">
+            <span className="empty-state-icon">
+              <FolderOpen size={48} strokeWidth={1.5} />
+            </span>
+            <p>Carregando prontuários...</p>
+          </div>
+        ) : records.length === 0 ? (
           <div className="empty-state">
             <span className="empty-state-icon">
               <FolderOpen size={48} strokeWidth={1.5} />
@@ -192,8 +208,8 @@ export function MedicalRecordsPage() {
                           <td>{mr.consultations?.length || 0}</td>
                           <td>{mr.diagnostics?.length || 0}</td>
                           <td>
-                            <Link to={`/doctor/medical-records/${mr.id}`} className="table-action">
-                              Ver →
+                            <Link to={`/doctor/patients/${mr.patient_id}`} className="table-action">
+                              Ver prontuários →
                             </Link>
                           </td>
                         </tr>
@@ -209,7 +225,7 @@ export function MedicalRecordsPage() {
 
       {showModal && (
         <MedicalRecordModal
-          doctorId={user?.id}
+          doctorId={user?.public_id || user?.id}
           patients={patients}
           preselectedPatientId={patientId}
           onClose={() => setShowModal(false)}

@@ -25,12 +25,26 @@ async function request(endpoint, options = {}) {
   const res = await fetch(url, { ...options, headers });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const err = new Error(data.detail || data.message || 'Erro na requisição');
+    const message = formatApiError(data);
+    const err = new Error(message);
     err.status = res.status;
     err.data = data;
     throw err;
   }
   return data;
+}
+
+function formatApiError(data) {
+  const detail = data.detail ?? data.message;
+  if (!detail) return 'Erro na requisição';
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((d) => (typeof d === 'object' && d?.msg ? `${d.loc?.join?.('.') || ''} ${d.msg}`.trim() : String(d)))
+      .filter(Boolean)
+      .join('. ') || 'Dados inválidos. Verifique os campos e tente novamente.';
+  }
+  return typeof detail === 'object' && detail?.msg ? detail.msg : JSON.stringify(detail);
 }
 
 export const api = {
