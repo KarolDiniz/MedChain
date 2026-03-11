@@ -41,6 +41,18 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.theme-dark {
+  --color-background: #050b12;
+  --color-surface: rgba(6, 23, 38, 0.98);
+  --color-text: #e6f4ff;
+  --color-text-light: #a9c4d8;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.8);
 }
 
 #root {

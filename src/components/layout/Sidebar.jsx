@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -6,6 +7,8 @@ import {
   User,
   ClipboardList,
   Stethoscope,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../common/Button';
@@ -27,6 +30,30 @@ export function Sidebar() {
   const { user, logout, isDoctor } = useAuth();
 
   const items = isDoctor() ? doctorNavItems : patientNavItems;
+
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem('theme');
+    if (stored === 'dark') {
+      setIsDark(true);
+      document.body.classList.add('theme-dark');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isDark) {
+      document.body.classList.add('theme-dark');
+      window.localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('theme-dark');
+      window.localStorage.setItem('theme', 'light');
+    }
+  }, [isDark]);
+
+  const toggleTheme = () => {
+    setIsDark((prev) => !prev);
+  };
 
   return (
     <aside className="sidebar">
@@ -70,9 +97,20 @@ export function Sidebar() {
             <span className="sidebar-user-role">{isDoctor() ? 'Doutor' : 'Paciente'}</span>
           </div>
         </div>
-        <Button variant="ghost" size="sm" onClick={logout} className="sidebar-logout">
-          Sair
-        </Button>
+        <div className="sidebar-footer-actions">
+          <button
+            type="button"
+            className="sidebar-theme-toggle"
+            onClick={toggleTheme}
+            aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+          >
+            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+            <span>{isDark ? 'Modo claro' : 'Modo escuro'}</span>
+          </button>
+          <Button variant="ghost" size="sm" onClick={logout} className="sidebar-logout">
+            Sair
+          </Button>
+        </div>
       </div>
     </aside>
   );
