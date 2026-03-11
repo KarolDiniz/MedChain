@@ -96,7 +96,13 @@ export const patientsApi = {
 };
 
 export const medicalRecordsApi = {
-  list: (type) => api.get(type ? `/medical-records/?type=${type}` : '/medical-records/'),
+  list: (type, doctorId) => {
+    const params = new URLSearchParams();
+    if (type) params.set('type', type);
+    if (doctorId) params.set('doctor_id', doctorId);
+    const query = params.toString();
+    return api.get(query ? `/medical-records/?${query}` : '/medical-records/');
+  },
   get: (id) => api.get(`/medical-records/${id}/`),
   create: (data) => api.post('/medical-records/', data),
 };

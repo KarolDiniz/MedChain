@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { addMedicalRecord } from '../../services/medicalRecordService';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
@@ -18,46 +17,26 @@ export function MedicalRecordModal({ doctorId, patients, preselectedPatientId, o
     );
     setPatientId(found ? (found.patient_public_id || found.uid || found.id) : preselectedPatientId);
   }, [patients, preselectedPatientId]);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!patientId || !doctorId) return;
-    setSaving(true);
-    setError(null);
-    try {
-      const recordId = await addMedicalRecord(doctorId, patientId, 'consultation', {
-        chief_complaint: '',
-        history_of_present_illness: '',
-        diagnosis: '',
-        treatment_plan: '',
-      });
-      onSaved();
-      if (recordId) {
-        navigate(`/doctor/medical-records/${recordId}`);
-      }
-    } catch (err) {
-      setError(err?.message || 'Erro ao criar prontuário.');
-    } finally {
-      setSaving(false);
-    }
+    if (!patientId) return;
+    onSaved();
+    navigate(`/doctor/patients/${patientId}`);
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <Card className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Novo Prontuário Médico</h2>
+          <h2>Novo Prontuário</h2>
           <button type="button" className="modal-close" onClick={onClose}>×</button>
         </div>
         <p className="modal-note">
-          Um novo prontuário será criado e vinculado ao paciente. O hash e o registro na blockchain
-          são gerados automaticamente.
+          Selecione o paciente para acessar a tela de cadastro de consultas, diagnósticos, atestados e arquivos.
         </p>
         <form onSubmit={handleSubmit} className="modal-form">
-          {error && <p className="modal-error">{error}</p>}
           <div className="input-group">
             <label className="input-label">Paciente *</label>
             <select
@@ -78,8 +57,8 @@ export function MedicalRecordModal({ doctorId, patients, preselectedPatientId, o
             </p>
           )}
           <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
-            <Button type="submit" disabled={patients.length === 0 || saving}>{saving ? 'Criando...' : 'Criar Prontuário'}</Button>
+            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
+            <Button type="submit" disabled={patients.length === 0}>Continuar</Button>
           </div>
         </form>
       </Card>

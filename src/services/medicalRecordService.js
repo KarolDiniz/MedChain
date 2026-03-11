@@ -134,26 +134,12 @@ export async function getMedicalRecordsByPatient(patientId) {
 
 export async function getMedicalRecordsByDoctor(doctorId) {
   try {
-    const data = await medicalRecordsApi.list();
+    if (!doctorId) return [];
+    const data = await medicalRecordsApi.list(null, doctorId);
     const consultations = data?.consultations || [];
     const diagnostics = data?.diagnostics || [];
     const certificates = data?.medical_certificates || [];
-    const doctorIdStr = String(doctorId);
-    const filtered = groupRecordsByDoctorPatient(
-      consultations.filter((c) => {
-        const did = c.medical_record?.doctor_id ?? c.doctor_id ?? c.doctor?.public_id;
-        return did && String(did) === doctorIdStr;
-      }),
-      diagnostics.filter((d) => {
-        const did = d.medical_record?.doctor_id ?? d.doctor_id ?? d.doctor?.public_id;
-        return did && String(did) === doctorIdStr;
-      }),
-      certificates.filter((c) => {
-        const did = c.medical_record?.doctor_id ?? c.doctor_id ?? c.doctor?.public_id;
-        return did && String(did) === doctorIdStr;
-      })
-    );
-    return filtered;
+    return groupRecordsByDoctorPatient(consultations, diagnostics, certificates);
   } catch {
     return [];
   }
