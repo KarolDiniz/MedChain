@@ -303,6 +303,12 @@ export function DoctorDashboard() {
                 </span>
                 <span>Novo Prontuário</span>
               </Link>
+              <Link to="/doctor/medical-records" className="dashboard-shortcut dashboard-shortcut--accent">
+                <span className="dashboard-shortcut-icon">
+                  <Stethoscope size={22} strokeWidth={2} />
+                </span>
+                <span>Nova Consulta</span>
+              </Link>
             </div>
           </section>
 

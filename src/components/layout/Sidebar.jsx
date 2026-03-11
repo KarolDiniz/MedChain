@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -9,6 +9,8 @@ import {
   Stethoscope,
   Moon,
   Sun,
+  Link2,
+  Settings,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../common/Button';
@@ -19,6 +21,9 @@ const doctorNavItems = [
   { to: '/doctor', label: 'Dashboard', Icon: LayoutDashboard },
   { to: '/doctor/patients', label: 'Pacientes', Icon: Users },
   { to: '/doctor/medical-records', label: 'Prontuários', Icon: FolderOpen },
+  { to: '/doctor/consultations', label: 'Consultas', Icon: Stethoscope },
+  { to: '/doctor/blockchain', label: 'Blockchain', Icon: Link2 },
+  { to: '/doctor/settings', label: 'Configurações', Icon: Settings },
 ];
 
 const patientNavItems = [
@@ -32,6 +37,10 @@ export function Sidebar() {
   const items = isDoctor() ? doctorNavItems : patientNavItems;
 
   const [isDark, setIsDark] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleMouseEnter = useCallback(() => setIsExpanded(true), []);
+  const handleMouseLeave = useCallback(() => setIsExpanded(false), []);
 
   useEffect(() => {
     const stored = window.localStorage.getItem('theme');
@@ -56,13 +65,17 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="sidebar">
+    <aside
+      className={`sidebar ${isExpanded ? 'sidebar--expanded' : 'sidebar--collapsed'}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="sidebar-header">
         <h1 className="sidebar-logo">
           <span className="sidebar-logo-icon">
             <Stethoscope size={24} strokeWidth={2} />
           </span>
-          MedChain
+          <span className="sidebar-logo-text">MedChain</span>
         </h1>
       </div>
       <nav className="sidebar-nav">
@@ -70,7 +83,7 @@ export function Sidebar() {
           const Icon = item.Icon;
           return (
             <NavLink
-              key={item.to}
+              key={`${item.to}-${item.label}`}
               to={item.to}
               end={item.to === '/doctor' || item.to === '/patient'}
               className={({ isActive }) => `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`}
@@ -78,7 +91,7 @@ export function Sidebar() {
               <span className="sidebar-link-icon">
                 <Icon size={20} strokeWidth={2} />
               </span>
-              {item.label}
+              <span className="sidebar-link-text">{item.label}</span>
             </NavLink>
           );
         })}
@@ -92,7 +105,7 @@ export function Sidebar() {
             editable
             variant="sidebar"
           />
-          <div className="sidebar-user-info">
+          <div className="sidebar-user-info sidebar-user-info--collapsible">
             <span className="sidebar-user-name">{user?.full_name}</span>
             <span className="sidebar-user-role">{isDoctor() ? 'Doutor' : 'Paciente'}</span>
           </div>
@@ -105,7 +118,7 @@ export function Sidebar() {
             aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
           >
             {isDark ? <Sun size={16} /> : <Moon size={16} />}
-            <span>{isDark ? 'Modo claro' : 'Modo escuro'}</span>
+            <span className="sidebar-theme-toggle-text">{isDark ? 'Modo claro' : 'Modo escuro'}</span>
           </button>
           <Button variant="ghost" size="sm" onClick={logout} className="sidebar-logout">
             Sair

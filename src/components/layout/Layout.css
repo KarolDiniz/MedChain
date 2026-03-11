@@ -1,12 +1,79 @@
 .layout {
   display: flex;
   min-height: 100vh;
+  position: relative;
+}
+
+.layout-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.layout-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(13, 115, 119, 0.04) 0%,
+    transparent 40%,
+    rgba(50, 224, 196, 0.03) 100%
+  );
+  opacity: 0.6;
+}
+
+body.theme-dark .layout-bg-gradient {
+  background: linear-gradient(
+    160deg,
+    rgba(13, 115, 119, 0.06) 0%,
+    transparent 40%,
+    rgba(50, 224, 196, 0.04) 100%
+  );
+}
+
+.layout-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(13, 115, 119, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 115, 119, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 20%, black 10%, transparent 60%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 20%, black 10%, transparent 60%);
+  animation: layoutGridPulse 12s ease-in-out infinite;
+}
+
+body.theme-dark .layout-bg-grid {
+  background-image:
+    linear-gradient(rgba(50, 224, 196, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(50, 224, 196, 0.03) 1px, transparent 1px);
+}
+
+@keyframes layoutGridPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.layout-bg-particles {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 20% 30%, rgba(13, 115, 119, 0.08) 0%, transparent 25%),
+    radial-gradient(circle at 80% 70%, rgba(50, 224, 196, 0.06) 0%, transparent 25%);
+  animation: layoutParticlesFloat 15s ease-in-out infinite;
+}
+
+@keyframes layoutParticlesFloat {
+  0%, 100% { opacity: 0.8; transform: translate(0, 0); }
+  50% { opacity: 1; transform: translate(2px, -2px); }
 }
 
 .layout-main {
   flex: 1;
   padding: 1.5rem;
   overflow-x: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 768px) {
@@ -18,5 +85,12 @@
 @media (max-width: 768px) {
   .layout {
     flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layout-bg-grid,
+  .layout-bg-particles {
+    animation: none;
   }
 }

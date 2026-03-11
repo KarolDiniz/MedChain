@@ -4,7 +4,7 @@
   border: none;
   border-radius: var(--border-radius, 10px);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s var(--transition-smooth);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -17,23 +17,27 @@
 }
 
 .btn--primary {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: white;
+  box-shadow: 0 4px 14px rgba(13, 115, 119, 0.3);
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: var(--color-primary-dark);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-primary-strong);
 }
 
 .btn--secondary {
-  background: var(--color-secondary);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, rgba(50, 224, 196, 0.85) 100%);
   color: var(--color-text);
+  box-shadow: 0 2px 8px rgba(50, 224, 196, 0.25);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: #28c9b0;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #28c9b0 0%, var(--color-secondary) 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-secondary);
 }
 
 .btn--outline {
@@ -45,6 +49,8 @@
 .btn--outline:hover:not(:disabled) {
   background: var(--color-primary);
   color: white;
+  transform: translateY(-1px);
+  box-shadow: var(--glow-primary);
 }
 
 .btn--ghost {
@@ -54,6 +60,7 @@
 
 .btn--ghost:hover:not(:disabled) {
   background: rgba(13, 115, 119, 0.08);
+  transform: scale(1.02);
 }
 
 .btn--sm {
