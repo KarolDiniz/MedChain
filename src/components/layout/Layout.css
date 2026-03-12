@@ -53,91 +53,91 @@ body.theme-dark .layout-bg-fade {
   );
 }
 
-/* Camada gradient mesh - mais evidente */
+/* Camada gradient mesh - visível e em movimento */
 .layout-bg-mesh {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 90% 70% at 10% 20%, rgba(13, 115, 119, 0.35) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 60% at 90% 10%, rgba(99, 102, 241, 0.28) 0%, transparent 50%),
-    radial-gradient(ellipse 70% 80% at 90% 90%, rgba(6, 182, 212, 0.3) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 70% at 5% 80%, rgba(50, 224, 196, 0.32) 0%, transparent 52%),
-    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(91, 141, 239, 0.15) 0%, transparent 65%);
-  background-size: 140% 140%;
+    radial-gradient(ellipse 90% 70% at 10% 20%, rgba(13, 115, 119, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 60% at 90% 10%, rgba(99, 102, 241, 0.42) 0%, transparent 48%),
+    radial-gradient(ellipse 70% 80% at 90% 90%, rgba(6, 182, 212, 0.45) 0%, transparent 52%),
+    radial-gradient(ellipse 80% 70% at 5% 80%, rgba(50, 224, 196, 0.48) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(91, 141, 239, 0.25) 0%, transparent 60%);
+  background-size: 160% 160%;
   background-position: 0% 0%;
-  animation: layout-mesh-flow 10s ease-in-out infinite;
+  animation: layout-mesh-flow 6s ease-in-out infinite;
 }
 
 body.theme-dark .layout-bg-mesh {
   background:
-    radial-gradient(ellipse 90% 70% at 10% 20%, rgba(13, 115, 119, 0.4) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 60% at 90% 10%, rgba(99, 102, 241, 0.35) 0%, transparent 50%),
-    radial-gradient(ellipse 70% 80% at 90% 90%, rgba(6, 182, 212, 0.38) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 70% at 5% 80%, rgba(50, 224, 196, 0.4) 0%, transparent 52%),
-    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(91, 141, 239, 0.2) 0%, transparent 65%);
-  background-size: 140% 140%;
-  animation: layout-mesh-flow 10s ease-in-out infinite;
+    radial-gradient(ellipse 90% 70% at 10% 20%, rgba(13, 115, 119, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 60% at 90% 10%, rgba(99, 102, 241, 0.45) 0%, transparent 48%),
+    radial-gradient(ellipse 70% 80% at 90% 90%, rgba(6, 182, 212, 0.5) 0%, transparent 52%),
+    radial-gradient(ellipse 80% 70% at 5% 80%, rgba(50, 224, 196, 0.52) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(91, 141, 239, 0.3) 0%, transparent 60%);
+  background-size: 160% 160%;
+  animation: layout-mesh-flow 6s ease-in-out infinite;
 }
 
-/* Orbs flutuantes - mais evidentes e em movimento */
+/* Orbs flutuantes - visíveis e em movimento marcado */
 .layout-bg-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.75;
-  animation: layout-orb-float 9s ease-in-out infinite;
+  filter: blur(65px);
+  opacity: 0.9;
+  animation: layout-orb-float 5s ease-in-out infinite;
 }
 
 .layout-bg-orb--1 {
-  width: min(500px, 60vw);
-  height: min(500px, 60vw);
+  width: min(520px, 62vw);
+  height: min(520px, 62vw);
   top: -15%;
   right: -10%;
-  background: radial-gradient(circle, rgba(13, 115, 119, 0.55) 0%, rgba(13, 115, 119, 0.2) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(13, 115, 119, 0.7) 0%, rgba(13, 115, 119, 0.3) 35%, transparent 65%);
   animation-delay: 0s;
 }
 
 .layout-bg-orb--2 {
-  width: min(450px, 55vw);
-  height: min(450px, 55vw);
+  width: min(480px, 58vw);
+  height: min(480px, 58vw);
   bottom: -12%;
   left: -10%;
-  background: radial-gradient(circle, rgba(50, 224, 196, 0.5) 0%, rgba(50, 224, 196, 0.15) 40%, transparent 70%);
-  animation-delay: -3s;
+  background: radial-gradient(circle, rgba(50, 224, 196, 0.65) 0%, rgba(50, 224, 196, 0.25) 35%, transparent 65%);
+  animation-delay: -1.5s;
 }
 
 .layout-bg-orb--3 {
-  width: min(380px, 45vw);
-  height: min(380px, 45vw);
-  top: 40%;
+  width: min(400px, 48vw);
+  height: min(400px, 48vw);
+  top: 38%;
   right: -8%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(99, 102, 241, 0.12) 40%, transparent 70%);
-  animation-delay: -7s;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.6) 0%, rgba(99, 102, 241, 0.2) 35%, transparent 65%);
+  animation-delay: -3s;
 }
 
 .layout-bg-orb--4 {
-  width: min(400px, 50vw);
-  height: min(400px, 50vw);
-  bottom: 15%;
-  left: 25%;
-  background: radial-gradient(circle, rgba(0, 184, 148, 0.4) 0%, rgba(0, 184, 148, 0.1) 40%, transparent 70%);
-  animation-delay: -10s;
+  width: min(420px, 52vw);
+  height: min(420px, 52vw);
+  bottom: 12%;
+  left: 22%;
+  background: radial-gradient(circle, rgba(0, 184, 148, 0.55) 0%, rgba(0, 184, 148, 0.2) 35%, transparent 65%);
+  animation-delay: -4s;
 }
 
 body.theme-dark .layout-bg-orb--1 {
-  background: radial-gradient(circle, rgba(13, 115, 119, 0.6) 0%, rgba(13, 115, 119, 0.25) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(13, 115, 119, 0.75) 0%, rgba(13, 115, 119, 0.35) 35%, transparent 65%);
 }
 
 body.theme-dark .layout-bg-orb--2 {
-  background: radial-gradient(circle, rgba(50, 224, 196, 0.55) 0%, rgba(50, 224, 196, 0.2) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(50, 224, 196, 0.7) 0%, rgba(50, 224, 196, 0.3) 35%, transparent 65%);
 }
 
 body.theme-dark .layout-bg-orb--3 {
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, rgba(99, 102, 241, 0.18) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.65) 0%, rgba(99, 102, 241, 0.25) 35%, transparent 65%);
 }
 
 body.theme-dark .layout-bg-orb--4 {
-  background: radial-gradient(circle, rgba(0, 184, 148, 0.5) 0%, rgba(0, 184, 148, 0.15) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 184, 148, 0.6) 0%, rgba(0, 184, 148, 0.25) 35%, transparent 65%);
 }
 
 /* Grid de pontos */
@@ -146,11 +146,11 @@ body.theme-dark .layout-bg-orb--4 {
   inset: 0;
   background-image: radial-gradient(
     circle,
-    rgba(13, 115, 119, 0.12) 1px,
+    rgba(13, 115, 119, 0.2) 1px,
     transparent 1px
   );
   background-size: 28px 28px;
-  opacity: 0.7;
+  opacity: 0.85;
   mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black 15%, transparent 70%);
   -webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black 15%, transparent 70%);
 }
@@ -158,7 +158,7 @@ body.theme-dark .layout-bg-orb--4 {
 body.theme-dark .layout-bg-grid {
   background-image: radial-gradient(
     circle,
-    rgba(50, 224, 196, 0.08) 1px,
+    rgba(50, 224, 196, 0.15) 1px,
     transparent 1px
   );
 }
@@ -172,10 +172,10 @@ body.theme-dark .layout-bg-grid {
 
 @keyframes layout-orb-float {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  20% { transform: translate(6%, -8%) scale(1.08); }
-  40% { transform: translate(-5%, 6%) scale(0.95); }
-  60% { transform: translate(8%, 5%) scale(1.05); }
-  80% { transform: translate(-6%, -4%) scale(1.02); }
+  20% { transform: translate(12%, -10%) scale(1.12); }
+  40% { transform: translate(-10%, 12%) scale(0.92); }
+  60% { transform: translate(10%, 10%) scale(1.08); }
+  80% { transform: translate(-8%, -8%) scale(1.04); }
 }
 
 @media (prefers-reduced-motion: reduce) {
