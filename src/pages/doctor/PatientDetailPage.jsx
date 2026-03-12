@@ -232,66 +232,54 @@ export function PatientDetailPage() {
       </header>
 
       <Card className="patient-info-card">
-        <h2 className="patient-info-title">
-          <User size={20} />
-          Dados do paciente
-        </h2>
+        <div className="patient-info-card-accent" />
+        <div className="patient-info-header">
+          <h2 className="patient-info-title">Dados do paciente</h2>
+          <p className="patient-info-subtitle">Informações cadastrais</p>
+        </div>
         <div className="patient-info-grid">
-          <div className="patient-info-item patient-info-item--wide">
-            <div className="patient-info-icon">
-              <Mail size={18} />
-            </div>
-            <div className="patient-info-content">
-              <span className="patient-info-label">E-mail</span>
-              <span className="patient-info-value">{patient.email}</span>
-            </div>
+          <div className="patient-info-row patient-info-row--name-email">
+            <motion.div
+              className="patient-info-item"
+              data-variant="name"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.05, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              <div className="patient-info-icon">
+                <User size={20} strokeWidth={1.75} />
+              </div>
+              <div className="patient-info-content">
+                <span className="patient-info-label">Nome</span>
+                <span className="patient-info-value">{patient.full_name}</span>
+              </div>
+            </motion.div>
+            <motion.div
+              className="patient-info-item"
+              data-variant="mail"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.09, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              <div className="patient-info-icon">
+                <Mail size={20} strokeWidth={1.75} />
+              </div>
+              <div className="patient-info-content">
+                <span className="patient-info-label">E-mail</span>
+                <span className="patient-info-value">{patient.email}</span>
+              </div>
+            </motion.div>
           </div>
-          <div className="patient-info-item">
-            <div className="patient-info-icon">
-              <Phone size={18} />
-            </div>
-            <div className="patient-info-content">
-              <span className="patient-info-label">Telefone</span>
-              <span className="patient-info-value">{formatPhone(patient.cellphone)}</span>
-            </div>
-          </div>
-          <div className="patient-info-item patient-info-item--wide">
-            <div className="patient-info-icon">
-              <Calendar size={18} />
-            </div>
-            <div className="patient-info-content">
-              <span className="patient-info-label">Data de nascimento</span>
-              <span className="patient-info-value">
-                {patient.birth_date ? new Date(patient.birth_date).toLocaleDateString('pt-BR') : '-'}
-              </span>
-            </div>
-          </div>
-          <div className="patient-info-item">
-            <div className="patient-info-icon">
-              <User size={18} />
-            </div>
-            <div className="patient-info-content">
-              <span className="patient-info-label">Gênero</span>
-              <span className="patient-info-value">{GENDER_LABELS[patient.gender] || patient.gender}</span>
-            </div>
-          </div>
-          <div className="patient-info-item patient-info-item--wide">
-            <div className="patient-info-icon">
-              <MapPin size={18} />
-            </div>
-            <div className="patient-info-content">
-              <span className="patient-info-label">Endereço</span>
-              <span className="patient-info-value">{formatAddress(patient.address) || '-'}</span>
-            </div>
-          </div>
-          <div className="patient-info-item">
-            <div className="patient-info-icon">
-              <CalendarPlus size={18} />
-            </div>
-            <div className="patient-info-content">
-              <span className="patient-info-label">Cadastrado em</span>
-              <span className="patient-info-value">
-                {patient.created_at
+
+          <div className="patient-info-row">
+            {[
+              { icon: Phone, label: 'Telefone', value: formatPhone(patient.cellphone), variant: 'phone' },
+              { icon: Calendar, label: 'Data de nascimento', value: patient.birth_date ? new Date(patient.birth_date).toLocaleDateString('pt-BR') : '-', variant: 'date' },
+              { icon: User, label: 'Gênero', value: GENDER_LABELS[patient.gender] || patient.gender, variant: 'user' },
+              {
+                icon: CalendarPlus,
+                label: 'Cadastrado em',
+                value: patient.created_at
                   ? new Date(patient.created_at).toLocaleDateString('pt-BR', {
                       day: '2-digit',
                       month: '2-digit',
@@ -299,10 +287,47 @@ export function PatientDetailPage() {
                       hour: '2-digit',
                       minute: '2-digit',
                     })
-                  : '-'}
-              </span>
-            </div>
+                  : '-',
+                variant: 'calendar',
+              },
+            ].map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.label}
+                  className="patient-info-item"
+                  data-variant={item.variant}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.13 + i * 0.04, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  <div className="patient-info-icon">
+                    <Icon size={20} strokeWidth={1.75} />
+                  </div>
+                  <div className="patient-info-content">
+                    <span className="patient-info-label">{item.label}</span>
+                    <span className="patient-info-value">{item.value}</span>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
+
+          <motion.div
+            className="patient-info-item patient-info-item--full"
+            data-variant="map"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.29, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            <div className="patient-info-icon">
+              <MapPin size={20} strokeWidth={1.75} />
+            </div>
+            <div className="patient-info-content">
+              <span className="patient-info-label">Endereço</span>
+              <span className="patient-info-value">{formatAddress(patient.address) || '-'}</span>
+            </div>
+          </motion.div>
         </div>
       </Card>
 
