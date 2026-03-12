@@ -1,6 +1,6 @@
 .card {
   position: relative;
-  background: rgba(255, 255, 255, 0.38);
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 16px;
   border: 1px solid rgba(13, 115, 119, 0.2);
   box-shadow:
@@ -37,12 +37,12 @@
     0 8px 36px rgba(13, 115, 119, 0.12),
     0 0 0 1px rgba(13, 115, 119, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.72);
   border-color: rgba(13, 115, 119, 0.3);
 }
 
 body.theme-dark .card {
-  background: rgba(6, 23, 38, 0.38);
+  background: rgba(6, 23, 38, 0.6);
   border-color: rgba(13, 115, 119, 0.3);
   box-shadow:
     0 4px 28px rgba(0, 0, 0, 0.35),
@@ -66,7 +66,7 @@ body.theme-dark .card:hover {
     0 0 0 1px rgba(13, 115, 119, 0.35),
     0 0 24px rgba(13, 115, 119, 0.08),
     inset 0 1px 0 rgba(50, 224, 196, 0.08);
-  background: rgba(6, 23, 38, 0.5);
+  background: rgba(6, 23, 38, 0.72);
   border-color: rgba(13, 115, 119, 0.4);
 }
 
