@@ -267,6 +267,16 @@ export function DoctorDashboard() {
 
   const shouldAnimate = !prefersReducedMotion;
 
+  /* Elementos decorativos flutuantes */
+  const floatingParticles = Array.from({ length: 8 }, (_, i) => ({
+    id: i,
+    size: 3 + (i % 3),
+    top: 10 + (i * 12) % 70,
+    left: 5 + (i * 18) % 85,
+    delay: i * 0.8,
+    duration: 4 + (i % 3) * 2,
+  }));
+
   return (
     <motion.div
       className="dashboard"
@@ -274,6 +284,33 @@ export function DoctorDashboard() {
       animate={shouldAnimate ? 'visible' : false}
       variants={shouldAnimate ? containerVariants : {}}
     >
+      {/* Partículas flutuantes decorativas */}
+      {shouldAnimate && (
+        <div className="dashboard-particles" aria-hidden>
+          {floatingParticles.map((p) => (
+            <motion.span
+              key={p.id}
+              className="dashboard-particle"
+              style={{
+                width: p.size,
+                height: p.size,
+                top: `${p.top}%`,
+                left: `${p.left}%`,
+              }}
+              animate={{
+                y: [0, -12, 0],
+                opacity: [0.3, 0.7, 0.3],
+              }}
+              transition={{
+                duration: p.duration,
+                repeat: Infinity,
+                delay: p.delay,
+                ease: 'easeInOut',
+              }}
+            />
+          ))}
+        </div>
+      )}
       <div className="dashboard-accent dashboard-accent--hero" aria-hidden />
       <div className="dashboard-accent dashboard-accent--bottom-left" aria-hidden />
       <div className="dashboard-accent dashboard-accent--top-right" aria-hidden />
@@ -285,11 +322,20 @@ export function DoctorDashboard() {
             variants={itemVariants}
           >
             <div className="dashboard-hero-content">
-              <p className="dashboard-hero-greeting">
-                <Sparkles size={18} strokeWidth={2} />
+              <motion.p
+                className="dashboard-hero-greeting"
+                whileHover={shouldAnimate ? { scale: 1.02, transition: { duration: 0.2 } } : {}}
+              >
+                <motion.span
+                  animate={shouldAnimate ? { rotate: [0, 10, -5, 0], scale: [1, 1.15, 1] } : {}}
+                  transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 4 }}
+                  style={{ display: 'inline-flex' }}
+                >
+                  <Sparkles size={18} strokeWidth={2} />
+                </motion.span>
                 {getGreeting()}
-              </p>
-              <h1 className="dashboard-hero-title">
+              </motion.p>
+              <h1 className="dashboard-hero-title dashboard-hero-title--shimmer">
                 Dr(a). {firstName}
               </h1>
               <p className="dashboard-hero-subtitle">
@@ -346,7 +392,12 @@ export function DoctorDashboard() {
               Atalhos rápidos
             </h2>
             <div className="dashboard-shortcuts">
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                className="dashboard-shortcut-wrap"
+              >
                 <Link to="/doctor/patients" className="dashboard-shortcut dashboard-shortcut--primary">
                   <span className="dashboard-shortcut-icon">
                     <UserPlus size={22} strokeWidth={2} />
@@ -354,7 +405,12 @@ export function DoctorDashboard() {
                   <span>Novo Paciente</span>
                 </Link>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                className="dashboard-shortcut-wrap"
+              >
                 <Link to="/doctor/medical-records" className="dashboard-shortcut dashboard-shortcut--secondary">
                   <span className="dashboard-shortcut-icon">
                     <FileText size={22} strokeWidth={2} />
@@ -362,7 +418,12 @@ export function DoctorDashboard() {
                   <span>Novo Prontuário</span>
                 </Link>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                className="dashboard-shortcut-wrap"
+              >
                 <Link to="/doctor/medical-records" className="dashboard-shortcut dashboard-shortcut--accent">
                   <span className="dashboard-shortcut-icon">
                     <Stethoscope size={22} strokeWidth={2} />
@@ -432,8 +493,14 @@ export function DoctorDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {patients.slice(0, 5).map((p) => (
-                        <tr key={p.id}>
+                      {patients.slice(0, 5).map((p, idx) => (
+                        <motion.tr
+                          key={p.id}
+                          initial={shouldAnimate ? { opacity: 0, x: -16 } : false}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: shouldAnimate ? 0.05 * idx : 0, duration: 0.35 }}
+                          whileHover={shouldAnimate ? { x: 4, transition: { duration: 0.2 } } : {}}
+                        >
                           <td>
                             <span className="dashboard-table-name">{p.full_name}</span>
                           </td>
@@ -444,7 +511,7 @@ export function DoctorDashboard() {
                               Ver <ChevronRight size={16} strokeWidth={2} />
                             </Link>
                           </td>
-                        </tr>
+                        </motion.tr>
                       ))}
                     </tbody>
                   </table>
@@ -483,6 +550,7 @@ export function DoctorDashboard() {
                         initial={shouldAnimate ? { height: 0 } : false}
                         animate={{ height: `${(week.value / activityMax) * 100}%` }}
                         transition={{ delay: shouldAnimate ? 0.2 * i + 0.5 : 0, duration: shouldAnimate ? 0.7 : 0, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        whileHover={shouldAnimate ? { scaleY: 1.05, filter: 'brightness(1.15)' } : {}}
                         title={`${week.label}: ${week.value} consulta(s)`}
                       />
                     </div>
@@ -537,6 +605,10 @@ export function DoctorDashboard() {
             className="dashboard-section dashboard-blockchain-section"
             variants={itemVariants}
           >
+            <motion.div
+              className="dashboard-blockchain-wrapper"
+              whileHover={shouldAnimate ? { scale: 1.01, transition: { duration: 0.25 } } : {}}
+            >
             <Card className="dashboard-blockchain-card">
               <div className="blockchain-badge">
                 <span className="blockchain-icon-wrap">
@@ -558,6 +630,7 @@ export function DoctorDashboard() {
                 <Shield className="blockchain-shield" size={32} strokeWidth={1.5} aria-hidden />
               </div>
             </Card>
+            </motion.div>
           </motion.section>
         </div>
       </div>

@@ -19,6 +19,22 @@
   --dash-cyan: #06b6d4;
 }
 
+/* ----- Partículas flutuantes ----- */
+.dashboard-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.dashboard-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  opacity: 0.35;
+}
+
 /* ----- Loading State ----- */
 .dashboard-loading-state {
   flex: 1;
@@ -59,13 +75,45 @@
 
 /* ----- Card Hover Enhancement ----- */
 .dashboard .card {
+  position: relative;
   transition: box-shadow 0.35s var(--dash-ease), transform 0.35s var(--dash-ease),
     border-color 0.3s var(--dash-ease);
+  overflow: hidden;
+}
+
+.dashboard .card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
 }
 
 .dashboard .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-lg), var(--glow-primary);
+}
+
+.dashboard .card:hover::before {
+  left: 100%;
+}
+
+body.theme-dark .dashboard .card::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(50, 224, 196, 0.06),
+    transparent
+  );
 }
 
 /* ----- Background Accents (Gradient Mesh) ----- */
@@ -144,8 +192,9 @@
 }
 
 @keyframes dashboard-accent-float {
-  0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.6; }
-  50% { transform: scale(1.08) translate(2%, -2%); opacity: 0.8; }
+  0%, 100% { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 0.6; }
+  33% { transform: scale(1.1) translate(3%, -3%) rotate(2deg); opacity: 0.85; }
+  66% { transform: scale(1.05) translate(-2%, 2%) rotate(-1deg); opacity: 0.75; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -239,6 +288,16 @@
   letter-spacing: -0.03em;
   line-height: 1.2;
   margin-bottom: 0.4rem;
+  position: relative;
+}
+
+.dashboard-hero-title--shimmer {
+  animation: dashboard-title-pulse 5s ease-in-out infinite;
+}
+
+@keyframes dashboard-title-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.92; }
 }
 
 body.theme-dark .dashboard-hero-title {
@@ -335,6 +394,12 @@ body.theme-dark .dashboard-hero-title {
   height: 3px;
   background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-primary-light));
   opacity: 1;
+  animation: dashboard-stat-bar-shine 3s ease-in-out infinite;
+}
+
+@keyframes dashboard-stat-bar-shine {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.9; filter: brightness(1.2); }
 }
 
 .dashboard-stat-card:nth-child(1) { animation-delay: 0.06s; }
@@ -471,6 +536,11 @@ body.theme-dark .dashboard-stat-card:hover {
   color: var(--color-primary);
   opacity: 0.9;
   flex-shrink: 0;
+  transition: transform 0.35s var(--dash-spring);
+}
+
+.dashboard-section:hover .dashboard-section-title svg {
+  transform: scale(1.1) rotate(-5deg);
 }
 
 /* ----- Shortcuts ----- */
@@ -520,8 +590,9 @@ body.theme-dark .dashboard-stat-card:hover {
 }
 
 .dashboard-shortcut:hover .dashboard-shortcut-icon {
-  transform: scale(1.1) rotate(-3deg);
+  transform: scale(1.15) rotate(-5deg);
 }
+
 
 .dashboard-shortcut--primary {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
@@ -598,9 +669,17 @@ body.theme-dark .dashboard-shortcut--secondary {
   border-bottom: none;
 }
 
+.dashboard-activity-item {
+  border-left: 3px solid transparent;
+  transition: background 0.3s var(--dash-ease), padding-left 0.3s var(--dash-ease),
+    border-left-color 0.3s var(--dash-ease), transform 0.25s var(--dash-ease);
+}
+
 .dashboard-activity-item:hover {
-  background: linear-gradient(90deg, rgba(13, 115, 119, 0.06) 0%, transparent 100%);
+  background: linear-gradient(90deg, rgba(13, 115, 119, 0.08) 0%, transparent 100%);
   padding-left: 1.5rem;
+  border-left-color: var(--color-primary);
+  transform: translateX(4px);
 }
 
 .dashboard-activity-icon {
@@ -709,8 +788,13 @@ body.theme-dark .dashboard-shortcut--secondary {
     var(--color-primary-dark) 100%
   );
   box-shadow: 0 -2px 8px rgba(13, 115, 119, 0.2);
-  transition: height 0.8s var(--dash-spring);
+  transition: box-shadow 0.3s var(--dash-ease), filter 0.3s var(--dash-ease);
   animation: dashboard-bar-grow 0.8s var(--dash-spring) backwards;
+  transform-origin: bottom;
+}
+
+.dashboard-chart-vertical-bar:hover {
+  box-shadow: 0 -4px 14px rgba(13, 115, 119, 0.35);
 }
 
 .dashboard-chart-vertical-bar-wrap:nth-child(1) .dashboard-chart-vertical-bar { animation-delay: 0.05s; }
@@ -770,7 +854,7 @@ body.theme-dark .dashboard-shortcut--secondary {
   height: 100%;
   border-radius: 10px;
   min-width: 6px;
-  transition: width 0.9s var(--dash-spring);
+  transition: width 0.9s var(--dash-spring), filter 0.3s var(--dash-ease), box-shadow 0.3s var(--dash-ease);
   animation: dashboard-bar-grow 0.7s var(--dash-spring) backwards;
 }
 
@@ -793,6 +877,11 @@ body.theme-dark .dashboard-shortcut--secondary {
 
 .dashboard-chart-bar--success {
   background: linear-gradient(90deg, var(--color-success) 0%, rgba(0, 184, 148, 0.85) 100%);
+}
+
+.dashboard-chart-row:hover .dashboard-chart-bar {
+  filter: brightness(1.1);
+  box-shadow: 0 0 12px rgba(13, 115, 119, 0.2);
 }
 
 .dashboard-chart-value {
@@ -1049,8 +1138,14 @@ body.theme-dark .dashboard-blockchain-card:hover {
   .dashboard-section,
   .dashboard-stats,
   .dashboard-chart-vertical-bar,
-  .dashboard-chart-bar {
-    animation: none;
+  .dashboard-chart-bar,
+  .dashboard-hero-title--shimmer,
+  .dashboard-stat-card::before,
+  .dashboard-particles {
+    animation: none !important;
+  }
+  .dashboard-particle {
+    animation: none !important;
   }
 }
 
