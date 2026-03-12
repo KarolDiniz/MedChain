@@ -22,6 +22,7 @@ import {
 } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
+import { Avatar } from '../../components/common/Avatar';
 import { getHashTypePrefix } from '../../utils/hashUtils';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
@@ -223,7 +224,16 @@ export function PatientDetailPage() {
           Voltar aos pacientes
         </Link>
         <div className="patient-detail-hero">
-          <div className="patient-detail-avatar">{getInitials(patient.full_name)}</div>
+          <div className="patient-detail-avatar">
+            <Avatar
+              userId={patient.patient_public_id || patient.uid || patient.id}
+              isDoctor={false}
+              size={64}
+              editable={false}
+              variant="profile"
+              initials={getInitials(patient.full_name)}
+            />
+          </div>
           <div className="patient-detail-hero-text">
             <h1>{patient.full_name}</h1>
             <p>Cadastre consultas, diagnósticos, atestados e arquivos</p>

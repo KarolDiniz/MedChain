@@ -70,7 +70,7 @@ function resizeImage(file) {
   });
 }
 
-export function Avatar({ userId, isDoctor = false, size = 48, editable = true, variant = 'sidebar' }) {
+export function Avatar({ userId, isDoctor = false, size = 48, editable = true, variant = 'sidebar', initials }) {
   const inputRef = useRef(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
 
@@ -135,7 +135,7 @@ export function Avatar({ userId, isDoctor = false, size = 48, editable = true, v
   return (
     <div
       className={`avatar avatar--${variant} ${editable ? 'avatar--editable' : ''}`}
-      style={{ width: size, height: size, minWidth: size, minHeight: size }}
+      style={{ width: size, height: size, minWidth: size, minHeight: size, '--avatar-size': `${size}px` }}
       onClick={handleClick}
       role={editable ? 'button' : undefined}
       tabIndex={editable ? 0 : undefined}
@@ -153,6 +153,8 @@ export function Avatar({ userId, isDoctor = false, size = 48, editable = true, v
       />
       {avatarUrl ? (
         <img src={avatarUrl} alt="Foto do perfil" className="avatar-img" />
+      ) : initials ? (
+        <span className="avatar-initials">{initials}</span>
       ) : (
         <span className="avatar-icon">
           <Icon size={Math.round(size * 0.55)} strokeWidth={2} />

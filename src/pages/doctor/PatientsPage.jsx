@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getPatientsByDoctor } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
+import { Avatar } from '../../components/common/Avatar';
 import { PatientModal } from '../../components/doctor/PatientModal';
 import './PatientsPage.css';
 
@@ -390,7 +391,16 @@ export function PatientsPage() {
                   transition={reducedMotion ? undefined : { duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
                 >
                 <Link to={`/doctor/patients/${p.id}`} className="patient-card">
-                  <div className="patient-card-avatar">{getInitials(p.full_name)}</div>
+                  <div className="patient-card-avatar">
+                    <Avatar
+                      userId={p.patient_public_id || p.uid || p.id}
+                      isDoctor={false}
+                      size={52}
+                      editable={false}
+                      variant="profile"
+                      initials={getInitials(p.full_name)}
+                    />
+                  </div>
                   <div className="patient-card-body">
                     <h3 className="patient-card-name">{p.full_name}</h3>
                     <div className="patient-card-details">
