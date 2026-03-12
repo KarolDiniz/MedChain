@@ -270,41 +270,6 @@
   transform: translateY(-1px);
 }
 
-.patient-info-item[data-variant='name'] .patient-info-icon {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-  box-shadow: 0 4px 14px rgba(13, 115, 119, 0.35);
-}
-
-.patient-info-item[data-variant='mail'] .patient-info-icon {
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-  box-shadow: 0 4px 14px rgba(10, 92, 95, 0.35);
-}
-
-.patient-info-item[data-variant='phone'] .patient-info-icon {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-  box-shadow: 0 4px 14px rgba(13, 115, 119, 0.3);
-}
-
-.patient-info-item[data-variant='date'] .patient-info-icon {
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-secondary) 100%);
-  box-shadow: 0 4px 14px rgba(20, 163, 168, 0.35);
-}
-
-.patient-info-item[data-variant='user'] .patient-info-icon {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-  box-shadow: 0 4px 14px rgba(13, 115, 119, 0.35);
-}
-
-.patient-info-item[data-variant='map'] .patient-info-icon {
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-light) 100%);
-  box-shadow: 0 4px 14px rgba(10, 92, 95, 0.3);
-}
-
-.patient-info-item[data-variant='calendar'] .patient-info-icon {
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-secondary) 100%);
-  box-shadow: 0 4px 14px rgba(20, 163, 168, 0.35);
-}
-
 body.theme-dark .patient-info-item {
   background: linear-gradient(135deg, rgba(13, 115, 119, 0.12) 0%, rgba(20, 163, 168, 0.08) 100%);
   border-color: rgba(13, 115, 119, 0.25);
@@ -319,14 +284,11 @@ body.theme-dark .patient-info-item:hover {
 .patient-info-icon {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-  color: white;
-  box-shadow: 0 4px 14px rgba(13, 115, 119, 0.35);
+  color: var(--color-primary);
   transition: transform 0.25s var(--transition-smooth);
 }
 
