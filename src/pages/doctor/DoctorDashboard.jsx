@@ -539,31 +539,68 @@ export function DoctorDashboard() {
                   <motion.div
                     key={week.label}
                     className="dashboard-chart-vertical-bar-wrap"
-                    initial={shouldAnimate ? { opacity: 0, y: 10 } : false}
+                    initial={shouldAnimate ? { opacity: 0, y: 24 } : false}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: shouldAnimate ? 0.1 * i + 0.3 : 0, duration: shouldAnimate ? 0.4 : 0 }}
+                    transition={{
+                      delay: shouldAnimate ? 0.08 * i + 0.2 : 0,
+                      duration: shouldAnimate ? 0.5 : 0,
+                      type: 'spring',
+                      stiffness: 200,
+                      damping: 20,
+                    }}
+                    whileHover={shouldAnimate ? { y: -4, transition: { duration: 0.2 } } : {}}
                   >
-                    <span className="dashboard-chart-vertical-value">{week.value}</span>
+                    <motion.span
+                      className="dashboard-chart-vertical-value"
+                      initial={shouldAnimate ? { scale: 0, opacity: 0 } : false}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: shouldAnimate ? 0.2 * i + 0.6 : 0, type: 'spring', stiffness: 300 }}
+                    >
+                      <AnimatedCounter value={week.value} duration={0.8} />
+                    </motion.span>
                     <div className="dashboard-chart-vertical-bar-inner">
                       <motion.div
                         className="dashboard-chart-vertical-bar"
-                        initial={shouldAnimate ? { height: 0 } : false}
-                        animate={{ height: `${(week.value / activityMax) * 100}%` }}
-                        transition={{ delay: shouldAnimate ? 0.2 * i + 0.5 : 0, duration: shouldAnimate ? 0.7 : 0, ease: [0.25, 0.46, 0.45, 0.94] }}
-                        whileHover={shouldAnimate ? { scaleY: 1.05, filter: 'brightness(1.15)' } : {}}
+                        initial={shouldAnimate ? { height: 0, opacity: 0.5 } : false}
+                        animate={{ height: `${(week.value / activityMax) * 100}%`, opacity: 1 }}
+                        transition={{
+                          delay: shouldAnimate ? 0.15 * i + 0.4 : 0,
+                          duration: shouldAnimate ? 0.9 : 0,
+                          type: 'spring',
+                          stiffness: 120,
+                          damping: 15,
+                        }}
+                        whileHover={
+                          shouldAnimate
+                            ? {
+                                scaleY: 1.08,
+                                filter: 'brightness(1.2)',
+                                boxShadow: '0 -6px 20px rgba(13, 115, 119, 0.4)',
+                                transition: { duration: 0.2 },
+                              }
+                            : {}
+                        }
+                        style={{ transformOrigin: 'bottom' }}
                         title={`${week.label}: ${week.value} consulta(s)`}
-                      />
+                      >
+                        <span className="dashboard-chart-vertical-bar-shine" aria-hidden />
+                      </motion.div>
                     </div>
                   </motion.div>
                 ))}
               </div>
-              <div className="dashboard-chart-vertical-labels">
+              <motion.div
+                className="dashboard-chart-vertical-labels"
+                initial={shouldAnimate ? { opacity: 0 } : false}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9, duration: 0.4 }}
+              >
                 {activityByWeek.map((week) => (
                   <span key={week.label} className="dashboard-chart-vertical-label">
                     {week.label}
                   </span>
                 ))}
-              </div>
+              </motion.div>
             </Card>
           </motion.section>
 
@@ -581,20 +618,57 @@ export function DoctorDashboard() {
                   <motion.div
                     key={item.label}
                     className="dashboard-chart-row"
-                    initial={shouldAnimate ? { opacity: 0, x: -10 } : false}
+                    initial={shouldAnimate ? { opacity: 0, x: -20 } : false}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: shouldAnimate ? 0.1 * i + 0.2 : 0, duration: shouldAnimate ? 0.35 : 0 }}
+                    transition={{
+                      delay: shouldAnimate ? 0.1 * i + 0.15 : 0,
+                      duration: 0.45,
+                      type: 'spring',
+                      stiffness: 180,
+                      damping: 18,
+                    }}
+                    whileHover={shouldAnimate ? { x: 6, transition: { duration: 0.2 } } : {}}
                   >
-                    <span className="dashboard-chart-label">{item.label}</span>
+                    <motion.span
+                      className="dashboard-chart-label"
+                      initial={shouldAnimate ? { opacity: 0 } : false}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: shouldAnimate ? 0.08 * i + 0.2 : 0 }}
+                    >
+                      {item.label}
+                    </motion.span>
                     <div className="dashboard-chart-bar-wrap">
                       <motion.div
                         className={`dashboard-chart-bar dashboard-chart-bar--${item.color}`}
                         initial={shouldAnimate ? { width: 0 } : false}
                         animate={{ width: `${(item.value / contentMax) * 100}%` }}
-                        transition={{ delay: shouldAnimate ? 0.15 * i + 0.4 : 0, duration: shouldAnimate ? 0.6 : 0, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      />
+                        transition={{
+                          delay: shouldAnimate ? 0.12 * i + 0.35 : 0,
+                          duration: 0.85,
+                          type: 'spring',
+                          stiffness: 100,
+                          damping: 14,
+                        }}
+                        whileHover={
+                          shouldAnimate
+                            ? {
+                                filter: 'brightness(1.15)',
+                                transition: { duration: 0.2 },
+                              }
+                            : {}
+                        }
+                      >
+                        <span className="dashboard-chart-bar-shine" aria-hidden />
+                      </motion.div>
                     </div>
-                    <span className="dashboard-chart-value">{item.value}</span>
+                    <motion.span
+                      className="dashboard-chart-value"
+                      initial={shouldAnimate ? { scale: 0.5, opacity: 0 } : false}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: shouldAnimate ? 0.2 * i + 0.7 : 0, type: 'spring', stiffness: 250 }}
+                    >
+                      <AnimatedCounter value={item.value} duration={0.6} />
+                    </motion.span>
                   </motion.div>
                 ))}
               </div>
