@@ -12,6 +12,10 @@ import {
   Activity,
   Calendar,
   Sparkles,
+  BarChart3,
+  ClipboardList,
+  Database,
+  HeartPulse,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getPatientsByDoctor, getMedicalRecordsByDoctor, getDoctorById, getDashboardStats } from '../../services/medicalRecordService';
@@ -221,11 +225,22 @@ export function DoctorDashboard() {
 
   const patientLinkId = (p) => p.uid || p.patient_public_id || p.id;
 
+  const getActivityIcon = (type) => {
+    switch (type) {
+      case 'consultation': return Stethoscope;
+      case 'diagnostic': return ClipboardList;
+      case 'certificate': return FileText;
+      default: return Activity;
+    }
+  };
+
   if (loading) {
     return (
       <div className="dashboard">
-        <div className="dashboard-layout">
-          <p className="dashboard-loading">Carregando...</p>
+        <div className="dashboard-loading-state">
+          <div className="dashboard-loading-spinner" aria-hidden />
+          <p className="dashboard-loading-text">Carregando seu painel...</p>
+          <p className="dashboard-loading-subtext">Preparando dados e estatísticas</p>
         </div>
       </div>
     );
@@ -237,12 +252,6 @@ export function DoctorDashboard() {
       <div className="dashboard-accent dashboard-accent--bottom-left" aria-hidden />
       <div className="dashboard-accent dashboard-accent--top-right" aria-hidden />
       <div className="dashboard-accent dashboard-accent--bottom-right" aria-hidden />
-      <div className="dashboard-accent dashboard-accent--mid-left dashboard-accent--tone-accent" aria-hidden />
-      <div className="dashboard-accent dashboard-accent--mid-right dashboard-accent--tone-success" aria-hidden />
-      <div className="dashboard-accent dashboard-accent--center-left dashboard-accent--tone-warm" aria-hidden />
-      <div className="dashboard-accent dashboard-accent--center-right dashboard-accent--tone-info" aria-hidden />
-      <div className="dashboard-accent dashboard-accent--top-left dashboard-accent--tone-secondary" aria-hidden />
-      <div className="dashboard-accent dashboard-accent--stats-area dashboard-accent--tone-soft" aria-hidden />
       <div className="dashboard-layout">
         <div className="dashboard-left-column">
           <header className="dashboard-hero">
@@ -258,7 +267,8 @@ export function DoctorDashboard() {
                 {specialty} · {todayFormatted}
               </p>
               <p className="dashboard-hero-desc">
-                Gerencie seus pacientes e prontuários com segurança e praticidade.
+                <HeartPulse size={18} strokeWidth={2} className="dashboard-hero-desc-icon" aria-hidden />
+                Gerencie seus pacientes e prontuários com segurança blockchain e praticidade.
               </p>
             </div>
             <div className="dashboard-hero-accent" aria-hidden />
@@ -320,17 +330,22 @@ export function DoctorDashboard() {
               </h2>
               <Card className="dashboard-activity-card">
                 <ul className="dashboard-activity-list">
-                  {recentActivity.map((item) => (
-                    <li key={item.id} className="dashboard-activity-item">
-                      <span className="dashboard-activity-dot" />
-                      <div className="dashboard-activity-content">
-                        <strong>{item.title}</strong>
-                        <span className="dashboard-activity-meta">
-                          {item.patientName} · {formatDate(item.date)}
+                  {recentActivity.map((item) => {
+                    const ActivityIcon = getActivityIcon(item.type);
+                    return (
+                      <li key={item.id} className={`dashboard-activity-item dashboard-activity-item--${item.type}`}>
+                        <span className="dashboard-activity-icon">
+                          <ActivityIcon size={16} strokeWidth={2} />
                         </span>
-                      </div>
-                    </li>
-                  ))}
+                        <div className="dashboard-activity-content">
+                          <strong>{item.title}</strong>
+                          <span className="dashboard-activity-meta">
+                            {item.patientName} · {formatDate(item.date)}
+                          </span>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </Card>
             </section>
@@ -382,6 +397,7 @@ export function DoctorDashboard() {
         <div className="dashboard-charts-column">
           <section className="dashboard-section dashboard-chart-section">
             <h2 className="dashboard-section-title">
+              <BarChart3 size={22} strokeWidth={2} />
               Consultas nas últimas semanas
             </h2>
             <Card className="dashboard-chart-card dashboard-chart-card--vertical">
@@ -411,6 +427,7 @@ export function DoctorDashboard() {
 
           <section className="dashboard-section dashboard-chart-section">
             <h2 className="dashboard-section-title">
+              <Database size={22} strokeWidth={2} />
               Conteúdo nos prontuários
             </h2>
             <Card className="dashboard-chart-card">
