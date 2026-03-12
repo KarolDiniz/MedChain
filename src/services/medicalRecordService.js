@@ -1,6 +1,15 @@
 import { patientsApi, doctorsApi, medicalRecordsApi } from './api';
 
 function mapPatient(p) {
+  const addr = p.address || {};
+  const flatAddr = {
+    street: addr.street || p.address_street,
+    number: addr.number || p.address_number,
+    complement: addr.complement || p.address_complement,
+    neighborhood: addr.neighborhood || p.address_neighborhood,
+    city: addr.city || p.address_city,
+    state: addr.state || p.address_state,
+  };
   return {
     id: p.uid || p.id,
     uid: p.uid || p.id,
@@ -14,7 +23,8 @@ function mapPatient(p) {
     dateofbirth: p.dateofbirth || p.birth_date,
     gender: p.gender,
     status: p.status,
-    address: p.address || {},
+    address: flatAddr,
+    created_at: p.created_at || p.created_date || p.date_created || p.created,
   };
 }
 

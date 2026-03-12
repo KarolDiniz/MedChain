@@ -1,6 +1,20 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Filter } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+  ArrowLeft,
+  Mail,
+  Phone,
+  Calendar,
+  User,
+  MapPin,
+  CalendarPlus,
+  Stethoscope,
+  ClipboardList,
+  FileCheck,
+  Paperclip,
+  Filter,
+} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getPatientById,
@@ -131,59 +145,183 @@ export function PatientDetailPage() {
     </div>
   );
 
-  if (loading) return <div className="patient-detail"><p>Carregando...</p></div>;
+  const formatPhone = (phone) => {
+    if (!phone) return '-';
+    const d = phone.replace(/\D/g, '');
+    if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+    if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return phone;
+  };
+
+  const formatAddress = (addr) => {
+    if (!addr || typeof addr !== 'object') return null;
+    const trim = (v) => (v != null && String(v).trim() ? String(v).trim() : null);
+    const linha1 = [addr.street, addr.number, addr.complement].map(trim).filter(Boolean).join(', ');
+    const bairro = trim(addr.neighborhood);
+    const cidade = trim(addr.city);
+    const estado = trim(addr.state);
+    const linha2 = [bairro, cidade ? (estado ? `${cidade} - ${estado}` : cidade) : estado].filter(Boolean).join(', ');
+    const parts = [linha1, linha2].filter(Boolean);
+    return parts.length ? parts.join('. ') : null;
+  };
+
+  const getInitials = (name) => {
+    if (!name || typeof name !== 'string') return '?';
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
+  const tabIcons = { consultations: Stethoscope, diagnostics: ClipboardList, certificates: FileCheck, files: Paperclip };
+
+  if (loading) {
+    return (
+      <motion.div
+        className="patient-detail patient-detail--loading"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="patient-detail-skeleton">
+          <div className="patient-detail-skeleton-header" />
+          <div className="patient-detail-skeleton-card" />
+          <div className="patient-detail-skeleton-tabs" />
+        </div>
+      </motion.div>
+    );
+  }
   if (!patient) {
     return (
-      <div className="patient-detail">
-        <p>Paciente não encontrado.</p>
-        <Link to="/doctor/patients">← Voltar</Link>
-      </div>
+      <motion.div
+        className="patient-detail patient-detail--not-found"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="patient-not-found">
+          <User size={48} strokeWidth={1.5} />
+          <h2>Paciente não encontrado</h2>
+          <p>Verifique o link ou retorne à listagem.</p>
+          <Link to="/doctor/patients" className="back-link">
+            <ArrowLeft size={18} />
+            Voltar aos pacientes
+          </Link>
+        </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="patient-detail patient-detail--prontuarios">
-      <header className="page-header">
-        <Link to="/doctor/patients" className="back-link">← Voltar aos pacientes</Link>
-        <h1>{patient.full_name}</h1>
-        <p>Cadastre consultas, diagnósticos, atestados e arquivos</p>
+    <motion.div
+      className="patient-detail patient-detail--prontuarios"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35 }}
+    >
+      <header className="patient-detail-header">
+        <Link to="/doctor/patients" className="back-link">
+          <ArrowLeft size={18} />
+          Voltar aos pacientes
+        </Link>
+        <div className="patient-detail-hero">
+          <div className="patient-detail-avatar">{getInitials(patient.full_name)}</div>
+          <div className="patient-detail-hero-text">
+            <h1>{patient.full_name}</h1>
+            <p>Cadastre consultas, diagnósticos, atestados e arquivos</p>
+          </div>
+        </div>
       </header>
 
       <Card className="patient-info-card">
-        <h2>Dados do paciente</h2>
-        <div className="detail-grid">
-          <div className="detail-item">
-            <span className="detail-label">E-mail</span>
-            <span className="detail-value">{patient.email}</span>
+        <h2 className="patient-info-title">
+          <User size={20} />
+          Dados do paciente
+        </h2>
+        <div className="patient-info-grid">
+          <div className="patient-info-item patient-info-item--wide">
+            <div className="patient-info-icon">
+              <Mail size={18} />
+            </div>
+            <div className="patient-info-content">
+              <span className="patient-info-label">E-mail</span>
+              <span className="patient-info-value">{patient.email}</span>
+            </div>
           </div>
-          <div className="detail-item">
-            <span className="detail-label">Telefone</span>
-            <span className="detail-value">{patient.cellphone || '-'}</span>
+          <div className="patient-info-item">
+            <div className="patient-info-icon">
+              <Phone size={18} />
+            </div>
+            <div className="patient-info-content">
+              <span className="patient-info-label">Telefone</span>
+              <span className="patient-info-value">{formatPhone(patient.cellphone)}</span>
+            </div>
           </div>
-          <div className="detail-item">
-            <span className="detail-label">Data de nascimento</span>
-            <span className="detail-value">
-              {patient.birth_date ? new Date(patient.birth_date).toLocaleDateString('pt-BR') : '-'}
-            </span>
+          <div className="patient-info-item patient-info-item--wide">
+            <div className="patient-info-icon">
+              <Calendar size={18} />
+            </div>
+            <div className="patient-info-content">
+              <span className="patient-info-label">Data de nascimento</span>
+              <span className="patient-info-value">
+                {patient.birth_date ? new Date(patient.birth_date).toLocaleDateString('pt-BR') : '-'}
+              </span>
+            </div>
           </div>
-          <div className="detail-item">
-            <span className="detail-label">Gênero</span>
-            <span className="detail-value">{GENDER_LABELS[patient.gender] || patient.gender}</span>
+          <div className="patient-info-item">
+            <div className="patient-info-icon">
+              <User size={18} />
+            </div>
+            <div className="patient-info-content">
+              <span className="patient-info-label">Gênero</span>
+              <span className="patient-info-value">{GENDER_LABELS[patient.gender] || patient.gender}</span>
+            </div>
+          </div>
+          <div className="patient-info-item patient-info-item--wide">
+            <div className="patient-info-icon">
+              <MapPin size={18} />
+            </div>
+            <div className="patient-info-content">
+              <span className="patient-info-label">Endereço</span>
+              <span className="patient-info-value">{formatAddress(patient.address) || '-'}</span>
+            </div>
+          </div>
+          <div className="patient-info-item">
+            <div className="patient-info-icon">
+              <CalendarPlus size={18} />
+            </div>
+            <div className="patient-info-content">
+              <span className="patient-info-label">Cadastrado em</span>
+              <span className="patient-info-value">
+                {patient.created_at
+                  ? new Date(patient.created_at).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
+                  : '-'}
+              </span>
+            </div>
           </div>
         </div>
       </Card>
 
       <div className="tabs">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            className={`tab ${activeTab === tab.id ? 'tab--active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label} ({tab.count})
-          </button>
-        ))}
+        {tabs.map((tab) => {
+          const Icon = tabIcons[tab.id];
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              className={`tab ${activeTab === tab.id ? 'tab--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {Icon && <Icon size={18} />}
+              <span>{tab.label}</span>
+              <span className="tab-count">{tab.count}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="tab-content">
@@ -198,15 +336,22 @@ export function PatientDetailPage() {
             </div>
             {sortedConsultations.length === 0 ? (
               <Card>
-                <div className="empty-state small">
+                <div className="empty-state empty-state--enhanced">
+                  <Stethoscope size={40} strokeWidth={1.5} className="empty-state-icon" />
                   <p>Nenhuma consulta registrada.</p>
-                  <Button onClick={() => setShowConsultationModal(true)}>Registrar consulta</Button>
+                  <Button onClick={() => setShowConsultationModal(true)}>+ Registrar consulta</Button>
                 </div>
               </Card>
             ) : (
               <div className="items-list">
-                {sortedConsultations.map((c) => (
-                  <Card key={c.id} className="consultation-card">
+                {sortedConsultations.map((c, i) => (
+                  <motion.div
+                    key={c.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.3) }}
+                  >
+                  <Card className="consultation-card">
                     <div className="consultation-header">
                       <span className="consultation-date">
                         {new Date(c.created_date).toLocaleDateString('pt-BR')}
@@ -230,6 +375,7 @@ export function PatientDetailPage() {
                       </div>
                     )}
                   </Card>
+                  </motion.div>
                 ))}
               </div>
             )}
@@ -247,15 +393,22 @@ export function PatientDetailPage() {
             </div>
             {sortedDiagnostics.length === 0 ? (
               <Card>
-                <div className="empty-state small">
+                <div className="empty-state empty-state--enhanced">
+                  <ClipboardList size={40} strokeWidth={1.5} className="empty-state-icon" />
                   <p>Nenhum diagnóstico registrado.</p>
-                  <Button onClick={() => setShowDiagnosticModal(true)}>Registrar diagnóstico</Button>
+                  <Button onClick={() => setShowDiagnosticModal(true)}>+ Registrar diagnóstico</Button>
                 </div>
               </Card>
             ) : (
               <div className="items-list">
-                {sortedDiagnostics.map((d) => (
-                  <Card key={d.id} className="diagnostic-card">
+                {sortedDiagnostics.map((d, i) => (
+                  <motion.div
+                    key={d.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.3) }}
+                  >
+                  <Card className="diagnostic-card">
                     <span className="diagnostic-date">
                       {new Date(d.issue_date || d.created_date).toLocaleDateString('pt-BR')}
                     </span>
@@ -263,6 +416,7 @@ export function PatientDetailPage() {
                     <div><strong>Descrição:</strong> {d.description || '-'}</div>
                     <div><strong>Resultado:</strong> {d.result || '-'}</div>
                   </Card>
+                  </motion.div>
                 ))}
               </div>
             )}
@@ -280,15 +434,22 @@ export function PatientDetailPage() {
             </div>
             {sortedCertificates.length === 0 ? (
               <Card>
-                <div className="empty-state small">
+                <div className="empty-state empty-state--enhanced">
+                  <FileCheck size={40} strokeWidth={1.5} className="empty-state-icon" />
                   <p>Nenhum atestado emitido.</p>
-                  <Button onClick={() => setShowCertificateModal(true)}>Emitir atestado</Button>
+                  <Button onClick={() => setShowCertificateModal(true)}>+ Emitir atestado</Button>
                 </div>
               </Card>
             ) : (
               <div className="items-list">
-                {sortedCertificates.map((cert) => (
-                  <Card key={cert.id} className="certificate-card">
+                {sortedCertificates.map((cert, i) => (
+                  <motion.div
+                    key={cert.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.3) }}
+                  >
+                  <Card className="certificate-card">
                     <span className="cert-date">
                       {new Date(cert.created_date).toLocaleDateString('pt-BR')}
                     </span>
@@ -296,6 +457,7 @@ export function PatientDetailPage() {
                     <div><strong>Finalidade:</strong> {cert.purpose || '-'}</div>
                     <div><strong>Dias de afastamento:</strong> {cert.period_of_leave ?? '-'}</div>
                   </Card>
+                  </motion.div>
                 ))}
               </div>
             )}
@@ -313,15 +475,22 @@ export function PatientDetailPage() {
             </div>
             {sortedFiles.length === 0 ? (
               <Card>
-                <div className="empty-state small">
+                <div className="empty-state empty-state--enhanced">
+                  <Paperclip size={40} strokeWidth={1.5} className="empty-state-icon" />
                   <p>Nenhum arquivo anexado.</p>
-                  <Button onClick={() => setShowFileModal(true)}>Anexar arquivo</Button>
+                  <Button onClick={() => setShowFileModal(true)}>+ Anexar arquivo</Button>
                 </div>
               </Card>
             ) : (
               <div className="items-list files-grid">
-                {sortedFiles.map((f) => (
-                  <Card key={f.id} className="file-card">
+                {sortedFiles.map((f, i) => (
+                  <motion.div
+                    key={f.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.3) }}
+                  >
+                  <Card className="file-card">
                     {f.created_date && (
                       <span className="file-date">{new Date(f.created_date).toLocaleDateString('pt-BR')}</span>
                     )}
@@ -329,6 +498,7 @@ export function PatientDetailPage() {
                     <div className="file-desc">{f.description || '-'}</div>
                     {f.hash && <HashBadge hash={f.hash} title="Arquivo" />}
                   </Card>
+                  </motion.div>
                 ))}
               </div>
             )}
@@ -367,6 +537,6 @@ export function PatientDetailPage() {
           onSaved={handleSaved}
         />
       )}
-    </div>
+    </motion.div>
   );
 }
