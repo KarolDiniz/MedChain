@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Search, X, Mail, Phone, Calendar, ChevronRight } from 'lucide-react';
+import { Users, Search, X, Mail, Phone, Calendar, ChevronRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getPatientsByDoctor } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
@@ -51,16 +51,35 @@ export function PatientsPage() {
           <h1>Pacientes</h1>
           <p>Gerencie os pacientes cadastrados</p>
         </div>
-        <Button onClick={() => setShowModal(true)}>+ Novo Paciente</Button>
       </header>
 
       {loading ? (
-        <div className="patients-content patients-content--loading">
-          <Card>
-            <div className="empty-state">
-              <p>Carregando...</p>
+        <div className="patients-content">
+          <div className="patients-toolbar">
+            <div className="search-bar search-bar--disabled">
+              <Search size={20} className="search-icon" />
+              <input type="text" className="search-input" placeholder="Buscar..." disabled aria-hidden />
             </div>
-          </Card>
+            <Button onClick={() => setShowModal(true)}>+ Novo Paciente</Button>
+          </div>
+          <div className="patients-loading">
+            <div className="patients-loading-spinner">
+              <Loader2 size={40} strokeWidth={2} />
+            </div>
+            <p>Carregando pacientes...</p>
+            <div className="patients-grid patients-grid--skeleton">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="patient-card-skeleton">
+                  <div className="patient-card-skeleton-avatar" />
+                  <div className="patient-card-skeleton-body">
+                    <div className="patient-card-skeleton-line patient-card-skeleton-name" />
+                    <div className="patient-card-skeleton-line patient-card-skeleton-detail" />
+                    <div className="patient-card-skeleton-line patient-card-skeleton-detail patient-card-skeleton-detail--short" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       ) : patients.length === 0 ? (
         <div className="patients-content">
@@ -78,21 +97,24 @@ export function PatientsPage() {
       ) : (
         <div className="patients-content">
           <div className="patients-toolbar">
-            <div className="search-bar">
-              <Search size={20} className="search-icon" />
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Buscar por nome, e-mail ou telefone..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Buscar pacientes"
-              />
-              {searchQuery && (
-                <button type="button" className="search-clear" onClick={() => setSearchQuery('')} aria-label="Limpar busca">
-                  <X size={18} />
-                </button>
-              )}
+            <div className="patients-toolbar-row">
+              <div className="search-bar">
+                <Search size={20} className="search-icon" />
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="Buscar por nome, e-mail ou telefone..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Buscar pacientes"
+                />
+                {searchQuery && (
+                  <button type="button" className="search-clear" onClick={() => setSearchQuery('')} aria-label="Limpar busca">
+                    <X size={18} />
+                  </button>
+                )}
+              </div>
+              <Button onClick={() => setShowModal(true)}>+ Novo Paciente</Button>
             </div>
             <div className="patients-toolbar-meta">
               {searchQuery ? (
