@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "framer-motion": "^12.36.0",
     "lucide-react": "^0.563.0",
     "polygon-background": "^1.1.2",
     "react": "^19.2.0",
