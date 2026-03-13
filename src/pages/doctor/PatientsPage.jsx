@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Users, Search, X, Mail, Phone, Calendar, ChevronRight, Loader2, ArrowUpDown, RotateCcw, Type } from 'lucide-react';
+import { Users, Search, X, Mail, Phone, Calendar, ChevronRight, ChevronLeft, Loader2, ArrowUpDown, RotateCcw, Type } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getPatientsByDoctor } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
@@ -34,6 +34,23 @@ const SORT_OPTIONS = [
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
+const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
+
+function getPageItems(currentPage, totalPages) {
+  if (totalPages <= 1) return [];
+  if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+  const items = [1];
+  if (currentPage > 3) items.push('ellipsis-start');
+  const start = Math.max(2, currentPage - 1);
+  const end = Math.min(totalPages - 1, currentPage + 1);
+  for (let i = start; i <= end; i++) {
+    if (!items.includes(i)) items.push(i);
+  }
+  if (currentPage < totalPages - 2) items.push('ellipsis-end');
+  if (totalPages > 1) items.push(totalPages);
+  return items;
+}
+
 export function PatientsPage() {
   const { user } = useAuth();
   const [patients, setPatients] = useState([]);
@@ -44,6 +61,8 @@ export function PatientsPage() {
   const [letterFilter, setLetterFilter] = useState('');
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const [letterFilterOpen, setLetterFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   const sortDropdownRef = useRef(null);
   const letterFilterRef = useRef(null);
   const reducedMotion = useReducedMotion();
@@ -140,6 +159,23 @@ export function PatientsPage() {
 
     return sorted;
   }, [patients, searchQuery, letterFilter, sortBy]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, letterFilter, sortBy]);
+
+  const totalItems = filteredPatients.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
+  const startItem = totalItems === 0 ? 0 : (safePage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(safePage * itemsPerPage, totalItems);
+
+  const paginatedPatients = useMemo(() => {
+    return filteredPatients.slice(startItem - 1, endItem);
+  }, [filteredPatients, startItem, endItem]);
+
+  const pageItems = getPageItems(safePage, totalPages);
+  const showPagination = totalItems > 0;
 
   const hasActiveFilters = searchQuery.trim() || letterFilter;
   const clearAllFilters = () => {
@@ -373,6 +409,7 @@ export function PatientsPage() {
             </Card>
             </motion.div>
           ) : (
+            <>
             <motion.div
               className="patients-grid"
               variants={reducedMotion ? {} : {
@@ -381,7 +418,7 @@ export function PatientsPage() {
               initial={reducedMotion ? false : 'hidden'}
               animate={reducedMotion ? false : 'visible'}
             >
-              {filteredPatients.map((p) => (
+              {paginatedPatients.map((p) => (
                 <motion.div
                   key={p.id}
                   variants={reducedMotion ? {} : {
@@ -432,6 +469,83 @@ export function PatientsPage() {
                 </motion.div>
               ))}
             </motion.div>
+
+            {showPagination && (
+              <motion.footer
+                className="patients-pagination"
+                style={{ '--pagination-progress': totalPages > 1 ? ((safePage - 1) / (totalPages - 1)) * 100 : 100 }}
+                initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                aria-label="Navegação de páginas"
+              >
+                <div className="patients-pagination-info">
+                  <span>
+                    Mostrando <strong>{startItem}</strong>–<strong>{endItem}</strong> de{' '}
+                    <strong>{totalItems}</strong> paciente{totalItems !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <nav className="patients-pagination-nav" role="navigation">
+                  <button
+                    type="button"
+                    className="patients-pagination-btn patients-pagination-btn--prev"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={safePage <= 1}
+                    aria-label="Página anterior"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <div className="patients-pagination-numbers" role="group" aria-label="Números de página">
+                    {pageItems.map((item, idx) =>
+                      item === 'ellipsis-start' || item === 'ellipsis-end' ? (
+                        <span key={`ellipsis-${idx}`} className="patients-pagination-ellipsis" aria-hidden>
+                          …
+                        </span>
+                      ) : (
+                        <button
+                          key={item}
+                          type="button"
+                          className={`patients-pagination-num ${item === safePage ? 'patients-pagination-num--active' : ''}`}
+                          onClick={() => setCurrentPage(item)}
+                          aria-current={item === safePage ? 'page' : undefined}
+                          aria-label={`Página ${item}`}
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className="patients-pagination-btn patients-pagination-btn--next"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={safePage >= totalPages}
+                    aria-label="Próxima página"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </nav>
+                <div className="patients-pagination-per-page">
+                  <label htmlFor="patients-per-page">Por página:</label>
+                  <select
+                    id="patients-per-page"
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    aria-label="Itens por página"
+                  >
+                    {ITEMS_PER_PAGE_OPTIONS.map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </motion.footer>
+            )}
+            </>
           )}
         </motion.div>
       )}

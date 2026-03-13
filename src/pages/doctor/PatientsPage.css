@@ -676,3 +676,236 @@ body.theme-dark .patient-card-avatar {
 .patients-no-results p {
   margin-bottom: 1rem;
 }
+
+/* ----- Paginação (design premium) ----- */
+.patients-pagination {
+  margin-top: 1.5rem;
+  padding: 0.85rem 1.25rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px) saturate(1.1);
+  -webkit-backdrop-filter: blur(20px) saturate(1.1);
+  border: 1px solid rgba(13, 115, 119, 0.15);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(13, 115, 119, 0.04);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+body.theme-dark .patients-pagination {
+  background: rgba(18, 42, 62, 0.7);
+  border-color: rgba(13, 115, 119, 0.35);
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.25);
+}
+
+.patients-pagination-info {
+  font-size: 0.85rem;
+}
+
+.patients-pagination-info > span {
+  color: var(--color-text-light);
+  letter-spacing: 0.01em;
+}
+
+.patients-pagination-info strong {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.patients-pagination-per-page {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+.patients-pagination-per-page label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.patients-pagination-per-page select {
+  padding: 0.35rem 1.75rem 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--color-primary);
+  background-color: rgba(13, 115, 119, 0.06);
+  border: 1px solid rgba(13, 115, 119, 0.22);
+  border-radius: 10px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230d7377' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 14px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+body.theme-dark .patients-pagination-per-page select {
+  background-color: rgba(13, 115, 119, 0.12);
+}
+
+.patients-pagination-per-page select:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.15);
+}
+
+.patients-pagination-per-page select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.2);
+}
+
+.patients-pagination-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.patients-pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(13, 115, 119, 0.2);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 100%);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.theme-dark .patients-pagination-btn {
+  background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+}
+
+.patients-pagination-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(13, 115, 119, 0.3);
+}
+
+.patients-pagination-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.patients-pagination-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.patients-pagination-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.patients-pagination-num {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.4rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-family: inherit;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.patients-pagination-num:hover {
+  background: rgba(13, 115, 119, 0.1);
+  border-color: rgba(13, 115, 119, 0.3);
+  color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+.patients-pagination-num--active {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 2px 10px rgba(13, 115, 119, 0.35);
+}
+
+.patients-pagination-num--active:hover {
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, #0a5a5d 100%);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(13, 115, 119, 0.45);
+}
+
+.patients-pagination-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 36px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-light);
+  opacity: 0.7;
+  user-select: none;
+  letter-spacing: 0.05em;
+}
+
+/* Barra de progresso visual (indicador de posição) */
+.patients-pagination::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: calc((var(--pagination-progress, 0) / 100) * 100%);
+  max-width: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  border-radius: 0 0 14px 14px;
+  opacity: 0.5;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.patients-pagination {
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .patients-pagination {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 0.9rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .patients-pagination-info {
+    text-align: center;
+    order: 1;
+  }
+
+  .patients-pagination-nav {
+    order: 2;
+    padding: 0.5rem 0;
+    border-top: 1px solid rgba(13, 115, 119, 0.15);
+    border-bottom: 1px solid rgba(13, 115, 119, 0.15);
+  }
+
+  .patients-pagination-per-page {
+    justify-content: center;
+    order: 3;
+  }
+}
