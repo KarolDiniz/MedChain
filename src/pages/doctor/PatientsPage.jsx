@@ -198,9 +198,14 @@ export function PatientsPage() {
         animate={reducedMotion ? false : { opacity: 1, y: 0 }}
         transition={reducedMotion ? undefined : { duration: 0.35, delay: 0.05 }}
       >
-        <div className="patients-header-title">
-          <h1>Pacientes</h1>
-          <p>Gerencie os pacientes cadastrados</p>
+        <div className="patients-header-content">
+          <div className="patients-header-icon-wrap">
+            <Users size={28} strokeWidth={1.8} />
+          </div>
+          <div className="patients-header-title">
+            <h1>Pacientes</h1>
+            <p>Gerencie os pacientes cadastrados e acesse seus prontuários</p>
+          </div>
         </div>
       </motion.header>
 
@@ -244,16 +249,16 @@ export function PatientsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35 }}
         >
-          <Card className="patients-empty-card">
-            <div className="empty-state">
-              <span className="empty-state-icon">
-                <Users size={48} strokeWidth={1.5} />
-              </span>
+          <Card className="patients-empty-card patients-empty-card--enhanced">
+            <div className="empty-state empty-state--patients">
+              <div className="empty-state-icon-wrap" aria-hidden>
+                <Users size={56} strokeWidth={1.5} />
+              </div>
               <h3>Nenhum paciente cadastrado</h3>
-              <p>Cadastre o primeiro paciente para começar a criar prontuários.</p>
-            <Button onClick={() => setShowModal(true)}>Cadastrar Paciente</Button>
-          </div>
-        </Card>
+              <p>Cadastre o primeiro paciente para começar a criar prontuários e gerenciar o histórico médico.</p>
+              <Button onClick={() => setShowModal(true)} className="empty-state-cta">+ Cadastrar Paciente</Button>
+            </div>
+          </Card>
         </motion.div>
       ) : (
         <motion.div
@@ -265,7 +270,7 @@ export function PatientsPage() {
           <div className="patients-toolbar">
             <div className="patients-toolbar-row">
               <div className="search-bar">
-                <Search size={20} className="search-icon" />
+                <Search size={18} className="search-icon" />
                 <input
                   type="text"
                   className="search-input"
@@ -276,7 +281,15 @@ export function PatientsPage() {
                 />
                 {searchQuery && (
                   <button type="button" className="search-clear" onClick={() => setSearchQuery('')} aria-label="Limpar busca">
-                    <X size={18} />
+                    <X size={16} />
+                  </button>
+                )}
+                <span className="search-bar-count">
+                  {filteredPatients.length} de {patients.length}
+                </span>
+                {hasActiveFilters && (
+                  <button type="button" className="search-bar-clear-filters" onClick={clearAllFilters} title="Limpar filtros">
+                    <RotateCcw size={14} />
                   </button>
                 )}
               </div>
@@ -375,16 +388,6 @@ export function PatientsPage() {
                 <Button onClick={() => setShowModal(true)}>+ Novo Paciente</Button>
               </div>
             </div>
-            <div className="patients-toolbar-meta">
-              <span className="filter-count">
-                {filteredPatients.length} de {patients.length}
-              </span>
-              {hasActiveFilters && (
-                <button type="button" className="filter-clear-btn" onClick={clearAllFilters} title="Limpar filtros">
-                  <RotateCcw size={16} />
-                </button>
-              )}
-            </div>
           </div>
 
           {filteredPatients.length === 0 ? (
@@ -432,7 +435,7 @@ export function PatientsPage() {
                     <Avatar
                       userId={p.patient_public_id || p.uid || p.id}
                       isDoctor={false}
-                      size={52}
+                      size={54}
                       editable={false}
                       variant="profile"
                       initials={getInitials(p.full_name)}
