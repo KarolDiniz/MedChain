@@ -412,7 +412,7 @@ export function PatientsPage() {
                   }}
                   transition={reducedMotion ? undefined : { duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
                 >
-                <Link to={`/doctor/patients/${p.id}`} className="patient-card">
+                <Link to={`/doctor/patients/${p.patient_public_id || p.id}`} className="patient-card">
                   <div className="patient-card-avatar">
                     <Avatar
                       userId={p.patient_public_id || p.uid || p.id}

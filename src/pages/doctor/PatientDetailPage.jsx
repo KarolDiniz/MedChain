@@ -20,6 +20,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import {
   getPatientById,
   getMedicalRecordsByDoctor,
+  getFilesByPatient,
 } from '../../services/medicalRecordService';
 import { groupRecordItemsByVisitDate } from '../../utils/groupByVisitDate';
 import { Card } from '../../components/common/Card';
@@ -68,7 +69,21 @@ export function PatientDetailPage() {
     setPatient(p);
     const pid = p?.patient_public_id || p?.uid || id;
     const grouped = (allRecords || []).find((r) => String(r.patient_id) === String(pid));
-    setRecord(grouped || { consultations: [], diagnostics: [], medical_certificates: [], files: [] });
+    // Arquivos exigem Patient.public_id — nunca User.public_id
+    let files = grouped?.files || [];
+    if (pid) {
+      try {
+        const listed = await getFilesByPatient(pid);
+        if (listed?.length) files = listed;
+      } catch {
+        /* mantém files do agrupamento */
+      }
+    }
+    setRecord(
+      grouped
+        ? { ...grouped, files }
+        : { consultations: [], diagnostics: [], medical_certificates: [], files }
+    );
     setLoading(false);
   };
 

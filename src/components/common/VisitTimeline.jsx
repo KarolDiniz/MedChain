@@ -1,10 +1,31 @@
 import { useState } from 'react';
-import { CalendarDays, ChevronDown, ChevronUp, Stethoscope, ClipboardList, FileCheck, Paperclip } from 'lucide-react';
+import { CalendarDays, ChevronDown, ChevronUp, Stethoscope, ClipboardList, FileCheck, Paperclip, UserRound } from 'lucide-react';
 import { Card } from './Card';
 import { IntegrityBadge } from './IntegrityBadge';
 import { FileAttachment } from './FileAttachment';
 import { summarizeVisit } from '../../utils/groupByVisitDate';
 import './VisitTimeline.css';
+
+function doctorNameFromItem(item) {
+  const doctor = item?.medical_record?.doctor || item?.doctor;
+  return doctor?.user?.full_name || doctor?.full_name || null;
+}
+
+function DoctorLine({ item }) {
+  const name = doctorNameFromItem(item);
+  if (!name) return null;
+  return (
+    <div className="visit-doctor">
+      <UserRound size={14} />
+      <span>Médico: {name}</span>
+      {item?.medical_record?.doctor?.CRM || item?.doctor?.CRM ? (
+        <span className="visit-doctor-crm">
+          · {item?.medical_record?.doctor?.CRM || item?.doctor?.CRM}
+        </span>
+      ) : null}
+    </div>
+  );
+}
 
 function ConsultationBlock({ item }) {
   return (
@@ -13,6 +34,7 @@ function ConsultationBlock({ item }) {
         <Stethoscope size={16} />
         <strong>Consulta</strong>
       </div>
+      <DoctorLine item={item} />
       <div><span>Queixa:</span> {item.chief_complaint || '-'}</div>
       {item.history_of_present_illness && (
         <div><span>História:</span> {item.history_of_present_illness}</div>
@@ -42,6 +64,7 @@ function DiagnosticBlock({ item }) {
         <ClipboardList size={16} />
         <strong>Diagnóstico / exame</strong>
       </div>
+      <DoctorLine item={item} />
       <div><span>Descrição:</span> {item.description || '-'}</div>
       <div><span>Resultado:</span> {item.result || '-'}</div>
       <IntegrityBadge item={item} label="Diagnóstico" compact />
@@ -56,6 +79,7 @@ function CertificateBlock({ item }) {
         <FileCheck size={16} />
         <strong>Atestado</strong>
       </div>
+      <DoctorLine item={item} />
       <div>{item.purpose || '-'} — {item.period_of_leave ?? '-'} dia(s)</div>
       <IntegrityBadge item={item} label="Atestado" compact />
     </div>

@@ -246,7 +246,7 @@ export function DoctorDashboard() {
     month: 'long',
   });
 
-  const patientLinkId = (p) => p.uid || p.patient_public_id || p.id;
+  const patientLinkId = (p) => p.patient_public_id || p.uid || p.id;
 
   const getActivityIcon = (type) => {
     switch (type) {

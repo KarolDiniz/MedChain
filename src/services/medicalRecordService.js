@@ -11,10 +11,15 @@ function mapPatient(p) {
     city: addr.city || p.address_city,
     state: addr.state || p.address_state,
   };
+  // patient_public_id = Patient.public_id (APIs clínicas/arquivos).
+  // uid = User.public_id (aceito em GET /patients/, mas NÃO em /files/by-patient/).
+  const patientPublicId = p.patient_public_id || null;
+  const userPublicId = p.uid || p.user_public_id || (patientPublicId ? null : p.id) || null;
   return {
-    id: p.uid || p.id,
-    uid: p.uid || p.id,
-    patient_public_id: p.patient_public_id || p.uid,
+    id: patientPublicId || userPublicId || p.id,
+    uid: userPublicId,
+    user_public_id: userPublicId,
+    patient_public_id: patientPublicId || userPublicId,
     full_name: p.full_name || p.name,
     name: p.name || p.full_name,
     email: p.email,

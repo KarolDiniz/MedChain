@@ -115,6 +115,19 @@ body.theme-dark .visit-item {
   color: #0f766e;
 }
 
+.visit-doctor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #64748b);
+  margin-bottom: 0.25rem;
+}
+
+.visit-doctor-crm {
+  opacity: 0.85;
+}
+
 .visit-item--diagnostic .visit-item-head { color: #1d4ed8; }
 .visit-item--certificate .visit-item-head { color: #047857; }
 
