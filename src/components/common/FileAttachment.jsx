@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Download, Eye, FileText, Image as ImageIcon, Loader2, X } from 'lucide-react';
 import { filesApi } from '../../services/api';
 import { IntegrityBadge } from './IntegrityBadge';
+import { formatDateBR, resolveItemDate } from '../../utils/dateUtils';
 import './FileAttachment.css';
 
 function formatLabel(mime) {
@@ -205,9 +206,9 @@ export function FileAttachment({ file, showIntegrity = true, compact = false }) 
         <div className="file-attachment-body">
           <span className="file-attachment-format">{formatLabel(file.format)}</span>
           <div className="file-attachment-desc">{file.description || `Arquivo #${file.id}`}</div>
-          {file.created_date && (
+          {resolveItemDate(file, 'file') && (
             <span className="file-attachment-date">
-              {new Date(file.created_date).toLocaleDateString('pt-BR')}
+              {formatDateBR(resolveItemDate(file, 'file'))}
             </span>
           )}
 

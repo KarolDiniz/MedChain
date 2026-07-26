@@ -12,6 +12,7 @@ import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { IntegrityBadge } from '../../components/common/IntegrityBadge';
 import { FileAttachment } from '../../components/common/FileAttachment';
+import { formatDateBR, resolveItemDate } from '../../utils/dateUtils';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
 import { CertificateModal } from '../../components/doctor/CertificateModal';
@@ -112,8 +113,8 @@ export function MedicalRecordDetailPage() {
     const list = record?.consultations || [];
     return [...list].sort((a, b) => {
       if (sortOrder === SORT_RECENT || sortOrder === SORT_OLDEST) {
-        const da = new Date(a.created_date).getTime();
-        const db = new Date(b.created_date).getTime();
+        const da = resolveItemDate(a)?.getTime() || 0;
+        const db = resolveItemDate(b)?.getTime() || 0;
         return sortOrder === SORT_RECENT ? db - da : da - db;
       }
       const sa = (a.chief_complaint || a.diagnosis || '').toLowerCase();
@@ -126,8 +127,8 @@ export function MedicalRecordDetailPage() {
     const list = record?.diagnostics || [];
     return [...list].sort((a, b) => {
       if (sortOrder === SORT_RECENT || sortOrder === SORT_OLDEST) {
-        const da = new Date(a.issue_date || a.created_date).getTime();
-        const db = new Date(b.issue_date || b.created_date).getTime();
+        const da = resolveItemDate(a, 'diagnostic')?.getTime() || 0;
+        const db = resolveItemDate(b, 'diagnostic')?.getTime() || 0;
         return sortOrder === SORT_RECENT ? db - da : da - db;
       }
       const sa = (a.description || '').toLowerCase();
@@ -140,8 +141,8 @@ export function MedicalRecordDetailPage() {
     const list = record?.medical_certificates || [];
     return [...list].sort((a, b) => {
       if (sortOrder === SORT_RECENT || sortOrder === SORT_OLDEST) {
-        const da = new Date(a.created_date).getTime();
-        const db = new Date(b.created_date).getTime();
+        const da = resolveItemDate(a)?.getTime() || 0;
+        const db = resolveItemDate(b)?.getTime() || 0;
         return sortOrder === SORT_RECENT ? db - da : da - db;
       }
       const sa = (a.purpose || '').toLowerCase();
@@ -151,15 +152,19 @@ export function MedicalRecordDetailPage() {
   }, [record?.medical_certificates, sortOrder]);
 
   const sortedFiles = useMemo(() => {
-    const list = record?.files || [];
+    const list = [...(record?.files || [])];
     if (sortOrder === SORT_ALPHA_ASC || sortOrder === SORT_ALPHA_DESC) {
-      return [...list].sort((a, b) => {
+      return list.sort((a, b) => {
         const sa = (a.description || '').toLowerCase();
         const sb = (b.description || '').toLowerCase();
         return sortOrder === SORT_ALPHA_ASC ? sa.localeCompare(sb) : sb.localeCompare(sa);
       });
     }
-    return sortOrder === SORT_OLDEST ? [...list] : [...list].reverse();
+    return list.sort((a, b) => {
+      const da = resolveItemDate(a, 'file')?.getTime() || 0;
+      const db = resolveItemDate(b, 'file')?.getTime() || 0;
+      return sortOrder === SORT_RECENT ? db - da : da - db;
+    });
   }, [record?.files, sortOrder]);
 
   if (loading) {
@@ -257,7 +262,7 @@ export function MedicalRecordDetailPage() {
                   <Card key={c.id} className="consultation-card">
                     <div className="consultation-header">
                       <span className="consultation-date">
-                        {new Date(c.created_date).toLocaleDateString('pt-BR')}
+                        {formatDateBR(resolveItemDate(c))}
                       </span>
                     </div>
                     <IntegrityBadge item={c} label="Consulta" />
@@ -303,7 +308,7 @@ export function MedicalRecordDetailPage() {
                 {sortedDiagnostics.map((d) => (
                   <Card key={d.id} className="diagnostic-card">
                     <span className="diagnostic-date">
-                      {new Date(d.issue_date || d.created_date).toLocaleDateString('pt-BR')}
+                      {formatDateBR(resolveItemDate(d, 'diagnostic'))}
                     </span>
                     <IntegrityBadge item={d} label="Diagnóstico" />
                     <div><strong>Descrição:</strong> {d.description}</div>
@@ -334,7 +339,7 @@ export function MedicalRecordDetailPage() {
                 {sortedCertificates.map((cert) => (
                   <Card key={cert.id} className="certificate-card">
                     <span className="cert-date">
-                      {new Date(cert.created_date).toLocaleDateString('pt-BR')}
+                      {formatDateBR(resolveItemDate(cert))}
                     </span>
                     <IntegrityBadge item={cert} label="Atestado" />
                     <div><strong>Finalidade:</strong> {cert.purpose}</div>

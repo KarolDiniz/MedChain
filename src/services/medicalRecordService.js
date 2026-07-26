@@ -31,8 +31,14 @@ function mapPatient(p) {
 
 function withIntegrity(item) {
   const fields = extractIntegrityFields(item);
+  const created =
+    item.created_date
+    || item.issue_date
+    || item.medical_record?.created_date
+    || null;
   return {
     ...item,
+    created_date: item.created_date || created,
     hash: fields.hash,
     blockchain_tx_id: fields.blockchainTxId,
     public_id: fields.publicId || item.public_id || item.medical_record?.public_id,

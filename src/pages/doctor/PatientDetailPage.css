@@ -405,6 +405,13 @@ body.theme-dark .patient-info-item:hover {
   font-size: 1.2rem;
 }
 
+.section-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-light, #64748b);
+  font-weight: 400;
+}
+
 .records-list {
   display: flex;
   flex-direction: column;

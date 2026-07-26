@@ -9,6 +9,7 @@ import {
   User,
   MapPin,
   CalendarPlus,
+  CalendarDays,
   Stethoscope,
   ClipboardList,
   FileCheck,
@@ -20,15 +21,18 @@ import {
   getPatientById,
   getMedicalRecordsByDoctor,
 } from '../../services/medicalRecordService';
+import { groupRecordItemsByVisitDate } from '../../utils/groupByVisitDate';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Avatar } from '../../components/common/Avatar';
 import { IntegrityBadge } from '../../components/common/IntegrityBadge';
 import { FileAttachment } from '../../components/common/FileAttachment';
+import { VisitTimeline } from '../../components/common/VisitTimeline';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
 import { CertificateModal } from '../../components/doctor/CertificateModal';
 import { FileModal } from '../../components/doctor/FileModal';
+import { formatDateBR, resolveItemDate } from '../../utils/dateUtils';
 import './PatientDetailPage.css';
 
 const GENDER_LABELS = { FEMALE: 'Feminino', MALE: 'Masculino', OTHER: 'Outro', 0: 'Masculino', 1: 'Feminino', 2: 'Outro' };
@@ -46,7 +50,7 @@ export function PatientDetailPage() {
   const [patient, setPatient] = useState(null);
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('consultations');
+  const [activeTab, setActiveTab] = useState('visits');
   const [showConsultationModal, setShowConsultationModal] = useState(false);
   const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
   const [showCertificateModal, setShowCertificateModal] = useState(false);
@@ -82,17 +86,25 @@ export function PatientDetailPage() {
   };
 
   const tabs = [
+    { id: 'visits', label: 'Atendimentos', count: null },
     { id: 'consultations', label: 'Consultas', count: record?.consultations?.length || 0 },
     { id: 'diagnostics', label: 'Diagnósticos', count: record?.diagnostics?.length || 0 },
     { id: 'certificates', label: 'Atestados', count: record?.medical_certificates?.length || 0 },
     { id: 'files', label: 'Arquivos', count: record?.files?.length || 0 },
   ];
 
+  const { visits, undatedFiles } = useMemo(
+    () => groupRecordItemsByVisitDate(record, sortOrder),
+    [record, sortOrder]
+  );
+
+  const visitsCount = visits.length;
+
   const sortedConsultations = useMemo(() => {
     const list = record?.consultations || [];
     return [...list].sort((a, b) => {
-      const da = new Date(a.created_date).getTime();
-      const db = new Date(b.created_date).getTime();
+      const da = resolveItemDate(a)?.getTime() || 0;
+      const db = resolveItemDate(b)?.getTime() || 0;
       return sortOrder === SORT_RECENT ? db - da : da - db;
     });
   }, [record?.consultations, sortOrder]);
@@ -100,8 +112,8 @@ export function PatientDetailPage() {
   const sortedDiagnostics = useMemo(() => {
     const list = record?.diagnostics || [];
     return [...list].sort((a, b) => {
-      const da = new Date(a.issue_date || a.created_date).getTime();
-      const db = new Date(b.issue_date || b.created_date).getTime();
+      const da = resolveItemDate(a, 'diagnostic')?.getTime() || 0;
+      const db = resolveItemDate(b, 'diagnostic')?.getTime() || 0;
       return sortOrder === SORT_RECENT ? db - da : da - db;
     });
   }, [record?.diagnostics, sortOrder]);
@@ -109,15 +121,20 @@ export function PatientDetailPage() {
   const sortedCertificates = useMemo(() => {
     const list = record?.medical_certificates || [];
     return [...list].sort((a, b) => {
-      const da = new Date(a.created_date).getTime();
-      const db = new Date(b.created_date).getTime();
+      const da = resolveItemDate(a)?.getTime() || 0;
+      const db = resolveItemDate(b)?.getTime() || 0;
       return sortOrder === SORT_RECENT ? db - da : da - db;
     });
   }, [record?.medical_certificates, sortOrder]);
 
   const sortedFiles = useMemo(() => {
-    const list = record?.files || [];
-    return sortOrder === SORT_OLDEST ? [...list] : [...list].reverse();
+    const list = [...(record?.files || [])];
+    list.sort((a, b) => {
+      const da = resolveItemDate(a, 'file')?.getTime() || 0;
+      const db = resolveItemDate(b, 'file')?.getTime() || 0;
+      return sortOrder === SORT_RECENT ? db - da : da - db;
+    });
+    return list;
   }, [record?.files, sortOrder]);
 
   const SortControl = () => (
@@ -160,7 +177,13 @@ export function PatientDetailPage() {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  const tabIcons = { consultations: Stethoscope, diagnostics: ClipboardList, certificates: FileCheck, files: Paperclip };
+  const tabIcons = {
+    visits: CalendarDays,
+    consultations: Stethoscope,
+    diagnostics: ClipboardList,
+    certificates: FileCheck,
+    files: Paperclip,
+  };
 
   if (loading) {
     return (
@@ -340,13 +363,35 @@ export function PatientDetailPage() {
             >
               {Icon && <Icon size={18} />}
               <span>{tab.label}</span>
-              <span className="tab-count">{tab.count}</span>
+              <span className="tab-count">{tab.id === 'visits' ? visitsCount : tab.count}</span>
             </button>
           );
         })}
       </div>
 
       <div className="tab-content">
+        {activeTab === 'visits' && (
+          <section>
+            <div className="section-header section-header--with-sort">
+              <div>
+                <h2>Atendimentos por dia</h2>
+                <p className="section-subtitle">
+                  Consulta, diagnóstico, atestado e anexos do mesmo dia aparecem juntos.
+                </p>
+              </div>
+              <div className="section-actions">
+                {(visits.length > 0 || undatedFiles.length > 0) && <SortControl />}
+                <Button onClick={() => setShowConsultationModal(true)}>+ Nova Consulta</Button>
+              </div>
+            </div>
+            <VisitTimeline
+              visits={visits}
+              undatedFiles={undatedFiles}
+              emptyMessage="Nenhum atendimento registrado para este paciente."
+            />
+          </section>
+        )}
+
         {activeTab === 'consultations' && (
           <section>
             <div className="section-header section-header--with-sort">
@@ -376,7 +421,7 @@ export function PatientDetailPage() {
                   <Card className="consultation-card">
                     <div className="consultation-header">
                       <span className="consultation-date">
-                        {new Date(c.created_date).toLocaleDateString('pt-BR')}
+                        {formatDateBR(resolveItemDate(c))}
                       </span>
                     </div>
                     <IntegrityBadge item={c} label="Consulta" />
@@ -432,7 +477,7 @@ export function PatientDetailPage() {
                   >
                   <Card className="diagnostic-card">
                     <span className="diagnostic-date">
-                      {new Date(d.issue_date || d.created_date).toLocaleDateString('pt-BR')}
+                      {formatDateBR(resolveItemDate(d, 'diagnostic'))}
                     </span>
                     <IntegrityBadge item={d} label="Diagnóstico" />
                     <div><strong>Descrição:</strong> {d.description || '-'}</div>
@@ -473,7 +518,7 @@ export function PatientDetailPage() {
                   >
                   <Card className="certificate-card">
                     <span className="cert-date">
-                      {new Date(cert.created_date).toLocaleDateString('pt-BR')}
+                      {formatDateBR(resolveItemDate(cert))}
                     </span>
                     <IntegrityBadge item={cert} label="Atestado" />
                     <div><strong>Finalidade:</strong> {cert.purpose || '-'}</div>

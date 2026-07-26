@@ -1,0 +1,162 @@
+import { useState } from 'react';
+import { CalendarDays, ChevronDown, ChevronUp, Stethoscope, ClipboardList, FileCheck, Paperclip } from 'lucide-react';
+import { Card } from './Card';
+import { IntegrityBadge } from './IntegrityBadge';
+import { FileAttachment } from './FileAttachment';
+import { summarizeVisit } from '../../utils/groupByVisitDate';
+import './VisitTimeline.css';
+
+function ConsultationBlock({ item }) {
+  return (
+    <div className="visit-item visit-item--consultation">
+      <div className="visit-item-head">
+        <Stethoscope size={16} />
+        <strong>Consulta</strong>
+      </div>
+      <div><span>Queixa:</span> {item.chief_complaint || '-'}</div>
+      {item.history_of_present_illness && (
+        <div><span>História:</span> {item.history_of_present_illness}</div>
+      )}
+      <div><span>Diagnóstico:</span> {item.diagnosis || '-'}</div>
+      <div><span>Plano:</span> {item.treatment_plan || '-'}</div>
+      {(item.prescription?.items?.length > 0 || item.prescriptions?.[0]?.items?.length > 0) && (
+        <div className="visit-prescriptions">
+          <strong>Prescrições</strong>
+          {(item.prescription?.items || item.prescriptions?.[0]?.items || []).map((rx, i) => (
+            <div key={i}>
+              {rx.medication_name} — {rx.dosage} {rx.frequency}
+              {rx.treatment_duration ? ` (${rx.treatment_duration})` : ''}
+            </div>
+          ))}
+        </div>
+      )}
+      <IntegrityBadge item={item} label="Consulta" compact />
+    </div>
+  );
+}
+
+function DiagnosticBlock({ item }) {
+  return (
+    <div className="visit-item visit-item--diagnostic">
+      <div className="visit-item-head">
+        <ClipboardList size={16} />
+        <strong>Diagnóstico / exame</strong>
+      </div>
+      <div><span>Descrição:</span> {item.description || '-'}</div>
+      <div><span>Resultado:</span> {item.result || '-'}</div>
+      <IntegrityBadge item={item} label="Diagnóstico" compact />
+    </div>
+  );
+}
+
+function CertificateBlock({ item }) {
+  return (
+    <div className="visit-item visit-item--certificate">
+      <div className="visit-item-head">
+        <FileCheck size={16} />
+        <strong>Atestado</strong>
+      </div>
+      <div>{item.purpose || '-'} — {item.period_of_leave ?? '-'} dia(s)</div>
+      <IntegrityBadge item={item} label="Atestado" compact />
+    </div>
+  );
+}
+
+function VisitCard({ visit, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <Card className={`visit-card ${open ? 'visit-card--open' : ''}`}>
+      <button type="button" className="visit-card-header" onClick={() => setOpen((v) => !v)}>
+        <div className="visit-card-title">
+          <span className="visit-card-icon"><CalendarDays size={18} /></span>
+          <div>
+            <h3>Atendimento — {visit.dateLabel}</h3>
+            <p>{summarizeVisit(visit)}</p>
+          </div>
+        </div>
+        <span className="visit-card-toggle">
+          {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        </span>
+      </button>
+
+      {open && (
+        <div className="visit-card-body">
+          <p className="visit-card-note">
+            Itens do mesmo dia agrupados visualmente. Cada registro mantém seu próprio hash na blockchain.
+          </p>
+
+          {visit.consultations.map((c) => (
+            <ConsultationBlock key={`c-${c.id}`} item={c} />
+          ))}
+          {visit.diagnostics.map((d) => (
+            <DiagnosticBlock key={`d-${d.id}`} item={d} />
+          ))}
+          {visit.medical_certificates.map((cert) => (
+            <CertificateBlock key={`cert-${cert.id}`} item={cert} />
+          ))}
+          {visit.files?.length > 0 && (
+            <div className="visit-files">
+              <div className="visit-item-head">
+                <Paperclip size={16} />
+                <strong>Arquivos</strong>
+              </div>
+              <div className="visit-files-grid">
+                {visit.files.map((f) => (
+                  <FileAttachment key={f.id} file={f} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+/**
+ * Timeline de atendimentos agrupados por data (front-only).
+ */
+export function VisitTimeline({ visits = [], undatedFiles = [], emptyMessage }) {
+  if (!visits.length && !undatedFiles.length) {
+    return (
+      <Card>
+        <div className="visit-empty">
+          <CalendarDays size={40} strokeWidth={1.5} />
+          <p>{emptyMessage || 'Nenhum atendimento registrado.'}</p>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="visit-timeline">
+      {visits.map((visit, index) => (
+        <VisitCard key={visit.dateKey} visit={visit} defaultOpen={index === 0} />
+      ))}
+
+      {undatedFiles.length > 0 && (
+        <Card className="visit-card visit-card--undated">
+          <div className="visit-card-header visit-card-header--static">
+            <div className="visit-card-title">
+              <span className="visit-card-icon"><Paperclip size={18} /></span>
+              <div>
+                <h3>Arquivos sem data</h3>
+                <p>
+                  {undatedFiles.length} anexo(s) sem data de upload registrada.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="visit-card-body">
+            <div className="visit-files-grid">
+              {undatedFiles.map((f) => (
+                <FileAttachment key={f.id} file={f} />
+              ))}
+            </div>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
