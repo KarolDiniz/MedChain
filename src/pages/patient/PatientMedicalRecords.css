@@ -123,3 +123,13 @@
   color: var(--color-text-light);
   line-height: 1.4;
 }
+
+.patient-files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.85rem;
+}
+
+.patient-files-grid .file-block {
+  margin: 0;
+}

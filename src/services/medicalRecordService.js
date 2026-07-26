@@ -1,4 +1,5 @@
-import { patientsApi, doctorsApi, medicalRecordsApi } from './api';
+import { patientsApi, doctorsApi, medicalRecordsApi, filesApi } from './api';
+import { extractIntegrityFields } from '../utils/blockchain';
 
 function mapPatient(p) {
   const addr = p.address || {};
@@ -25,6 +26,17 @@ function mapPatient(p) {
     status: p.status,
     address: flatAddr,
     created_at: p.created_at || p.created_date || p.date_created || p.created,
+  };
+}
+
+function withIntegrity(item) {
+  const fields = extractIntegrityFields(item);
+  return {
+    ...item,
+    hash: fields.hash,
+    blockchain_tx_id: fields.blockchainTxId,
+    public_id: fields.publicId || item.public_id || item.medical_record?.public_id,
+    anchored: fields.anchored,
   };
 }
 
@@ -71,48 +83,90 @@ export async function updatePatient(id, patientData) {
   return getPatientById(id);
 }
 
-function groupRecordsByDoctorPatient(consultations, diagnostics, certificates) {
+function groupRecordsByDoctorPatient(consultations, diagnostics, certificates, files = []) {
   const map = new Map();
   const key = (d, p) => `${d}|${p}`;
+  const ensure = (did, pid, mr) => {
+    const k = key(did, pid);
+    if (!map.has(k)) {
+      map.set(k, {
+        id: mr?.public_id || `${did}-${pid}`,
+        public_id: mr?.public_id,
+        doctor_id: did,
+        patient_id: pid,
+        created_date: mr?.created_date,
+        consultations: [],
+        diagnostics: [],
+        medical_certificates: [],
+        files: [],
+        items: [],
+      });
+    }
+    return map.get(k);
+  };
+
   const add = (item, type) => {
+    const enriched = withIntegrity(item);
     const mr = item.medical_record || item;
     const did = mr.doctor_id ?? mr.doctor?.public_id;
     const pid = mr.patient_id ?? mr.patient?.public_id;
     if (!did || !pid) return;
-    const k = key(did, pid);
-    if (!map.has(k)) {
-      map.set(k, {
-        id: mr.public_id,
-        public_id: mr.public_id,
-        doctor_id: did,
-        patient_id: pid,
-        created_date: mr.created_date,
-        consultations: [],
-        diagnostics: [],
-        medical_certificates: [],
-      });
-    }
-    const rec = map.get(k);
+    const rec = ensure(did, pid, mr);
     if (type === 'consultation') {
-      rec.consultations.push(item);
+      rec.consultations.push(enriched);
+      rec.items.push({ kind: 'consultation', ...enriched });
       if (item.created_date && (!rec.created_date || new Date(item.created_date) > new Date(rec.created_date))) {
         rec.created_date = item.created_date;
       }
     } else if (type === 'diagnostic') {
-      rec.diagnostics.push(item);
+      rec.diagnostics.push(enriched);
+      rec.items.push({ kind: 'diagnostic', ...enriched });
       const d = item.issue_date || item.created_date;
       if (d && (!rec.created_date || new Date(d) > new Date(rec.created_date))) rec.created_date = d;
     } else if (type === 'certificate') {
-      rec.medical_certificates.push(item);
+      rec.medical_certificates.push(enriched);
+      rec.items.push({ kind: 'certificate', ...enriched });
       if (item.created_date && (!rec.created_date || new Date(item.created_date) > new Date(rec.created_date))) {
         rec.created_date = item.created_date;
       }
     }
   };
+
   (consultations || []).forEach((c) => add(c, 'consultation'));
   (diagnostics || []).forEach((d) => add(d, 'diagnostic'));
   (certificates || []).forEach((c) => add(c, 'certificate'));
+
+  (files || []).forEach((f) => {
+    const did = f.doctor_uid || f.doctor_id;
+    const pid = f.patient_uid || f.patient_id;
+    if (!did || !pid) return;
+    const rec = ensure(did, pid, { public_id: f.id, created_date: f.created_date });
+    const fileItem = {
+      ...f,
+      hash: f.hash,
+      public_id: f.id,
+      anchored: Boolean(f.hash),
+    };
+    rec.files.push(fileItem);
+    rec.items.push({ kind: 'file', ...fileItem });
+  });
+
   return Array.from(map.values());
+}
+
+async function loadFilesForPatients(patientIds) {
+  const unique = [...new Set((patientIds || []).filter(Boolean).map(String))];
+  const results = await Promise.all(
+    unique.map(async (pid) => {
+      try {
+        const list = await filesApi.listByPatient(pid);
+        return list || [];
+      } catch {
+        return [];
+      }
+    })
+  );
+  return results.flat();
 }
 
 export async function getMedicalRecordsByPatient(patientId) {
@@ -122,21 +176,17 @@ export async function getMedicalRecordsByPatient(patientId) {
     const diagnostics = data?.diagnostics || [];
     const certificates = data?.medical_certificates || [];
     const patientIdStr = String(patientId);
-    const filtered = groupRecordsByDoctorPatient(
-      consultations.filter((c) => {
-        const pid = c.medical_record?.patient_id ?? c.patient_id ?? c.patient?.public_id;
-        return pid && String(pid) === patientIdStr;
-      }),
-      diagnostics.filter((d) => {
-        const pid = d.medical_record?.patient_id ?? d.patient_id ?? d.patient?.public_id;
-        return pid && String(pid) === patientIdStr;
-      }),
-      certificates.filter((c) => {
-        const pid = c.medical_record?.patient_id ?? c.patient_id ?? c.patient?.public_id;
-        return pid && String(pid) === patientIdStr;
-      })
+    const filterByPatient = (item) => {
+      const pid = item.medical_record?.patient_id ?? item.patient_id ?? item.patient?.public_id;
+      return pid && String(pid) === patientIdStr;
+    };
+    const files = await loadFilesForPatients([patientId]);
+    return groupRecordsByDoctorPatient(
+      consultations.filter(filterByPatient),
+      diagnostics.filter(filterByPatient),
+      certificates.filter(filterByPatient),
+      files
     );
-    return filtered;
   } catch {
     return [];
   }
@@ -149,7 +199,25 @@ export async function getMedicalRecordsByDoctor(doctorId) {
     const consultations = data?.consultations || [];
     const diagnostics = data?.diagnostics || [];
     const certificates = data?.medical_certificates || [];
-    return groupRecordsByDoctorPatient(consultations, diagnostics, certificates);
+    const patientIds = [
+      ...consultations.map((c) => c.medical_record?.patient_id ?? c.patient_id),
+      ...diagnostics.map((d) => d.medical_record?.patient_id ?? d.patient_id),
+      ...certificates.map((c) => c.medical_record?.patient_id ?? c.patient_id),
+    ];
+    const files = await loadFilesForPatients(patientIds);
+    const doctorFiles = (files || []).filter(
+      (f) => String(f.doctor_uid || f.doctor_id) === String(doctorId)
+    );
+    return groupRecordsByDoctorPatient(consultations, diagnostics, certificates, doctorFiles);
+  } catch {
+    return [];
+  }
+}
+
+export async function getFilesByPatient(patientId) {
+  try {
+    if (!patientId) return [];
+    return await filesApi.listByPatient(patientId);
   } catch {
     return [];
   }
@@ -159,17 +227,102 @@ export async function getMedicalRecordById(id) {
   try {
     const mr = await medicalRecordsApi.get(id);
     if (!mr) return null;
+    const consultation = mr.consultation ? withIntegrity({ ...mr.consultation, medical_record: mr }) : null;
+    const diagnostic = mr.diagnostic ? withIntegrity({ ...mr.diagnostic, medical_record: mr }) : null;
+    const certificate = mr.certificate ? withIntegrity({ ...mr.certificate, medical_record: mr }) : null;
+    let files = [];
+    try {
+      files = await filesApi.listByPatient(mr.patient_id);
+    } catch {
+      files = [];
+    }
     return {
       ...mr,
       id: mr.public_id ?? mr.id,
-      consultations: mr.consultation ? [mr.consultation] : [],
-      diagnostics: mr.diagnostic ? [mr.diagnostic] : [],
-      medical_certificates: mr.certificate ? [mr.certificate] : [],
-      files: mr.files || [],
+      hash: mr.hash,
+      blockchain_tx_id: mr.blockchain_tx_id,
+      anchored: Boolean(mr.hash && mr.blockchain_tx_id),
+      consultations: consultation ? [consultation] : [],
+      diagnostics: diagnostic ? [diagnostic] : [],
+      medical_certificates: certificate ? [certificate] : [],
+      files: files || [],
     };
   } catch {
     return null;
   }
+}
+
+export async function verifyMedicalRecord(publicId) {
+  return medicalRecordsApi.verify(publicId);
+}
+
+export async function getAuditTimeline(doctorId, patientId) {
+  const records = doctorId
+    ? await getMedicalRecordsByDoctor(doctorId)
+    : await getMedicalRecordsByPatient(patientId);
+
+  const events = [];
+  for (const group of records || []) {
+    for (const c of group.consultations || []) {
+      events.push({
+        id: `c-${c.id}`,
+        kind: 'consultation',
+        label: 'Consulta',
+        date: c.created_date,
+        patient_id: group.patient_id,
+        doctor_id: group.doctor_id,
+        public_id: c.public_id || c.medical_record?.public_id,
+        hash: c.hash,
+        blockchain_tx_id: c.blockchain_tx_id,
+        summary: c.chief_complaint || c.diagnosis || 'Consulta',
+      });
+    }
+    for (const d of group.diagnostics || []) {
+      events.push({
+        id: `d-${d.id}`,
+        kind: 'diagnostic',
+        label: 'Diagnóstico',
+        date: d.issue_date || d.created_date,
+        patient_id: group.patient_id,
+        doctor_id: group.doctor_id,
+        public_id: d.public_id || d.medical_record?.public_id,
+        hash: d.hash,
+        blockchain_tx_id: d.blockchain_tx_id,
+        summary: d.description || 'Diagnóstico',
+      });
+    }
+    for (const cert of group.medical_certificates || []) {
+      events.push({
+        id: `cert-${cert.id}`,
+        kind: 'certificate',
+        label: 'Atestado',
+        date: cert.created_date,
+        patient_id: group.patient_id,
+        doctor_id: group.doctor_id,
+        public_id: cert.public_id || cert.medical_record?.public_id,
+        hash: cert.hash,
+        blockchain_tx_id: cert.blockchain_tx_id,
+        summary: cert.purpose || 'Atestado',
+      });
+    }
+    for (const f of group.files || []) {
+      events.push({
+        id: `f-${f.id}`,
+        kind: 'file',
+        label: 'Arquivo',
+        date: f.created_date,
+        patient_id: group.patient_id,
+        doctor_id: group.doctor_id,
+        public_id: null,
+        hash: f.hash,
+        blockchain_tx_id: null,
+        summary: f.description || f.format || 'Arquivo',
+        verifyDisabled: true,
+      });
+    }
+  }
+
+  return events.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 }
 
 export async function addMedicalRecord(doctorId, patientId, type = 'consultation', data = {}) {
@@ -223,8 +376,7 @@ export async function addConsultation(doctorId, patientId, data) {
         : undefined,
     },
   };
-  const res = await medicalRecordsApi.create(payload);
-  return res;
+  return medicalRecordsApi.create(payload);
 }
 
 export async function addDiagnostic(doctorId, patientId, data) {
@@ -261,6 +413,5 @@ export async function addFile(patientUid, file, description) {
   formData.append('patient_uid', patientUid);
   formData.append('file', file);
   if (description) formData.append('description', description);
-  const { filesApi } = await import('./api');
   return filesApi.upload(formData);
 }

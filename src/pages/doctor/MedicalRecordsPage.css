@@ -716,6 +716,11 @@ body.theme-dark .record-card::before {
   color: var(--color-success);
 }
 
+.record-badge--integrity {
+  background: rgba(15, 118, 110, 0.12);
+  color: #0f766e;
+}
+
 body.theme-dark .record-badge--consult {
   background: rgba(13, 115, 119, 0.25);
 }
@@ -726,6 +731,11 @@ body.theme-dark .record-badge--diagnostic {
 
 body.theme-dark .record-badge--cert {
   background: rgba(0, 184, 148, 0.2);
+}
+
+body.theme-dark .record-badge--integrity {
+  background: rgba(94, 234, 212, 0.15);
+  color: #5eead4;
 }
 
 .record-card-arrow {

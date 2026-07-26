@@ -13,6 +13,7 @@ import { SobrePage } from './pages/doctor/SobrePage';
 import { SettingsPage } from './pages/doctor/SettingsPage';
 import { PatientProfile } from './pages/patient/PatientProfile';
 import { PatientMedicalRecords } from './pages/patient/PatientMedicalRecords';
+import { AuditPage } from './pages/shared/AuditPage';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="patients/:id" element={<PatientDetailPage />} />
             <Route path="medical-records" element={<MedicalRecordsPage />} />
             <Route path="medical-records/:id" element={<MedicalRecordDetailPage />} />
+            <Route path="auditoria" element={<AuditPage />} />
             <Route path="sobre" element={<SobrePage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
@@ -49,6 +51,7 @@ function App() {
           >
             <Route index element={<PatientProfile />} />
             <Route path="medical-records" element={<PatientMedicalRecords />} />
+            <Route path="auditoria" element={<AuditPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

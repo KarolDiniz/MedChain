@@ -11,6 +11,7 @@ import {
   Sun,
   Info,
   Settings,
+  Shield,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../common/Button';
@@ -21,6 +22,7 @@ const doctorNavItems = [
   { to: '/doctor', label: 'Dashboard', Icon: LayoutDashboard },
   { to: '/doctor/patients', label: 'Pacientes', Icon: Users },
   { to: '/doctor/medical-records', label: 'Prontuários', Icon: FolderOpen },
+  { to: '/doctor/auditoria', label: 'Auditoria', Icon: Shield },
   { to: '/doctor/sobre', label: 'Sobre', Icon: Info },
   { to: '/doctor/settings', label: 'Configurações', Icon: Settings },
 ];
@@ -28,6 +30,7 @@ const doctorNavItems = [
 const patientNavItems = [
   { to: '/patient', label: 'Meu Perfil', Icon: User },
   { to: '/patient/medical-records', label: 'Meus Prontuários', Icon: ClipboardList },
+  { to: '/patient/auditoria', label: 'Auditoria', Icon: Shield },
 ];
 
 export function Sidebar() {

@@ -1,9 +1,9 @@
-import { Stethoscope, Shield, Database, FileText, ChevronLeft } from 'lucide-react';
+import { Stethoscope, Shield, Database, FileText, ChevronLeft, Link2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/common/Card';
 import './SobrePage.css';
 
-const SYSTEM_VERSION = '1.0.0';
+const SYSTEM_VERSION = '1.1.0';
 
 export function SobrePage() {
   return (
@@ -25,8 +25,9 @@ export function SobrePage() {
               <h2>MedChain</h2>
               <p className="sobre-version">Versão {SYSTEM_VERSION}</p>
               <p className="sobre-desc">
-                Sistema de prontuários médicos eletrônicos com integridade garantida por tecnologia blockchain.
-                Desenvolvido para garantir segurança, rastreabilidade e conformidade com a legislação de saúde.
+                Prontuário eletrônico com prova de integridade: o conteúdo clínico fica no banco de dados;
+                um hash SHA-256 é ancorado na blockchain Solana (devnet) via Memo Program.
+                Qualquer alteração no registro quebra a verificação.
               </p>
             </div>
           </div>
@@ -36,27 +37,34 @@ export function SobrePage() {
           <Card className="sobre-feature-card">
             <FileText size={24} className="sobre-feature-icon" />
             <h3>Prontuários</h3>
-            <p>Gestão completa de prontuários, consultas, diagnósticos, atestados e receitas médicas.</p>
+            <p>Consultas, diagnósticos, atestados e arquivos vinculados ao paciente — modelo append-only (sem edição/exclusão clínica).</p>
           </Card>
           <Card className="sobre-feature-card">
             <Database size={24} className="sobre-feature-icon" />
-            <h3>Blockchain</h3>
-            <p>Registro imutável e auditável de todos os documentos com hashes criptográficos.</p>
+            <h3>Off-chain + on-chain</h3>
+            <p>Dados sensíveis permanecem off-chain (PostgreSQL/arquivos cifrados). Na Solana fica apenas o hash + ID, não o prontuário completo.</p>
           </Card>
           <Card className="sobre-feature-card">
             <Shield size={24} className="sobre-feature-icon" />
-            <h3>Segurança</h3>
-            <p>Dados sensíveis protegidos com criptografia e controle de acesso por perfil.</p>
+            <h3>Verificação</h3>
+            <p>Use Auditoria ou o botão “Verificar integridade” para recomputar o hash e comparar com a transação no Explorer.</p>
           </Card>
         </div>
 
         <Card className="sobre-tech-card">
-          <h3>Tecnologia</h3>
-          <p>React, Vite, React Router, FastAPI, PostgreSQL, Solana</p>
+          <h3>Arquitetura em uma frase</h3>
+          <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <Link2 size={16} />
+            Conteúdo clínico → SHA-256 → Memo Solana → prova pública de integridade
+          </p>
+          <p>Stack: React, Vite, FastAPI, PostgreSQL, Redis, Solana Devnet</p>
         </Card>
       </div>
 
       <div className="sobre-actions">
+        <Link to="/doctor/auditoria" className="sobre-back-link">
+          Ir para Auditoria
+        </Link>
         <Link to="/doctor" className="sobre-back-link">
           <ChevronLeft size={20} />
           Voltar ao Dashboard

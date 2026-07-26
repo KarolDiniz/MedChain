@@ -23,7 +23,8 @@ import {
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Avatar } from '../../components/common/Avatar';
-import { getHashTypePrefix } from '../../utils/hashUtils';
+import { IntegrityBadge } from '../../components/common/IntegrityBadge';
+import { FileAttachment } from '../../components/common/FileAttachment';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
 import { CertificateModal } from '../../components/doctor/CertificateModal';
@@ -38,8 +39,6 @@ const SORT_OPTIONS = [
   { value: SORT_RECENT, label: 'Mais recentes' },
   { value: SORT_OLDEST, label: 'Mais antigos' },
 ];
-
-const prefixToLabel = { con: 'Consulta', dia: 'Diagnóstico', cert: 'Atestado', file: 'Arquivo' };
 
 export function PatientDetailPage() {
   const { id } = useParams();
@@ -120,18 +119,6 @@ export function PatientDetailPage() {
     const list = record?.files || [];
     return sortOrder === SORT_OLDEST ? [...list] : [...list].reverse();
   }, [record?.files, sortOrder]);
-
-  const HashBadge = ({ hash, title }) => {
-    if (!hash) return null;
-    const prefix = getHashTypePrefix(hash);
-    const label = prefixToLabel[prefix] || title || 'Hash';
-    return (
-      <div className="item-hash-badge" title={`Hash de auditoria — ${label}`}>
-        <span className="hash-type-prefix" data-type={prefix}>{prefix || '—'}</span>
-        <code className="item-hash-value">{hash}</code>
-      </div>
-    );
-  };
 
   const SortControl = () => (
     <div className="sort-dropdown-wrap">
@@ -392,7 +379,7 @@ export function PatientDetailPage() {
                         {new Date(c.created_date).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
-                    {c.hash && <HashBadge hash={c.hash} title="Consulta" />}
+                    <IntegrityBadge item={c} label="Consulta" />
                     <div className="consultation-body">
                       <div><strong>Queixa principal:</strong> {c.chief_complaint || '-'}</div>
                       <div><strong>História:</strong> {c.history_of_present_illness || '-'}</div>
@@ -447,7 +434,7 @@ export function PatientDetailPage() {
                     <span className="diagnostic-date">
                       {new Date(d.issue_date || d.created_date).toLocaleDateString('pt-BR')}
                     </span>
-                    {d.hash && <HashBadge hash={d.hash} title="Diagnóstico" />}
+                    <IntegrityBadge item={d} label="Diagnóstico" />
                     <div><strong>Descrição:</strong> {d.description || '-'}</div>
                     <div><strong>Resultado:</strong> {d.result || '-'}</div>
                   </Card>
@@ -488,7 +475,7 @@ export function PatientDetailPage() {
                     <span className="cert-date">
                       {new Date(cert.created_date).toLocaleDateString('pt-BR')}
                     </span>
-                    {cert.hash && <HashBadge hash={cert.hash} title="Atestado" />}
+                    <IntegrityBadge item={cert} label="Atestado" />
                     <div><strong>Finalidade:</strong> {cert.purpose || '-'}</div>
                     <div><strong>Dias de afastamento:</strong> {cert.period_of_leave ?? '-'}</div>
                   </Card>
@@ -525,14 +512,9 @@ export function PatientDetailPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.3) }}
                   >
-                  <Card className="file-card">
-                    {f.created_date && (
-                      <span className="file-date">{new Date(f.created_date).toLocaleDateString('pt-BR')}</span>
-                    )}
-                    <span className="file-format">{f.format || 'Arquivo'}</span>
-                    <div className="file-desc">{f.description || '-'}</div>
-                    {f.hash && <HashBadge hash={f.hash} title="Arquivo" />}
-                  </Card>
+                    <Card className="file-card">
+                      <FileAttachment file={f} />
+                    </Card>
                   </motion.div>
                 ))}
               </div>

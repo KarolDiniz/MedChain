@@ -447,7 +447,7 @@ export function LoginPage() {
             </button>
 
             <p className="login-register-trust">
-              Seus dados são criptografados e protegidos por blockchain.
+              Seus dados clínicos ficam protegidos no servidor; a integridade é comprovada por hash na blockchain.
             </p>
           </form>
 

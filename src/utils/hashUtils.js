@@ -1,7 +1,6 @@
 /**
- * Utilitário de hashes por tipo de prontuário.
- * Cada tipo (consulta, diagnóstico, prescrição, atestado, arquivo, prontuário)
- * gera um hash com prefixo distinto para auditoria e rastreabilidade.
+ * Utilitário legado usado apenas por mockData.
+ * O hash real de auditoria é SHA-256 gerado no backend e ancorado na Solana.
  */
 
 export const HASH_TYPES = {

@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
-import { ClipboardList, ChevronDown, ChevronUp, Link2 } from 'lucide-react';
+import { ClipboardList, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getMedicalRecordsByPatient, getDoctorById } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
+import { IntegrityBadge } from '../../components/common/IntegrityBadge';
+import { FileAttachment } from '../../components/common/FileAttachment';
 import './PatientMedicalRecords.css';
 
 function DoctorName({ doctorId }) {
   const [name, setName] = useState('-');
   useEffect(() => {
     if (!doctorId) return;
-    getDoctorById(doctorId).then((d) => setName(d?.full_name || '-'));
+    getDoctorById(doctorId).then((d) => setName(d?.full_name || d?.user?.full_name || '-'));
   }, [doctorId]);
   return <>{name}</>;
 }
@@ -57,7 +59,9 @@ export function PatientMedicalRecords() {
     <div className="patient-records">
       <header className="page-header">
         <h1>Meus Prontuários</h1>
-        <p>Visualize seus registros médicos. Dados protegidos por blockchain.</p>
+        <p>
+          Visualize seus registros e verifique a integridade (hash SHA-256 ancorado na Solana).
+        </p>
       </header>
 
       {records.length === 0 ? (
@@ -95,7 +99,13 @@ export function PatientMedicalRecords() {
                 </button>
                 {isExpanded && (
                   <div className="record-accordion-body">
-                    <p className="record-doctor">Médico: <DoctorName doctorId={mr.doctor_id} /></p>
+                    <p className="record-doctor">
+                      Médico:{' '}
+                      {mr.consultations?.[0]?.medical_record?.doctor?.user?.full_name
+                        || mr.diagnostics?.[0]?.medical_record?.doctor?.user?.full_name
+                        || mr.medical_certificates?.[0]?.medical_record?.doctor?.user?.full_name
+                        || <DoctorName doctorId={mr.doctor_id} />}
+                    </p>
 
                     {mr.consultations?.length > 0 && (
                       <section className="record-section">
@@ -108,18 +118,17 @@ export function PatientMedicalRecords() {
                             <div><strong>Queixa:</strong> {c.chief_complaint}</div>
                             <div><strong>Diagnóstico:</strong> {c.diagnosis}</div>
                             <div><strong>Tratamento:</strong> {c.treatment_plan}</div>
-                            {c.prescriptions?.length > 0 && (
+                            {(c.prescription?.items?.length > 0 || c.prescriptions?.[0]?.items?.length > 0) && (
                               <div className="prescriptions-list">
                                 <strong>Prescrições:</strong>
-                                {c.prescriptions.flatMap((p) =>
-                                  (p.items || []).map((item, i) => (
-                                    <div key={i}>
-                                      {item.medication_name} - {item.dosage} {item.frequency} ({item.treatment_duration})
-                                    </div>
-                                  ))
-                                )}
+                                {(c.prescription?.items || c.prescriptions?.flatMap((p) => p.items || []) || []).map((item, i) => (
+                                  <div key={i}>
+                                    {item.medication_name} - {item.dosage} {item.frequency} ({item.treatment_duration})
+                                  </div>
+                                ))}
                               </div>
                             )}
+                            <IntegrityBadge item={c} label="Consulta" />
                           </div>
                         ))}
                       </section>
@@ -131,10 +140,11 @@ export function PatientMedicalRecords() {
                         {mr.diagnostics.map((d) => (
                           <div key={d.id} className="record-block">
                             <span className="record-date">
-                              {new Date(d.issue_date).toLocaleDateString('pt-BR')}
+                              {new Date(d.issue_date || d.created_date).toLocaleDateString('pt-BR')}
                             </span>
                             <div><strong>{d.description}</strong></div>
                             <div>Resultado: {d.result}</div>
+                            <IntegrityBadge item={d} label="Diagnóstico" />
                           </div>
                         ))}
                       </section>
@@ -149,6 +159,7 @@ export function PatientMedicalRecords() {
                               {new Date(cert.created_date).toLocaleDateString('pt-BR')}
                             </span>
                             <div>{cert.purpose} - {cert.period_of_leave} dia(s)</div>
+                            <IntegrityBadge item={cert} label="Atestado" />
                           </div>
                         ))}
                       </section>
@@ -157,24 +168,15 @@ export function PatientMedicalRecords() {
                     {mr.files?.length > 0 && (
                       <section className="record-section">
                         <h4>Arquivos</h4>
-                        {mr.files.map((f) => (
-                          <div key={f.id} className="record-block file-block">
-                            {f.created_date && (
-                              <span className="record-date">{new Date(f.created_date).toLocaleDateString('pt-BR')}</span>
-                            )}
-                            <span className="file-format">{f.format}</span> — {f.description}
-                          </div>
-                        ))}
+                        <div className="patient-files-grid">
+                          {mr.files.map((f) => (
+                            <div key={f.id} className="record-block file-block">
+                              <FileAttachment file={f} />
+                            </div>
+                          ))}
+                        </div>
                       </section>
                     )}
-
-                    <div className="record-blockchain">
-                      <span className="record-blockchain-label">
-                        <Link2 size={16} strokeWidth={2} />
-                        Auditoria
-                      </span>
-                      <p className="record-blockchain-note">Cada item (consulta, diagnóstico, atestado, arquivo) possui hash próprio para verificação de integridade.</p>
-                    </div>
                   </div>
                 )}
               </Card>

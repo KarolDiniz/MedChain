@@ -365,6 +365,12 @@ export function MedicalRecordsPage() {
                               {certificatesCount}
                             </span>
                           )}
+                          <span className="record-badge record-badge--integrity">
+                            {(mr.consultations || []).filter((c) => c.hash && c.blockchain_tx_id).length
+                              + (mr.diagnostics || []).filter((d) => d.hash && d.blockchain_tx_id).length
+                              + (mr.medical_certificates || []).filter((c) => c.hash && c.blockchain_tx_id).length}{' '}
+                            ancorados
+                          </span>
                         </div>
                       </div>
                       <span className="record-card-arrow">

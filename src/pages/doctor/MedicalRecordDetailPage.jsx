@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Filter } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -7,12 +7,11 @@ import {
   getPatientById,
   getDoctorById,
   getMedicalRecordsByDoctor,
-  addDiagnostic,
-  addMedicalCertificate,
 } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
-import { getHashTypePrefix } from '../../utils/hashUtils';
+import { IntegrityBadge } from '../../components/common/IntegrityBadge';
+import { FileAttachment } from '../../components/common/FileAttachment';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
 import { CertificateModal } from '../../components/doctor/CertificateModal';
@@ -48,21 +47,17 @@ export function MedicalRecordDetailPage() {
   const sortDropdownRef = useRef(null);
 
   const doctorId = user?.id || user?.public_id;
+  const isAuthorized = record && String(record.doctor_id) === String(doctorId);
 
   const loadData = async () => {
     if (!id) return;
     setLoading(true);
     try {
       const initial = await getMedicalRecordById(id);
-      if (!initial) {
+      if (!initial || String(initial.doctor_id) !== String(doctorId)) {
         setRecord(null);
-        setLoading(false);
-        return;
-      }
-      const isAuthorized = String(initial.doctor_id) === String(doctorId);
-      if (!isAuthorized) {
-        setRecord(null);
-        setLoading(false);
+        setPatient(null);
+        setDoctor(null);
         return;
       }
       const [recordsForDoctor, p, d] = await Promise.all([
@@ -85,42 +80,8 @@ export function MedicalRecordDetailPage() {
 
   useEffect(() => {
     loadData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, doctorId]);
-
-  const handleSaved = () => {
-    setShowConsultationModal(false);
-    setShowDiagnosticModal(false);
-    setShowCertificateModal(false);
-    setShowFileModal(false);
-    loadData();
-  };
-
-  if (loading) {
-    return (
-      <div className="record-detail-page">
-        <p>Carregando...</p>
-        <Link to="/doctor/medical-records">← Voltar</Link>
-      </div>
-    );
-  }
-
-  if (!record || String(record.doctor_id) !== String(doctorId)) {
-    return (
-      <div>
-        <p>Prontuário não encontrado.</p>
-        <Link to="/doctor/medical-records">← Voltar</Link>
-      </div>
-    );
-  }
-
-  const tabs = [
-    { id: 'consultations', label: 'Consultas', count: record.consultations?.length || 0 },
-    { id: 'diagnostics', label: 'Diagnósticos', count: record.diagnostics?.length || 0 },
-    { id: 'certificates', label: 'Atestados', count: record.medical_certificates?.length || 0 },
-    { id: 'files', label: 'Arquivos', count: record.files?.length || 0 },
-  ];
-
-  const prefixToLabel = { con: 'Consulta', dia: 'Diagnóstico', cert: 'Atestado', file: 'Arquivo' };
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -132,8 +93,23 @@ export function MedicalRecordDetailPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleSaved = () => {
+    setShowConsultationModal(false);
+    setShowDiagnosticModal(false);
+    setShowCertificateModal(false);
+    setShowFileModal(false);
+    loadData();
+  };
+
+  const tabs = useMemo(() => ([
+    { id: 'consultations', label: 'Consultas', count: record?.consultations?.length || 0 },
+    { id: 'diagnostics', label: 'Diagnósticos', count: record?.diagnostics?.length || 0 },
+    { id: 'certificates', label: 'Atestados', count: record?.medical_certificates?.length || 0 },
+    { id: 'files', label: 'Arquivos', count: record?.files?.length || 0 },
+  ]), [record]);
+
   const sortedConsultations = useMemo(() => {
-    const list = record.consultations || [];
+    const list = record?.consultations || [];
     return [...list].sort((a, b) => {
       if (sortOrder === SORT_RECENT || sortOrder === SORT_OLDEST) {
         const da = new Date(a.created_date).getTime();
@@ -144,10 +120,10 @@ export function MedicalRecordDetailPage() {
       const sb = (b.chief_complaint || b.diagnosis || '').toLowerCase();
       return sortOrder === SORT_ALPHA_ASC ? sa.localeCompare(sb) : sb.localeCompare(sa);
     });
-  }, [record.consultations, sortOrder]);
+  }, [record?.consultations, sortOrder]);
 
   const sortedDiagnostics = useMemo(() => {
-    const list = record.diagnostics || [];
+    const list = record?.diagnostics || [];
     return [...list].sort((a, b) => {
       if (sortOrder === SORT_RECENT || sortOrder === SORT_OLDEST) {
         const da = new Date(a.issue_date || a.created_date).getTime();
@@ -158,10 +134,10 @@ export function MedicalRecordDetailPage() {
       const sb = (b.description || '').toLowerCase();
       return sortOrder === SORT_ALPHA_ASC ? sa.localeCompare(sb) : sb.localeCompare(sa);
     });
-  }, [record.diagnostics, sortOrder]);
+  }, [record?.diagnostics, sortOrder]);
 
   const sortedCertificates = useMemo(() => {
-    const list = record.medical_certificates || [];
+    const list = record?.medical_certificates || [];
     return [...list].sort((a, b) => {
       if (sortOrder === SORT_RECENT || sortOrder === SORT_OLDEST) {
         const da = new Date(a.created_date).getTime();
@@ -172,10 +148,10 @@ export function MedicalRecordDetailPage() {
       const sb = (b.purpose || '').toLowerCase();
       return sortOrder === SORT_ALPHA_ASC ? sa.localeCompare(sb) : sb.localeCompare(sa);
     });
-  }, [record.medical_certificates, sortOrder]);
+  }, [record?.medical_certificates, sortOrder]);
 
   const sortedFiles = useMemo(() => {
-    const list = record.files || [];
+    const list = record?.files || [];
     if (sortOrder === SORT_ALPHA_ASC || sortOrder === SORT_ALPHA_DESC) {
       return [...list].sort((a, b) => {
         const sa = (a.description || '').toLowerCase();
@@ -184,61 +160,34 @@ export function MedicalRecordDetailPage() {
       });
     }
     return sortOrder === SORT_OLDEST ? [...list] : [...list].reverse();
-  }, [record.files, sortOrder]);
+  }, [record?.files, sortOrder]);
 
-  const SortOrderControl = () => (
-    <div className="sort-dropdown-wrap" ref={sortDropdownRef}>
-      <button
-        type="button"
-        className={`sort-trigger-btn ${sortDropdownOpen ? 'sort-trigger-btn--open' : ''}`}
-        onClick={() => setSortDropdownOpen((v) => !v)}
-        aria-expanded={sortDropdownOpen}
-        aria-haspopup="listbox"
-        aria-label="Abrir ordenação"
-      >
-        <Filter size={18} />
-      </button>
-      {sortDropdownOpen && (
-        <ul className="sort-dropdown-list" role="listbox">
-          {SORT_OPTIONS.map((opt) => (
-            <li key={opt.value} role="option" aria-selected={sortOrder === opt.value}>
-              <button
-                type="button"
-                className={`sort-dropdown-item ${sortOrder === opt.value ? 'sort-dropdown-item--active' : ''}`}
-                onClick={() => {
-                  setSortOrder(opt.value);
-                  setSortDropdownOpen(false);
-                }}
-              >
-                {opt.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-
-  const HashBadge = ({ hash, title }) => {
-    if (!hash) return null;
-    const prefix = getHashTypePrefix(hash);
-    const label = prefixToLabel[prefix] || title || 'Hash';
+  if (loading) {
     return (
-      <div className="item-hash-badge" title={`Hash de auditoria — ${label}`}>
-        <span className="hash-type-prefix" data-type={prefix}>{prefix || '—'}</span>
-        <code className="item-hash-value">{hash}</code>
+      <div className="record-detail-page">
+        <p>Carregando...</p>
+        <Link to="/doctor/medical-records">← Voltar</Link>
       </div>
     );
-  };
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div>
+        <p>Prontuário não encontrado.</p>
+        <Link to="/doctor/medical-records">← Voltar</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="record-detail-page">
       <header className="page-header">
-        <Link to="/doctor/medical-records" className="back-link">← Voltar aos prontuários</Link>
+        <Link to={`/doctor/patients/${record.patient_id}`} className="back-link">← Voltar ao paciente</Link>
         <div className="record-detail-header">
           <div className="record-detail-header-center">
             <h1>Prontuário — {patient?.full_name}</h1>
-            <p>Paciente: {patient?.full_name} | Médico: {doctor?.full_name}</p>
+            <p>Paciente: {patient?.full_name} | Médico: {doctor?.full_name || doctor?.user?.full_name || '—'}</p>
           </div>
         </div>
       </header>
@@ -262,11 +211,40 @@ export function MedicalRecordDetailPage() {
             <div className="section-header section-header--with-sort">
               <h2>Consultas</h2>
               <div className="section-actions">
-                {sortedConsultations.length > 0 && <SortOrderControl />}
+                {sortedConsultations.length > 0 && (
+                  <div className="sort-dropdown-wrap" ref={sortDropdownRef}>
+                    <button
+                      type="button"
+                      className={`sort-trigger-btn ${sortDropdownOpen ? 'sort-trigger-btn--open' : ''}`}
+                      onClick={() => setSortDropdownOpen((v) => !v)}
+                      aria-expanded={sortDropdownOpen}
+                    >
+                      <Filter size={18} />
+                    </button>
+                    {sortDropdownOpen && (
+                      <ul className="sort-dropdown-list" role="listbox">
+                        {SORT_OPTIONS.map((opt) => (
+                          <li key={opt.value} role="option" aria-selected={sortOrder === opt.value}>
+                            <button
+                              type="button"
+                              className={`sort-dropdown-item ${sortOrder === opt.value ? 'sort-dropdown-item--active' : ''}`}
+                              onClick={() => {
+                                setSortOrder(opt.value);
+                                setSortDropdownOpen(false);
+                              }}
+                            >
+                              {opt.label}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
                 <Button onClick={() => setShowConsultationModal(true)}>+ Nova Consulta</Button>
               </div>
             </div>
-            {(!record.consultations || record.consultations.length === 0) ? (
+            {sortedConsultations.length === 0 ? (
               <Card>
                 <div className="empty-state small">
                   <p>Nenhuma consulta registrada.</p>
@@ -282,23 +260,19 @@ export function MedicalRecordDetailPage() {
                         {new Date(c.created_date).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
-                    {c.hash && <HashBadge hash={c.hash} title="Consulta" />}
+                    <IntegrityBadge item={c} label="Consulta" />
                     <div className="consultation-body">
                       <div><strong>Queixa principal:</strong> {c.chief_complaint}</div>
                       <div><strong>História:</strong> {c.history_of_present_illness}</div>
                       <div><strong>Diagnóstico:</strong> {c.diagnosis}</div>
                       <div><strong>Plano de tratamento:</strong> {c.treatment_plan}</div>
                     </div>
-                    {c.prescriptions && c.prescriptions.length > 0 && (
+                    {(c.prescription?.items?.length > 0 || c.prescriptions?.[0]?.items?.length > 0) && (
                       <div className="prescriptions-mini">
                         <strong>Prescrições:</strong>
-                        {c.prescriptions.map((p) => (
-                          <div key={p.id} className="prescription-mini">
-                            {p.items?.map((item, i) => (
-                              <div key={i}>
-                                {item.medication_name} - {item.dosage} {item.frequency}
-                              </div>
-                            ))}
+                        {(c.prescription?.items || c.prescriptions?.[0]?.items || []).map((item, i) => (
+                          <div key={i} className="prescription-mini">
+                            {item.medication_name} - {item.dosage} {item.frequency}
                           </div>
                         ))}
                       </div>
@@ -315,15 +289,13 @@ export function MedicalRecordDetailPage() {
             <div className="section-header section-header--with-sort">
               <h2>Diagnósticos</h2>
               <div className="section-actions">
-                {sortedDiagnostics.length > 0 && <SortOrderControl />}
                 <Button onClick={() => setShowDiagnosticModal(true)}>+ Novo Diagnóstico</Button>
               </div>
             </div>
-            {(!record.diagnostics || record.diagnostics.length === 0) ? (
+            {sortedDiagnostics.length === 0 ? (
               <Card>
                 <div className="empty-state small">
                   <p>Nenhum diagnóstico registrado.</p>
-                  <Button onClick={() => setShowDiagnosticModal(true)}>Registrar diagnóstico</Button>
                 </div>
               </Card>
             ) : (
@@ -331,9 +303,9 @@ export function MedicalRecordDetailPage() {
                 {sortedDiagnostics.map((d) => (
                   <Card key={d.id} className="diagnostic-card">
                     <span className="diagnostic-date">
-                      {new Date(d.issue_date).toLocaleDateString('pt-BR')}
+                      {new Date(d.issue_date || d.created_date).toLocaleDateString('pt-BR')}
                     </span>
-                    {d.hash && <HashBadge hash={d.hash} title="Diagnóstico" />}
+                    <IntegrityBadge item={d} label="Diagnóstico" />
                     <div><strong>Descrição:</strong> {d.description}</div>
                     <div><strong>Resultado:</strong> {d.result}</div>
                   </Card>
@@ -348,15 +320,13 @@ export function MedicalRecordDetailPage() {
             <div className="section-header section-header--with-sort">
               <h2>Atestados</h2>
               <div className="section-actions">
-                {sortedCertificates.length > 0 && <SortOrderControl />}
                 <Button onClick={() => setShowCertificateModal(true)}>+ Novo Atestado</Button>
               </div>
             </div>
-            {(!record.medical_certificates || record.medical_certificates.length === 0) ? (
+            {sortedCertificates.length === 0 ? (
               <Card>
                 <div className="empty-state small">
                   <p>Nenhum atestado emitido.</p>
-                  <Button onClick={() => setShowCertificateModal(true)}>Emitir atestado</Button>
                 </div>
               </Card>
             ) : (
@@ -366,7 +336,7 @@ export function MedicalRecordDetailPage() {
                     <span className="cert-date">
                       {new Date(cert.created_date).toLocaleDateString('pt-BR')}
                     </span>
-                    {cert.hash && <HashBadge hash={cert.hash} title="Atestado" />}
+                    <IntegrityBadge item={cert} label="Atestado" />
                     <div><strong>Finalidade:</strong> {cert.purpose}</div>
                     <div><strong>Dias de afastamento:</strong> {cert.period_of_leave}</div>
                   </Card>
@@ -381,27 +351,20 @@ export function MedicalRecordDetailPage() {
             <div className="section-header section-header--with-sort">
               <h2>Arquivos</h2>
               <div className="section-actions">
-                {sortedFiles?.length > 0 && <SortOrderControl />}
                 <Button onClick={() => setShowFileModal(true)}>+ Novo Arquivo</Button>
               </div>
             </div>
-            {(!record.files || record.files.length === 0) ? (
+            {sortedFiles.length === 0 ? (
               <Card>
                 <div className="empty-state small">
                   <p>Nenhum arquivo anexado.</p>
-                  <Button onClick={() => setShowFileModal(true)}>Anexar arquivo</Button>
                 </div>
               </Card>
             ) : (
               <div className="items-list files-grid">
                 {sortedFiles.map((f) => (
                   <Card key={f.id} className="file-card">
-                    {f.created_date && (
-                      <span className="file-date">{new Date(f.created_date).toLocaleDateString('pt-BR')}</span>
-                    )}
-                    <span className="file-format">{f.format}</span>
-                    <div className="file-desc">{f.description}</div>
-                    {f.hash && <HashBadge hash={f.hash} title="Arquivo" />}
+                    <FileAttachment file={f} />
                   </Card>
                 ))}
               </div>

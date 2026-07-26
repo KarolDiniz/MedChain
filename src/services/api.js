@@ -1,20 +1,86 @@
+import { translateApiMessage } from '../utils/blockchain';
+
 // Em desenvolvimento usa o proxy do Vite (/api/v1) para evitar CORS e "Failed to fetch"
 const API_URL = import.meta.env.DEV ? '/api/v1' : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1');
 
-function getToken() {
-  const user = localStorage.getItem('medchain_user');
-  if (user) {
-    try {
-      const parsed = JSON.parse(user);
-      return parsed.access_token;
-    } catch {
-      return null;
-    }
+function getStoredUser() {
+  const raw = localStorage.getItem('medchain_user');
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
   }
-  return null;
 }
 
-async function request(endpoint, options = {}) {
+function getToken() {
+  return getStoredUser()?.access_token || null;
+}
+
+function getRefreshToken() {
+  return getStoredUser()?.refresh_token || null;
+}
+
+function persistTokens(accessToken, refreshToken) {
+  const user = getStoredUser();
+  if (!user) return;
+  const next = {
+    ...user,
+    access_token: accessToken || user.access_token,
+    refresh_token: refreshToken || user.refresh_token,
+  };
+  localStorage.setItem('medchain_user', JSON.stringify(next));
+  window.dispatchEvent(new CustomEvent('medchain:user-updated', { detail: next }));
+}
+
+function clearSession() {
+  localStorage.removeItem('medchain_user');
+  window.dispatchEvent(new CustomEvent('medchain:logout'));
+}
+
+async function tryRefreshToken() {
+  const refresh = getRefreshToken();
+  if (!refresh) return false;
+  try {
+    const res = await fetch(`${API_URL}/auth/refresh-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${refresh}`,
+      },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.access_token) return false;
+    persistTokens(data.access_token, data.refresh_token);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function formatApiError(data) {
+  const detail = data.detail ?? data.message;
+  if (!detail) return 'Erro na requisição';
+  if (typeof detail === 'string') return translateApiMessage(detail);
+  if (Array.isArray(detail)) {
+    return detail
+      .map((d) => {
+        if (typeof d === 'object' && d?.msg) {
+          const field = Array.isArray(d.loc) ? d.loc.filter((x) => x !== 'body').join('.') : '';
+          const msg = translateApiMessage(d.msg);
+          return field ? `${field}: ${msg}` : msg;
+        }
+        return String(d);
+      })
+      .filter(Boolean)
+      .join('. ') || 'Dados inválidos. Verifique os campos e tente novamente.';
+  }
+  return typeof detail === 'object' && detail?.msg
+    ? translateApiMessage(detail.msg)
+    : JSON.stringify(detail);
+}
+
+async function request(endpoint, options = {}, retry = true) {
   const url = `${API_URL}${endpoint}`;
   const token = getToken();
   const headers = {
@@ -23,6 +89,13 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
   const res = await fetch(url, { ...options, headers });
+
+  if (res.status === 401 && retry) {
+    const refreshed = await tryRefreshToken();
+    if (refreshed) return request(endpoint, options, false);
+    clearSession();
+  }
+
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     const message = formatApiError(data);
@@ -32,19 +105,6 @@ async function request(endpoint, options = {}) {
     throw err;
   }
   return data;
-}
-
-function formatApiError(data) {
-  const detail = data.detail ?? data.message;
-  if (!detail) return 'Erro na requisição';
-  if (typeof detail === 'string') return detail;
-  if (Array.isArray(detail)) {
-    return detail
-      .map((d) => (typeof d === 'object' && d?.msg ? `${d.loc?.join?.('.') || ''} ${d.msg}`.trim() : String(d)))
-      .filter(Boolean)
-      .join('. ') || 'Dados inválidos. Verifique os campos e tente novamente.';
-  }
-  return typeof detail === 'object' && detail?.msg ? detail.msg : JSON.stringify(detail);
 }
 
 export const api = {
@@ -105,9 +165,41 @@ export const medicalRecordsApi = {
   },
   get: (id) => api.get(`/medical-records/${id}/`),
   create: (data) => api.post('/medical-records/', data),
+  verify: (id) => api.post(`/medical-records/${id}/verify/`),
 };
 
 export const filesApi = {
+  listByPatient: (patientUid) => api.get(`/files/by-patient/${patientUid}/`),
+  get: (fileId) => api.get(`/files/${fileId}/`),
+
+  fetchContent: async (fileId) => {
+    const token = getToken();
+    const url = `${API_URL}/files/${fileId}/content/`;
+    const res = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (res.status === 401) {
+      clearSession();
+    }
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(formatApiError(data) || 'Falha ao carregar arquivo');
+    }
+    return res.blob();
+  },
+
+  download: async (fileId, filename) => {
+    const blob = await filesApi.fetchContent(fileId);
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = objectUrl;
+    a.download = filename || `arquivo-${fileId}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(objectUrl);
+  },
+
   upload: (formData) => {
     const token = getToken();
     const url = `${API_URL}/files/upload/`;
@@ -115,6 +207,10 @@ export const filesApi = {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
-    }).then((r) => (r.ok ? r.json() : Promise.reject(new Error('Upload falhou'))));
+    }).then(async (r) => {
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(formatApiError(data) || 'Upload falhou');
+      return data;
+    });
   },
 };

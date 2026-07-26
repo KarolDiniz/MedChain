@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Users, Search, X, Mail, Phone, Calendar, ChevronRight, ChevronLeft, Loader2, ArrowUpDown, RotateCcw, Type } from 'lucide-react';
+import { Users, Search, X, Mail, Phone, Calendar, ChevronRight, ChevronLeft, Loader2, ArrowUpDown, RotateCcw } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getPatientsByDoctor } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
@@ -60,20 +60,15 @@ export function PatientsPage() {
   const [sortBy, setSortBy] = useState('name-asc');
   const [letterFilter, setLetterFilter] = useState('');
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
-  const [letterFilterOpen, setLetterFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const sortDropdownRef = useRef(null);
-  const letterFilterRef = useRef(null);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     function handleClickOutside(e) {
       if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target)) {
         setSortDropdownOpen(false);
-      }
-      if (letterFilterRef.current && !letterFilterRef.current.contains(e.target)) {
-        setLetterFilterOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -217,11 +212,15 @@ export function PatientsPage() {
           transition={{ duration: 0.3 }}
         >
           <div className="patients-toolbar">
-            <div className="search-bar search-bar--disabled">
-              <Search size={20} className="search-icon" />
-              <input type="text" className="search-input" placeholder="Buscar..." disabled aria-hidden />
+            <div className="patients-toolbar-row">
+              <div className="search-bar search-bar--disabled">
+                <Search size={20} className="search-icon" />
+                <input type="text" className="search-input" placeholder="Buscar..." disabled aria-hidden />
+              </div>
+              <div className="patients-toolbar-actions">
+                <Button onClick={() => setShowModal(true)} className="patients-btn-new">+ Novo Paciente</Button>
+              </div>
             </div>
-            <Button onClick={() => setShowModal(true)}>+ Novo Paciente</Button>
           </div>
           <div className="patients-loading">
             <div className="patients-loading-spinner">
@@ -267,93 +266,82 @@ export function PatientsPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="patients-toolbar">
-            <div className="patients-toolbar-row">
-              <div className="search-bar">
-                <Search size={18} className="search-icon" />
-                <input
-                  type="text"
-                  className="search-input"
-                  placeholder="Buscar por nome, e-mail, telefone ou data..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  aria-label="Buscar pacientes"
-                />
-                {searchQuery && (
-                  <button type="button" className="search-clear" onClick={() => setSearchQuery('')} aria-label="Limpar busca">
-                    <X size={16} />
-                  </button>
-                )}
-                <span className="search-bar-count">
-                  {filteredPatients.length} de {patients.length}
-                </span>
-                {hasActiveFilters && (
-                  <button type="button" className="search-bar-clear-filters" onClick={clearAllFilters} title="Limpar filtros">
-                    <RotateCcw size={14} />
-                  </button>
-                )}
-              </div>
-              <div className="patients-toolbar-actions">
-                <div className="patients-sort-dropdown" ref={sortDropdownRef}>
-                  <button
-                    type="button"
-                    className={`patients-sort-trigger ${sortDropdownOpen ? 'patients-sort-trigger--open' : ''}`}
-                    onClick={() => setSortDropdownOpen((v) => !v)}
-                    aria-expanded={sortDropdownOpen}
-                    aria-label="Ordenar por"
-                  >
-                    <ArrowUpDown size={20} />
-                  </button>
-                  <AnimatePresence>
-                  {sortDropdownOpen && (
-                    <motion.ul
-                      className="patients-sort-dropdown-list"
-                      role="listbox"
-                      initial={reducedMotion ? false : { opacity: 0, y: -8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={reducedMotion ? undefined : { opacity: 0, y: -8, scale: 0.96 }}
-                      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                    >
-                      {SORT_OPTIONS.map((opt) => (
-                        <li key={opt.value} role="option">
-                          <button
-                            type="button"
-                            className={`patients-sort-dropdown-item ${sortBy === opt.value ? 'patients-sort-dropdown-item--active' : ''}`}
-                            onClick={() => {
-                              setSortBy(opt.value);
-                              setSortDropdownOpen(false);
-                            }}
-                          >
-                            {opt.label}
-                          </button>
-                        </li>
-                      ))}
-                    </motion.ul>
+          {/* Barra de filtros - SEMPRE acima dos cards, sticky */}
+          <div className="patients-filters-sticky">
+            <div className="patients-toolbar">
+              <div className="patients-toolbar-row">
+                <div className="search-bar">
+                  <Search size={18} className="search-icon" />
+                  <input
+                    type="text"
+                    className="search-input"
+                    placeholder="Buscar por nome, e-mail, telefone ou data..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-label="Buscar pacientes"
+                  />
+                  {searchQuery && (
+                    <button type="button" className="search-clear" onClick={() => setSearchQuery('')} aria-label="Limpar busca">
+                      <X size={16} />
+                    </button>
                   )}
-                  </AnimatePresence>
+                  <span className="search-bar-count">
+                    {filteredPatients.length} de {patients.length}
+                  </span>
+                  {hasActiveFilters && (
+                    <button type="button" className="search-bar-clear-filters" onClick={clearAllFilters} title="Limpar filtros">
+                      <RotateCcw size={14} />
+                    </button>
+                  )}
                 </div>
-                <div className="patients-letter-trigger-wrap" ref={letterFilterRef}>
-                  <button
-                    type="button"
-                    className={`patients-sort-trigger ${letterFilterOpen ? 'patients-sort-trigger--open' : ''} ${letterFilter ? 'patients-sort-trigger--active' : ''}`}
-                    onClick={() => setLetterFilterOpen((v) => !v)}
-                    aria-expanded={letterFilterOpen}
-                    aria-label="Filtro por inicial do nome"
-                    title="Inicial do nome"
-                  >
-                    <Type size={20} />
-                  </button>
-                  <AnimatePresence>
-                  {letterFilterOpen && (
-                    <motion.div
-                      className="patients-letter-filters patients-letter-filters--dropdown"
-                      initial={reducedMotion ? false : { opacity: 0, y: -8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={reducedMotion ? undefined : { opacity: 0, y: -8, scale: 0.96 }}
-                      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                <div className="patients-toolbar-actions">
+                  <div className="patients-sort-dropdown" ref={sortDropdownRef}>
+                    <button
+                      type="button"
+                      className={`patients-sort-trigger ${sortDropdownOpen ? 'patients-sort-trigger--open' : ''}`}
+                      onClick={() => setSortDropdownOpen((v) => !v)}
+                      aria-expanded={sortDropdownOpen}
+                      aria-label="Ordenar por"
                     >
-                      <span className="patients-letter-label">Inicial do nome:</span>
-                      <div className="patients-letter-strip">
+                      <ArrowUpDown size={20} />
+                    </button>
+                    <AnimatePresence>
+                    {sortDropdownOpen && (
+                      <motion.ul
+                        className="patients-sort-dropdown-list patients-sort-dropdown-list--above"
+                        role="listbox"
+                        initial={reducedMotion ? false : { opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={reducedMotion ? undefined : { opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                      >
+                        {SORT_OPTIONS.map((opt) => (
+                          <li key={opt.value} role="option">
+                            <button
+                              type="button"
+                              className={`patients-sort-dropdown-item ${sortBy === opt.value ? 'patients-sort-dropdown-item--active' : ''}`}
+                              onClick={() => {
+                                setSortBy(opt.value);
+                                setSortDropdownOpen(false);
+                              }}
+                            >
+                              {opt.label}
+                            </button>
+                          </li>
+                        ))}
+                      </motion.ul>
+                    )}
+                    </AnimatePresence>
+                  </div>
+                  <Button onClick={() => setShowModal(true)} className="patients-btn-new">+ Novo Paciente</Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Filtro A-Z - sempre visível acima dos cards */}
+            <div className="patients-letter-bar">
+              <span className="patients-letter-label">Inicial do nome:</span>
+              <div className="patients-letter-strip">
                 <button
                   type="button"
                   className={`patients-letter-chip patients-letter-chip--all ${!letterFilter ? 'patients-letter-chip--active' : ''}`}
@@ -380,12 +368,6 @@ export function PatientsPage() {
                     </button>
                   );
                 })}
-              </div>
-                    </motion.div>
-                  )}
-                  </AnimatePresence>
-                </div>
-                <Button onClick={() => setShowModal(true)}>+ Novo Paciente</Button>
               </div>
             </div>
           </div>
@@ -435,7 +417,7 @@ export function PatientsPage() {
                     <Avatar
                       userId={p.patient_public_id || p.uid || p.id}
                       isDoctor={false}
-                      size={54}
+                      size={58}
                       editable={false}
                       variant="profile"
                       initials={getInitials(p.full_name)}

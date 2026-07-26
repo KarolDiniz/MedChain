@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../services/api';
+import { translateApiMessage } from '../utils/blockchain';
 
 const AuthContext = createContext(null);
 
@@ -14,8 +15,12 @@ function buildUserData(res, type) {
 
 function parseApiError(err) {
   const raw = err?.data?.detail ?? err?.message ?? '';
-  if (Array.isArray(raw)) return raw[0]?.msg ?? String(raw);
-  return typeof raw === 'string' ? raw : (raw?.msg ?? JSON.stringify(raw));
+  if (Array.isArray(raw)) {
+    const first = raw[0]?.msg ?? String(raw);
+    return translateApiMessage(first);
+  }
+  if (typeof raw === 'string') return translateApiMessage(raw);
+  return translateApiMessage(raw?.msg ?? JSON.stringify(raw));
 }
 
 function isAlreadyExistsError(msg) {
@@ -23,21 +28,79 @@ function isAlreadyExistsError(msg) {
   return s.includes('ja existe') || s.includes('already exists');
 }
 
+function persistUser(userData) {
+  localStorage.setItem('medchain_user', JSON.stringify(userData));
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem('medchain_user');
-    if (stored) {
+    let cancelled = false;
+
+    const bootstrap = async () => {
+      const stored = localStorage.getItem('medchain_user');
+      if (!stored) {
+        if (!cancelled) setLoading(false);
+        return;
+      }
+
       try {
         const parsed = JSON.parse(stored);
-        setUser(parsed);
+        if (!parsed?.access_token) {
+          localStorage.removeItem('medchain_user');
+          if (!cancelled) setLoading(false);
+          return;
+        }
+
+        // Hidrata imediatamente para não bloquear a UI
+        if (!cancelled) setUser(parsed);
+
+        try {
+          const me = await authApi.me();
+          if (cancelled) return;
+          const role = (me?.role || parsed.role || '').toLowerCase();
+          const type = role === 'doctor' ? 'doctor' : parsed.type || 'patient';
+          const next = {
+            ...parsed,
+            ...me,
+            type,
+            role,
+            access_token: parsed.access_token,
+            refresh_token: parsed.refresh_token,
+          };
+          setUser(next);
+          persistUser(next);
+        } catch {
+          // Token inválido: api.js já tenta refresh; se falhar, limpa sessão
+          if (!cancelled && !localStorage.getItem('medchain_user')) {
+            setUser(null);
+          }
+        }
       } catch {
         localStorage.removeItem('medchain_user');
+        if (!cancelled) setUser(null);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    bootstrap();
+
+    const onLogout = () => {
+      setUser(null);
+    };
+    const onUserUpdated = (e) => {
+      if (e?.detail) setUser(e.detail);
+    };
+    window.addEventListener('medchain:logout', onLogout);
+    window.addEventListener('medchain:user-updated', onUserUpdated);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('medchain:logout', onLogout);
+      window.removeEventListener('medchain:user-updated', onUserUpdated);
+    };
   }, []);
 
   const login = async (email, password) => {
@@ -47,7 +110,7 @@ export function AuthProvider({ children }) {
       const type = role === 'doctor' ? 'doctor' : 'patient';
       const userData = buildUserData(res, type);
       setUser(userData);
-      localStorage.setItem('medchain_user', JSON.stringify(userData));
+      persistUser(userData);
       return { success: true, type };
     } catch (err) {
       if (err?.message === 'Failed to fetch') {
@@ -62,7 +125,7 @@ export function AuthProvider({ children }) {
       const res = await authApi.registerDoctor(data);
       const userData = buildUserData(res, 'doctor');
       setUser(userData);
-      localStorage.setItem('medchain_user', JSON.stringify(userData));
+      persistUser(userData);
       return { success: true, type: 'doctor' };
     } catch (err) {
       const msgStr = parseApiError(err);
@@ -72,7 +135,7 @@ export function AuthProvider({ children }) {
           const loginRes = await authApi.login(data.email, data.password);
           const userData = buildUserData(loginRes, 'doctor');
           setUser(userData);
-          localStorage.setItem('medchain_user', JSON.stringify(userData));
+          persistUser(userData);
           return { success: true, type: 'doctor' };
         } catch (completeErr) {
           return { success: false, error: parseApiError(completeErr) || 'Erro ao completar cadastro.' };
