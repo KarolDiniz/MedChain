@@ -3,6 +3,7 @@ import { CalendarDays, ChevronDown, ChevronUp, Stethoscope, ClipboardList, FileC
 import { Card } from './Card';
 import { IntegrityBadge } from './IntegrityBadge';
 import { FileAttachment } from './FileAttachment';
+import { CertificateDownloadButton } from './CertificateDownloadButton';
 import { summarizeVisit } from '../../utils/groupByVisitDate';
 import './VisitTimeline.css';
 
@@ -72,12 +73,15 @@ function DiagnosticBlock({ item }) {
   );
 }
 
-function CertificateBlock({ item }) {
+function CertificateBlock({ item, patient }) {
   return (
     <div className="visit-item visit-item--certificate">
-      <div className="visit-item-head">
-        <FileCheck size={16} />
-        <strong>Atestado</strong>
+      <div className="visit-item-head visit-item-head--row">
+        <span className="visit-item-head-label">
+          <FileCheck size={16} />
+          <strong>Atestado</strong>
+        </span>
+        <CertificateDownloadButton certificate={item} patient={patient} compact />
       </div>
       <DoctorLine item={item} />
       <div>{item.purpose || '-'} — {item.period_of_leave ?? '-'} dia(s)</div>
@@ -86,7 +90,7 @@ function CertificateBlock({ item }) {
   );
 }
 
-function VisitCard({ visit, defaultOpen = false }) {
+function VisitCard({ visit, defaultOpen = false, patient }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
@@ -117,7 +121,7 @@ function VisitCard({ visit, defaultOpen = false }) {
             <DiagnosticBlock key={`d-${d.id}`} item={d} />
           ))}
           {visit.medical_certificates.map((cert) => (
-            <CertificateBlock key={`cert-${cert.id}`} item={cert} />
+            <CertificateBlock key={`cert-${cert.id}`} item={cert} patient={patient} />
           ))}
           {visit.files?.length > 0 && (
             <div className="visit-files">
@@ -141,7 +145,7 @@ function VisitCard({ visit, defaultOpen = false }) {
 /**
  * Timeline de atendimentos agrupados por data (front-only).
  */
-export function VisitTimeline({ visits = [], undatedFiles = [], emptyMessage }) {
+export function VisitTimeline({ visits = [], undatedFiles = [], emptyMessage, patient }) {
   if (!visits.length && !undatedFiles.length) {
     return (
       <Card>
@@ -156,7 +160,12 @@ export function VisitTimeline({ visits = [], undatedFiles = [], emptyMessage }) 
   return (
     <div className="visit-timeline">
       {visits.map((visit, index) => (
-        <VisitCard key={visit.dateKey} visit={visit} defaultOpen={index === 0} />
+        <VisitCard
+          key={visit.dateKey}
+          visit={visit}
+          defaultOpen={index === 0}
+          patient={patient}
+        />
       ))}
 
       {undatedFiles.length > 0 && (

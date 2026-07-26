@@ -115,6 +115,20 @@ body.theme-dark .visit-item {
   color: #0f766e;
 }
 
+.visit-item-head--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.visit-item-head-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .visit-doctor {
   display: inline-flex;
   align-items: center;

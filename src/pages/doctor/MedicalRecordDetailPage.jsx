@@ -12,6 +12,7 @@ import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { IntegrityBadge } from '../../components/common/IntegrityBadge';
 import { FileAttachment } from '../../components/common/FileAttachment';
+import { CertificateDownloadButton } from '../../components/common/CertificateDownloadButton';
 import { formatDateBR, resolveItemDate } from '../../utils/dateUtils';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
@@ -338,9 +339,16 @@ export function MedicalRecordDetailPage() {
               <div className="items-list">
                 {sortedCertificates.map((cert) => (
                   <Card key={cert.id} className="certificate-card">
-                    <span className="cert-date">
-                      {formatDateBR(resolveItemDate(cert))}
-                    </span>
+                    <div className="certificate-card-top">
+                      <span className="cert-date">
+                        {formatDateBR(resolveItemDate(cert))}
+                      </span>
+                      <CertificateDownloadButton
+                        certificate={cert}
+                        patient={patient}
+                        doctor={doctor}
+                      />
+                    </div>
                     <IntegrityBadge item={cert} label="Atestado" />
                     <div><strong>Finalidade:</strong> {cert.purpose}</div>
                     <div><strong>Dias de afastamento:</strong> {cert.period_of_leave}</div>

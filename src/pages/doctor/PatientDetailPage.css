@@ -588,6 +588,14 @@ body.theme-dark .patient-detail--prontuarios .tab--active {
   transition: box-shadow 0.3s ease, transform 0.25s ease, border-color 0.25s;
 }
 
+.patient-detail--prontuarios .certificate-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .patient-detail--prontuarios .consultation-card::before,
 .patient-detail--prontuarios .diagnostic-card::before,
 .patient-detail--prontuarios .certificate-card::before {

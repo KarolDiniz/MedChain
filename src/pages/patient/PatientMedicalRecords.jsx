@@ -92,6 +92,7 @@ export function PatientMedicalRecords() {
         <VisitTimeline
           visits={visits}
           undatedFiles={undatedFiles}
+          patient={user}
           emptyMessage="Nenhum atendimento encontrado."
         />
       )}

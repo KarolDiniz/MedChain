@@ -162,6 +162,20 @@
   color: var(--color-text-light);
 }
 
+.certificate-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.certificate-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .consultation-body div,
 .diagnostic-card div,
 .certificate-card div {

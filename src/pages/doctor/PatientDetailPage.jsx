@@ -29,6 +29,7 @@ import { Avatar } from '../../components/common/Avatar';
 import { IntegrityBadge } from '../../components/common/IntegrityBadge';
 import { FileAttachment } from '../../components/common/FileAttachment';
 import { VisitTimeline } from '../../components/common/VisitTimeline';
+import { CertificateDownloadButton } from '../../components/common/CertificateDownloadButton';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
 import { CertificateModal } from '../../components/doctor/CertificateModal';
@@ -402,6 +403,7 @@ export function PatientDetailPage() {
             <VisitTimeline
               visits={visits}
               undatedFiles={undatedFiles}
+              patient={patient}
               emptyMessage="Nenhum atendimento registrado para este paciente."
             />
           </section>
@@ -532,9 +534,12 @@ export function PatientDetailPage() {
                     transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.3) }}
                   >
                   <Card className="certificate-card">
-                    <span className="cert-date">
-                      {formatDateBR(resolveItemDate(cert))}
-                    </span>
+                    <div className="certificate-card-top">
+                      <span className="cert-date">
+                        {formatDateBR(resolveItemDate(cert))}
+                      </span>
+                      <CertificateDownloadButton certificate={cert} patient={patient} />
+                    </div>
                     <IntegrityBadge item={cert} label="Atestado" />
                     <div><strong>Finalidade:</strong> {cert.purpose || '-'}</div>
                     <div><strong>Dias de afastamento:</strong> {cert.period_of_leave ?? '-'}</div>
