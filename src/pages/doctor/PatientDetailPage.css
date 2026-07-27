@@ -528,6 +528,8 @@ body.theme-dark .patient-detail--prontuarios .tab--active {
 }
 
 .patient-detail--prontuarios .tab-content .section-header--with-sort {
+  position: relative;
+  z-index: 1000;
   display: flex;
   flex-wrap: wrap;
   align-items: center;

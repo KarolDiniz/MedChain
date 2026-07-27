@@ -73,6 +73,7 @@
 
 .tab-content .sort-dropdown-wrap {
   position: relative;
+  z-index: 1100;
 }
 
 .tab-content .sort-trigger-btn {
@@ -109,7 +110,7 @@
   border: 2px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  z-index: 20;
+  z-index: 1200;
 }
 
 .tab-content .sort-dropdown-item {

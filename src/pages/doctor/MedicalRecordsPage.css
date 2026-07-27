@@ -304,6 +304,8 @@ body.theme-dark .records-stat-card--primary {
 
 /* ----- Toolbar (busca e ordenação) - padronizado com PatientsPage ----- */
 .records-toolbar {
+  position: relative;
+  z-index: 1000;
   margin-bottom: 1.5rem;
   flex-shrink: 0;
   padding: 0.6rem 1.25rem;
@@ -313,6 +315,7 @@ body.theme-dark .records-stat-card--primary {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 2px 12px rgba(13, 115, 119, 0.04);
+  isolation: isolate;
 }
 
 body.theme-dark .records-toolbar {
@@ -442,6 +445,7 @@ body.theme-dark .records-search-count {
 
 .records-sort-wrap {
   position: relative;
+  z-index: 1100;
 }
 
 .records-sort-trigger {
@@ -484,7 +488,7 @@ body.theme-dark .records-sort-trigger {
   border: 1px solid var(--color-border);
   border-radius: 10px;
   box-shadow: var(--shadow-md);
-  z-index: 50;
+  z-index: 1200;
   transform-origin: top right;
 }
 
@@ -558,6 +562,8 @@ body.theme-dark .records-filter-clear-btn {
 
 /* ----- Grid de cards de prontuários ----- */
 .records-grid {
+  position: relative;
+  z-index: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.25rem;

@@ -316,7 +316,7 @@ export function PatientsPage() {
                     <AnimatePresence>
                     {sortDropdownOpen && (
                       <motion.ul
-                        className="patients-sort-dropdown-list patients-sort-dropdown-list--above"
+                        className="patients-sort-dropdown-list"
                         role="listbox"
                         initial={reducedMotion ? false : { opacity: 0, y: 8, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
