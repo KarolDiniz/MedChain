@@ -1,6 +1,16 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Filter } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+  ArrowLeft,
+  Filter,
+  Stethoscope,
+  ClipboardList,
+  FileCheck,
+  Paperclip,
+  User,
+  UserRound,
+} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import {
@@ -9,9 +19,10 @@ import {
   getDoctorById,
   getMedicalRecordsByDoctor,
 } from '../../services/medicalRecordService';
-import { resolveDoctorId, sameId } from '../../utils/ids';
+import { resolveDoctorId, resolvePatientPublicId, sameId } from '../../utils/ids';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
+import { Avatar } from '../../components/common/Avatar';
 import { IntegrityBadge } from '../../components/common/IntegrityBadge';
 import { FileAttachment } from '../../components/common/FileAttachment';
 import { CertificateDownloadButton } from '../../components/common/CertificateDownloadButton';
@@ -33,6 +44,20 @@ const SORT_OPTIONS = [
   { value: SORT_ALPHA_ASC, label: 'Alfabética (A→Z)' },
   { value: SORT_ALPHA_DESC, label: 'Alfabética (Z→A)' },
 ];
+
+function getInitials(name) {
+  if (!name || typeof name !== 'string') return '?';
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+const TAB_ICONS = {
+  consultations: Stethoscope,
+  diagnostics: ClipboardList,
+  certificates: FileCheck,
+  files: Paperclip,
+};
 
 export function MedicalRecordDetailPage() {
   const { id } = useParams();
@@ -181,45 +206,114 @@ export function MedicalRecordDetailPage() {
 
   if (loading) {
     return (
-      <div className="record-detail-page">
-        <p>Carregando...</p>
-        <Link to="/doctor/medical-records">← Voltar</Link>
-      </div>
+      <motion.div
+        className="record-detail-page record-detail-page--loading"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="record-detail-skeleton" aria-busy="true" aria-label="Carregando prontuário">
+          <div className="record-detail-skeleton-header" />
+          <div className="record-detail-skeleton-card" />
+          <div className="record-detail-skeleton-tabs" />
+        </div>
+      </motion.div>
     );
   }
 
   if (!isAuthorized) {
     return (
-      <div>
-        <p>Prontuário não encontrado.</p>
-        <Link to="/doctor/medical-records">← Voltar</Link>
-      </div>
+      <motion.div
+        className="record-detail-page record-detail-page--not-found"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="record-detail-not-found">
+          <ClipboardList size={48} strokeWidth={1.5} />
+          <h2>Prontuário não encontrado</h2>
+          <p>Verifique o link ou retorne à listagem.</p>
+          <Link to="/doctor/medical-records" className="back-link">
+            <ArrowLeft size={18} />
+            Voltar aos prontuários
+          </Link>
+        </div>
+      </motion.div>
     );
   }
 
+  const patientName = patient?.full_name || 'Paciente';
+  const doctorName = doctor?.full_name || doctor?.user?.full_name || '—';
+  const patientPublicId = resolvePatientPublicId(patient) || record.patient_id;
+
   return (
-    <div className="record-detail-page">
-      <header className="page-header">
-        <Link to={`/doctor/patients/${record.patient_id}`} className="back-link">← Voltar ao paciente</Link>
-        <div className="record-detail-header">
-          <div className="record-detail-header-center">
-            <h1>Prontuário — {patient?.full_name}</h1>
-            <p>Paciente: {patient?.full_name} | Médico: {doctor?.full_name || doctor?.user?.full_name || '—'}</p>
+    <motion.div
+      className="record-detail-page"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35 }}
+    >
+      <header className="record-detail-header">
+        <Link to="/doctor/medical-records" className="back-link">
+          <ArrowLeft size={18} />
+          Voltar aos prontuários
+        </Link>
+        <div className="record-detail-hero">
+          <div className="record-detail-avatar">
+            <Avatar
+              userId={patientPublicId}
+              isDoctor={false}
+              size={64}
+              editable={false}
+              variant="profile"
+              initials={getInitials(patientName)}
+            />
+          </div>
+          <div className="record-detail-hero-text">
+            <h1>Prontuário — {patientName}</h1>
+            <p>Consultas, diagnósticos, atestados e arquivos deste paciente</p>
           </div>
         </div>
       </header>
 
-      <div className="tabs">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            className={`tab ${activeTab === tab.id ? 'tab--active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label} ({tab.count})
-          </button>
-        ))}
+      <div className="record-detail-meta" aria-label="Resumo do prontuário">
+        <div className="record-detail-meta-item">
+          <div className="record-detail-meta-icon" aria-hidden>
+            <User size={20} strokeWidth={1.75} />
+          </div>
+          <div className="record-detail-meta-content">
+            <span className="record-detail-meta-label">Paciente</span>
+            <span className="record-detail-meta-value">{patientName}</span>
+          </div>
+        </div>
+        <div className="record-detail-meta-item">
+          <div className="record-detail-meta-icon" aria-hidden>
+            <UserRound size={20} strokeWidth={1.75} />
+          </div>
+          <div className="record-detail-meta-content">
+            <span className="record-detail-meta-label">Médico</span>
+            <span className="record-detail-meta-value">{doctorName}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="tabs" role="tablist" aria-label="Seções do prontuário">
+        {tabs.map((tab) => {
+          const TabIcon = TAB_ICONS[tab.id];
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              className={`tab${activeTab === tab.id ? ' tab--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {TabIcon ? <TabIcon size={18} strokeWidth={2} aria-hidden /> : null}
+              {tab.label}
+              <span className="tab-count">{tab.count}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="tab-content">
@@ -428,6 +522,6 @@ export function MedicalRecordDetailPage() {
           onSaved={handleSaved}
         />
       )}
-    </div>
+    </motion.div>
   );
 }
