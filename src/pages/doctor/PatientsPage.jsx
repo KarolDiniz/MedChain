@@ -186,6 +186,8 @@ export function PatientsPage() {
     setLetterFilter('');
   };
 
+  const currentSortLabel = SORT_OPTIONS.find((o) => o.value === sortBy)?.label || 'Ordenar';
+
   const animationProps = reducedMotion
     ? { initial: false, animate: false }
     : { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] } };
@@ -210,6 +212,9 @@ export function PatientsPage() {
             <p>Gerencie os pacientes cadastrados e acesse seus prontuários</p>
           </div>
         </div>
+        <Button onClick={() => setShowModal(true)} className="patients-btn-new">
+          + Novo Paciente
+        </Button>
       </motion.header>
 
       {loading ? (
@@ -224,9 +229,6 @@ export function PatientsPage() {
               <div className="search-bar search-bar--disabled">
                 <Search size={20} className="search-icon" />
                 <input type="text" className="search-input" placeholder="Buscar..." disabled aria-hidden />
-              </div>
-              <div className="patients-toolbar-actions">
-                <Button onClick={() => setShowModal(true)} className="patients-btn-new">+ Novo Paciente</Button>
               </div>
             </div>
           </div>
@@ -274,7 +276,6 @@ export function PatientsPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          {/* Barra de filtros - SEMPRE acima dos cards, sticky */}
           <div className="patients-filters-sticky">
             <div className="patients-toolbar">
               <div className="patients-toolbar-row">
@@ -293,63 +294,72 @@ export function PatientsPage() {
                       <X size={16} />
                     </button>
                   )}
-                  <span className="search-bar-count">
-                    {filteredPatients.length} de {patients.length}
-                  </span>
-                  {hasActiveFilters && (
-                    <button type="button" className="search-bar-clear-filters" onClick={clearAllFilters} title="Limpar filtros">
-                      <RotateCcw size={14} />
-                    </button>
-                  )}
                 </div>
+
                 <div className="patients-toolbar-actions">
                   <div className="patients-sort-dropdown" ref={sortDropdownRef}>
                     <button
                       type="button"
-                      className={`patients-sort-trigger ${sortDropdownOpen ? 'patients-sort-trigger--open' : ''}`}
+                      className={`patients-sort-trigger patients-sort-trigger--labeled ${sortDropdownOpen ? 'patients-sort-trigger--open' : ''}`}
                       onClick={() => setSortDropdownOpen((v) => !v)}
                       aria-expanded={sortDropdownOpen}
-                      aria-label="Ordenar por"
+                      aria-label={`Ordenar por: ${currentSortLabel}`}
                     >
-                      <ArrowUpDown size={20} />
+                      <ArrowUpDown size={16} />
+                      <span className="patients-sort-trigger-label">{currentSortLabel}</span>
                     </button>
                     <AnimatePresence>
-                    {sortDropdownOpen && (
-                      <motion.ul
-                        className="patients-sort-dropdown-list"
-                        role="listbox"
-                        initial={reducedMotion ? false : { opacity: 0, y: 8, scale: 0.96 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={reducedMotion ? undefined : { opacity: 0, y: 8, scale: 0.96 }}
-                        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                      >
-                        {SORT_OPTIONS.map((opt) => (
-                          <li key={opt.value} role="option">
-                            <button
-                              type="button"
-                              className={`patients-sort-dropdown-item ${sortBy === opt.value ? 'patients-sort-dropdown-item--active' : ''}`}
-                              onClick={() => {
-                                setSortBy(opt.value);
-                                setSortDropdownOpen(false);
-                              }}
-                            >
-                              {opt.label}
-                            </button>
-                          </li>
-                        ))}
-                      </motion.ul>
-                    )}
+                      {sortDropdownOpen && (
+                        <motion.ul
+                          className="patients-sort-dropdown-list"
+                          role="listbox"
+                          initial={reducedMotion ? false : { opacity: 0, y: 8, scale: 0.96 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={reducedMotion ? undefined : { opacity: 0, y: 8, scale: 0.96 }}
+                          transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                        >
+                          {SORT_OPTIONS.map((opt) => (
+                            <li key={opt.value} role="option">
+                              <button
+                                type="button"
+                                className={`patients-sort-dropdown-item ${sortBy === opt.value ? 'patients-sort-dropdown-item--active' : ''}`}
+                                onClick={() => {
+                                  setSortBy(opt.value);
+                                  setSortDropdownOpen(false);
+                                }}
+                              >
+                                {opt.label}
+                              </button>
+                            </li>
+                          ))}
+                        </motion.ul>
+                      )}
                     </AnimatePresence>
                   </div>
-                  <Button onClick={() => setShowModal(true)} className="patients-btn-new">+ Novo Paciente</Button>
+
+                  <div className="patients-toolbar-meta">
+                    <span className="filter-count">
+                      {filteredPatients.length} de {patients.length} paciente{patients.length !== 1 ? 's' : ''}
+                    </span>
+                    {hasActiveFilters && (
+                      <button
+                        type="button"
+                        className="patients-clear-filters"
+                        onClick={clearAllFilters}
+                        title="Limpar filtros"
+                      >
+                        <RotateCcw size={14} />
+                        Limpar
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Filtro A-Z - sempre visível acima dos cards */}
             <div className="patients-letter-bar">
-              <span className="patients-letter-label">Inicial do nome:</span>
-              <div className="patients-letter-strip">
+              <span className="patients-letter-label">A–Z</span>
+              <div className="patients-letter-strip" role="group" aria-label="Filtrar por inicial do nome">
                 <button
                   type="button"
                   className={`patients-letter-chip patients-letter-chip--all ${!letterFilter ? 'patients-letter-chip--active' : ''}`}
@@ -372,7 +382,6 @@ export function PatientsPage() {
                       title={isAvailable ? `${count} paciente${count !== 1 ? 's' : ''} com nome em "${l}"` : `Nenhum paciente em "${l}"`}
                     >
                       <span className="patients-letter-char">{l}</span>
-                      {isAvailable && <span className="patients-letter-count">{count}</span>}
                     </button>
                   );
                 })}
@@ -386,158 +395,161 @@ export function PatientsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={reducedMotion ? undefined : { duration: 0.3 }}
             >
-            <Card>
-              <div className="patients-no-results">
-                <p>
-                  {hasActiveFilters
-                    ? `Nenhum paciente encontrado${searchQuery ? ` para "${searchQuery}"` : ''}${letterFilter ? ` com inicial "${letterFilter}"` : ''}.`
-                    : 'Nenhum paciente cadastrado.'}
-                </p>
-                {hasActiveFilters && (
-                  <button type="button" className="filter-clear-btn" onClick={clearAllFilters} title="Limpar filtros">
-                    <RotateCcw size={16} />
-                  </button>
-                )}
-              </div>
-            </Card>
+              <Card>
+                <div className="patients-no-results">
+                  <p>
+                    {hasActiveFilters
+                      ? `Nenhum paciente encontrado${searchQuery ? ` para "${searchQuery}"` : ''}${letterFilter ? ` com inicial "${letterFilter}"` : ''}.`
+                      : 'Nenhum paciente cadastrado.'}
+                  </p>
+                  {hasActiveFilters && (
+                    <button type="button" className="filter-clear-btn" onClick={clearAllFilters} title="Limpar filtros">
+                      <RotateCcw size={16} />
+                    </button>
+                  )}
+                </div>
+              </Card>
             </motion.div>
           ) : (
             <>
-            <motion.div
-              className="patients-grid"
-              variants={reducedMotion ? {} : {
-                visible: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
-              }}
-              initial={reducedMotion ? false : 'hidden'}
-              animate={reducedMotion ? false : 'visible'}
-            >
-              {paginatedPatients.map((p) => (
-                <motion.div
-                  key={p.id}
-                  variants={reducedMotion ? {} : {
-                    hidden: { opacity: 0, y: 16 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                  transition={reducedMotion ? undefined : { duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+              <motion.div
+                className="patients-grid"
+                variants={reducedMotion ? {} : {
+                  visible: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
+                }}
+                initial={reducedMotion ? false : 'hidden'}
+                animate={reducedMotion ? false : 'visible'}
+              >
+                {paginatedPatients.map((p) => (
+                  <motion.div
+                    key={p.id}
+                    variants={reducedMotion ? {} : {
+                      hidden: { opacity: 0, y: 16 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                    transition={reducedMotion ? undefined : { duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                  >
+                    <Link
+                      to={`/doctor/patients/${p.patient_public_id || p.id}`}
+                      className="patient-card"
+                      aria-label={`Abrir ficha de ${p.full_name}`}
+                    >
+                      <div className="patient-card-avatar">
+                        <Avatar
+                          userId={p.patient_public_id || p.uid || p.id}
+                          isDoctor={false}
+                          size={52}
+                          editable={false}
+                          variant="profile"
+                          initials={getInitials(p.full_name)}
+                        />
+                      </div>
+                      <div className="patient-card-body">
+                        <h3 className="patient-card-name">{p.full_name}</h3>
+                        <div className="patient-card-details">
+                          {p.email && (
+                            <span className="patient-card-detail">
+                              <Mail size={14} />
+                              <span>{p.email}</span>
+                            </span>
+                          )}
+                          {p.cellphone && (
+                            <span className="patient-card-detail">
+                              <Phone size={14} />
+                              <span>{p.cellphone}</span>
+                            </span>
+                          )}
+                          {p.birth_date && (
+                            <span className="patient-card-detail">
+                              <Calendar size={14} />
+                              <span>{new Date(p.birth_date).toLocaleDateString('pt-BR')}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="patient-card-action" aria-hidden>
+                        <ChevronRight size={20} />
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {showPagination && (
+                <motion.footer
+                  className="patients-pagination"
+                  style={{ '--pagination-progress': totalPages > 1 ? ((safePage - 1) / (totalPages - 1)) * 100 : 100 }}
+                  initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                  aria-label="Navegação de páginas"
                 >
-                <Link to={`/doctor/patients/${p.patient_public_id || p.id}`} className="patient-card">
-                  <div className="patient-card-avatar">
-                    <Avatar
-                      userId={p.patient_public_id || p.uid || p.id}
-                      isDoctor={false}
-                      size={58}
-                      editable={false}
-                      variant="profile"
-                      initials={getInitials(p.full_name)}
-                    />
+                  <div className="patients-pagination-info">
+                    <span>
+                      Mostrando <strong>{startItem}</strong>–<strong>{endItem}</strong> de{' '}
+                      <strong>{totalItems}</strong> paciente{totalItems !== 1 ? 's' : ''}
+                    </span>
                   </div>
-                  <div className="patient-card-body">
-                    <h3 className="patient-card-name">{p.full_name}</h3>
-                    <div className="patient-card-details">
-                      {p.email && (
-                        <span className="patient-card-detail">
-                          <Mail size={14} />
-                          <span>{p.email}</span>
-                        </span>
-                      )}
-                      {p.cellphone && (
-                        <span className="patient-card-detail">
-                          <Phone size={14} />
-                          <span>{p.cellphone}</span>
-                        </span>
-                      )}
-                      {p.birth_date && (
-                        <span className="patient-card-detail">
-                          <Calendar size={14} />
-                          <span>{new Date(p.birth_date).toLocaleDateString('pt-BR')}</span>
-                        </span>
+                  <nav className="patients-pagination-nav" role="navigation">
+                    <button
+                      type="button"
+                      className="patients-pagination-btn patients-pagination-btn--prev"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={safePage <= 1}
+                      aria-label="Página anterior"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <div className="patients-pagination-numbers" role="group" aria-label="Números de página">
+                      {pageItems.map((item, idx) =>
+                        item === 'ellipsis-start' || item === 'ellipsis-end' ? (
+                          <span key={`ellipsis-${idx}`} className="patients-pagination-ellipsis" aria-hidden>
+                            …
+                          </span>
+                        ) : (
+                          <button
+                            key={item}
+                            type="button"
+                            className={`patients-pagination-num ${item === safePage ? 'patients-pagination-num--active' : ''}`}
+                            onClick={() => setCurrentPage(item)}
+                            aria-current={item === safePage ? 'page' : undefined}
+                            aria-label={`Página ${item}`}
+                          >
+                            {item}
+                          </button>
+                        )
                       )}
                     </div>
+                    <button
+                      type="button"
+                      className="patients-pagination-btn patients-pagination-btn--next"
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={safePage >= totalPages}
+                      aria-label="Próxima página"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </nav>
+                  <div className="patients-pagination-per-page">
+                    <label htmlFor="patients-per-page">Por página:</label>
+                    <select
+                      id="patients-per-page"
+                      value={itemsPerPage}
+                      onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      aria-label="Itens por página"
+                    >
+                      {ITEMS_PER_PAGE_OPTIONS.map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="patient-card-action">
-                    <span>Ver detalhes</span>
-                    <ChevronRight size={18} />
-                  </div>
-                </Link>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {showPagination && (
-              <motion.footer
-                className="patients-pagination"
-                style={{ '--pagination-progress': totalPages > 1 ? ((safePage - 1) / (totalPages - 1)) * 100 : 100 }}
-                initial={reducedMotion ? false : { opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                aria-label="Navegação de páginas"
-              >
-                <div className="patients-pagination-info">
-                  <span>
-                    Mostrando <strong>{startItem}</strong>–<strong>{endItem}</strong> de{' '}
-                    <strong>{totalItems}</strong> paciente{totalItems !== 1 ? 's' : ''}
-                  </span>
-                </div>
-                <nav className="patients-pagination-nav" role="navigation">
-                  <button
-                    type="button"
-                    className="patients-pagination-btn patients-pagination-btn--prev"
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={safePage <= 1}
-                    aria-label="Página anterior"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <div className="patients-pagination-numbers" role="group" aria-label="Números de página">
-                    {pageItems.map((item, idx) =>
-                      item === 'ellipsis-start' || item === 'ellipsis-end' ? (
-                        <span key={`ellipsis-${idx}`} className="patients-pagination-ellipsis" aria-hidden>
-                          …
-                        </span>
-                      ) : (
-                        <button
-                          key={item}
-                          type="button"
-                          className={`patients-pagination-num ${item === safePage ? 'patients-pagination-num--active' : ''}`}
-                          onClick={() => setCurrentPage(item)}
-                          aria-current={item === safePage ? 'page' : undefined}
-                          aria-label={`Página ${item}`}
-                        >
-                          {item}
-                        </button>
-                      )
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    className="patients-pagination-btn patients-pagination-btn--next"
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={safePage >= totalPages}
-                    aria-label="Próxima página"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                </nav>
-                <div className="patients-pagination-per-page">
-                  <label htmlFor="patients-per-page">Por página:</label>
-                  <select
-                    id="patients-per-page"
-                    value={itemsPerPage}
-                    onChange={(e) => {
-                      setItemsPerPage(Number(e.target.value));
-                      setCurrentPage(1);
-                    }}
-                    aria-label="Itens por página"
-                  >
-                    {ITEMS_PER_PAGE_OPTIONS.map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </motion.footer>
-            )}
+                </motion.footer>
+              )}
             </>
           )}
         </motion.div>
