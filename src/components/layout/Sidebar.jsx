@@ -159,9 +159,14 @@ export function Sidebar() {
             className="sidebar-theme-toggle"
             onClick={toggleTheme}
             aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+            title={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
           >
-            {isDark ? <Sun size={16} /> : <Moon size={16} />}
-            <span className="sidebar-theme-toggle-text">{isDark ? 'Modo claro' : 'Modo escuro'}</span>
+            <span className="sidebar-theme-toggle-icon" aria-hidden>
+              {isDark ? <Sun size={16} strokeWidth={2.25} /> : <Moon size={16} strokeWidth={2.25} />}
+            </span>
+            <span className="sidebar-theme-toggle-text">
+              {isDark ? 'Modo claro' : 'Modo escuro'}
+            </span>
           </button>
           <Button variant="ghost" size="sm" onClick={logout} className="sidebar-logout">
             Sair
