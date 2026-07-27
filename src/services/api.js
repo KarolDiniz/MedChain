@@ -148,6 +148,7 @@ export const authApi = {
   completeDoctor: (data) =>
     api.post('/auth/complete-doctor', {
       email: data.email,
+      password: data.password,
       full_name: data.full_name,
       CRM: data.CRM,
       specialty: data.specialty,

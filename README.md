@@ -21,19 +21,19 @@ Acesse [http://localhost:5173](http://localhost:5173)
 
 ## Usuários de demonstração
 
-**Senha padrão para todos:** `12345`
+**Senha padrão para todos:** `senha123`
 
 ### Doutores
 | E-mail | Senha |
 |--------|-------|
-| maria.silva@medchain.com | 12345 |
-| joao.santos@medchain.com | 12345 |
+| maria.silva@medchain.com | senha123 |
+| joao.santos@medchain.com | senha123 |
 
 ### Pacientes
 | E-mail | Senha |
 |--------|-------|
-| ana.oliveira@email.com | 12345 |
-| carlos.mendes@email.com | 12345 |
+| ana.oliveira@email.com | senha123 |
+| carlos.mendes@email.com | senha123 |
 
 ## Funcionalidades
 
