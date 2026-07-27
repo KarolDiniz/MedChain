@@ -90,7 +90,7 @@ function CertificateBlock({ item, patient }) {
   );
 }
 
-function VisitCard({ visit, defaultOpen = false, patient }) {
+function VisitCard({ visit, defaultOpen = false, patient, note }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
@@ -103,7 +103,7 @@ function VisitCard({ visit, defaultOpen = false, patient }) {
             <p>{summarizeVisit(visit)}</p>
           </div>
         </div>
-        <span className="visit-card-toggle">
+        <span className="visit-card-toggle" aria-hidden>
           {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </span>
       </button>
@@ -111,7 +111,8 @@ function VisitCard({ visit, defaultOpen = false, patient }) {
       {open && (
         <div className="visit-card-body">
           <p className="visit-card-note">
-            Itens do mesmo dia agrupados visualmente. Cada registro mantém seu próprio hash na blockchain.
+            {note
+              || 'Registros do mesmo dia agrupados visualmente. Cada item mantém sua própria evidência de integridade.'}
           </p>
 
           {visit.consultations.map((c) => (
@@ -145,7 +146,7 @@ function VisitCard({ visit, defaultOpen = false, patient }) {
 /**
  * Timeline de atendimentos agrupados por data (front-only).
  */
-export function VisitTimeline({ visits = [], undatedFiles = [], emptyMessage, patient }) {
+export function VisitTimeline({ visits = [], undatedFiles = [], emptyMessage, patient, note }) {
   if (!visits.length && !undatedFiles.length) {
     return (
       <Card>
@@ -165,6 +166,7 @@ export function VisitTimeline({ visits = [], undatedFiles = [], emptyMessage, pa
           visit={visit}
           defaultOpen={index === 0}
           patient={patient}
+          note={note}
         />
       ))}
 
@@ -176,7 +178,7 @@ export function VisitTimeline({ visits = [], undatedFiles = [], emptyMessage, pa
               <div>
                 <h3>Arquivos sem data</h3>
                 <p>
-                  {undatedFiles.length} anexo(s) sem data de upload registrada.
+                  {undatedFiles.length} anexo{undatedFiles.length !== 1 ? 's' : ''} sem data de upload registrada.
                 </p>
               </div>
             </div>

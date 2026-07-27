@@ -8,15 +8,32 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   text-align: center;
-  padding: 2rem 1rem;
-  color: var(--text-secondary, #64748b);
+  padding: 2.5rem 1.25rem;
+  color: var(--color-text-light, #64748b);
 }
 
 .visit-card {
   padding: 0;
   overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.visit-card:hover {
+  border-color: rgba(13, 115, 119, 0.28);
+  box-shadow: 0 8px 24px rgba(13, 115, 119, 0.08);
+}
+
+.visit-card--open {
+  border-color: rgba(13, 115, 119, 0.3);
+  box-shadow: 0 10px 28px rgba(13, 115, 119, 0.1);
+}
+
+body.theme-dark .visit-card:hover,
+body.theme-dark .visit-card--open {
+  border-color: rgba(45, 212, 191, 0.3);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
 }
 
 .visit-card-header {
@@ -25,72 +42,123 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.1rem;
+  padding: 1.05rem 1.15rem;
   border: none;
   background: transparent;
   cursor: pointer;
   text-align: left;
   color: inherit;
+  font-family: inherit;
+  transition: background 0.2s ease;
+}
+
+.visit-card-header:hover {
+  background: rgba(13, 115, 119, 0.04);
+}
+
+body.theme-dark .visit-card-header:hover {
+  background: rgba(45, 212, 191, 0.05);
 }
 
 .visit-card-header--static {
   cursor: default;
 }
 
+.visit-card-header--static:hover {
+  background: transparent;
+}
+
 .visit-card-title {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.8rem;
   align-items: flex-start;
+  min-width: 0;
 }
 
 .visit-card-title h3 {
   margin: 0;
   font-size: 0.98rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
   text-transform: capitalize;
+  color: var(--color-text);
 }
 
 .visit-card-title p {
-  margin: 0.2rem 0 0;
+  margin: 0.22rem 0 0;
   font-size: 0.82rem;
-  color: var(--text-secondary, #64748b);
+  line-height: 1.4;
+  color: var(--color-text-light, #64748b);
 }
 
 .visit-card-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
   background: rgba(15, 118, 110, 0.12);
   color: #0f766e;
   flex-shrink: 0;
 }
 
+body.theme-dark .visit-card-icon {
+  background: rgba(45, 212, 191, 0.14);
+  color: #99f6e4;
+}
+
 .visit-card-toggle {
-  color: var(--text-secondary, #64748b);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  color: var(--color-text-light, #64748b);
+  background: rgba(13, 115, 119, 0.06);
+  flex-shrink: 0;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.visit-card--open .visit-card-toggle {
+  color: var(--color-primary);
+  background: rgba(13, 115, 119, 0.12);
 }
 
 .visit-card-body {
-  padding: 0 1.1rem 1.1rem;
+  padding: 0 1.15rem 1.15rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  border-top: 1px solid var(--border-color, #e2e8f0);
+  border-top: 1px solid rgba(13, 115, 119, 0.1);
+}
+
+body.theme-dark .visit-card-body {
+  border-top-color: rgba(45, 212, 191, 0.14);
 }
 
 .visit-card-note {
   margin: 0.85rem 0 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
   font-size: 0.78rem;
-  color: var(--text-secondary, #64748b);
-  line-height: 1.4;
+  line-height: 1.45;
+  color: var(--color-text-light, #64748b);
+  background: rgba(13, 115, 119, 0.05);
+  border: 1px solid rgba(13, 115, 119, 0.08);
+}
+
+body.theme-dark .visit-card-note {
+  background: rgba(45, 212, 191, 0.06);
+  border-color: rgba(45, 212, 191, 0.12);
 }
 
 .visit-item {
-  padding: 0.85rem;
-  border-radius: 10px;
-  border: 1px solid var(--border-color, #e2e8f0);
-  background: var(--surface-muted, #f8fafc);
+  padding: 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(13, 115, 119, 0.12);
+  background: rgba(248, 250, 252, 0.9);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -103,7 +171,7 @@ body.theme-dark .visit-item {
 }
 
 .visit-item span {
-  color: var(--text-secondary, #64748b);
+  color: var(--color-text-light, #64748b);
   margin-right: 0.25rem;
 }
 
@@ -133,8 +201,9 @@ body.theme-dark .visit-item {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  flex-wrap: wrap;
   font-size: 0.85rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--color-text-light, #64748b);
   margin-bottom: 0.25rem;
 }
 
@@ -148,7 +217,7 @@ body.theme-dark .visit-item {
 .visit-prescriptions {
   margin-top: 0.35rem;
   padding-top: 0.35rem;
-  border-top: 1px dashed var(--border-color, #e2e8f0);
+  border-top: 1px dashed rgba(13, 115, 119, 0.18);
   font-size: 0.85rem;
 }
 
@@ -156,6 +225,15 @@ body.theme-dark .visit-item {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+  padding: 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(13, 115, 119, 0.12);
+  background: rgba(248, 250, 252, 0.9);
+}
+
+body.theme-dark .visit-files {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .visit-files-grid {
