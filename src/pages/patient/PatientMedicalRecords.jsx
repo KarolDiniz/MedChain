@@ -3,6 +3,7 @@ import { ClipboardList, Download, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { getMedicalRecordsByPatient } from '../../services/medicalRecordService';
+import { resolvePatientPublicId } from '../../utils/ids';
 import { groupRecordItemsByVisitDate } from '../../utils/groupByVisitDate';
 import { downloadRecordsSummaryPdf } from '../../utils/recordsSummaryPdf';
 import { Card } from '../../components/common/Card';
@@ -32,7 +33,7 @@ export function PatientMedicalRecords() {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const patientId = user?.patient_public_id || user?.id || user?.uid;
+  const patientId = resolvePatientPublicId(user) || user?.id || user?.uid;
 
   useEffect(() => {
     const load = async () => {

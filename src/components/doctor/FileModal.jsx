@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { addFile } from '../../services/medicalRecordService';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
+import { ModalShell } from './ModalShell';
 import './Modal.css';
 
 export function FileModal({ patientId, onClose, onSaved }) {
@@ -20,48 +21,60 @@ export function FileModal({ patientId, onClose, onSaved }) {
     setError(null);
     try {
       await addFile(patientId, file, description);
-      onSaved();
+      onSaved?.('file');
     } catch (err) {
-      setError(err?.message || 'Erro ao enviar arquivo.');
+      const status = err?.status;
+      if (status === 409) {
+        setError(
+          err?.message
+          || 'Este arquivo já foi enviado anteriormente (conteúdo idêntico).',
+        );
+      } else {
+        setError(err?.message || 'Erro ao enviar arquivo.');
+      }
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content card card--padding" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Anexar Arquivo</h2>
-          <button type="button" className="modal-close" onClick={onClose}>×</button>
-        </div>
-        <p className="modal-note">
-          Envie arquivos em PDF, PNG ou JPEG. O hash é gerado para auditoria na blockchain.
-        </p>
-        <form onSubmit={handleSubmit} className="modal-form">
-          {error && <p className="modal-error">{error}</p>}
-          <Input
-            label="Descrição"
-            name="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Ex: Resultado hemograma"
+    <ModalShell title="Anexar Arquivo" onClose={onClose}>
+      <p className="modal-note">
+        Envie arquivos em PDF, PNG ou JPEG. O hash é gerado para auditoria na blockchain.
+        Arquivos com o mesmo conteúdo não podem ser reenviados.
+      </p>
+      <form onSubmit={handleSubmit} className="modal-form">
+        {error && <p className="modal-error" role="alert">{error}</p>}
+        <Input
+          label="Descrição"
+          name="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Ex: Resultado hemograma"
+        />
+        <div className="input-group">
+          <label className="input-label" htmlFor="file-upload-input">Arquivo *</label>
+          <input
+            id="file-upload-input"
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"
+            onChange={(e) => {
+              setFile(e.target.files?.[0] || null);
+              setError(null);
+            }}
+            className="input-field"
           />
-          <div className="input-group">
-            <label className="input-label">Arquivo *</label>
-            <input
-              type="file"
-              accept=".pdf,.png,.jpg,.jpeg"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="input-field"
-            />
-          </div>
-          <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
-            <Button type="submit" disabled={saving || !file}>{saving ? 'Enviando...' : 'Enviar'}</Button>
-          </div>
-        </form>
-      </div>
-    </div>
+          {file && (
+            <p className="modal-note" style={{ marginTop: '0.35rem' }}>
+              Selecionado: {file.name}
+            </p>
+          )}
+        </div>
+        <div className="modal-actions">
+          <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button type="submit" disabled={saving || !file}>{saving ? 'Enviando...' : 'Enviar'}</Button>
+        </div>
+      </form>
+    </ModalShell>
   );
 }

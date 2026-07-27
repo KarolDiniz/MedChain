@@ -21,6 +21,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { getPatientsByDoctor, getMedicalRecordsByDoctor, getDoctorById, getDashboardStats } from '../../services/medicalRecordService';
+import { resolveDoctorId, findPatientByAnyId, resolvePatientRouteId } from '../../utils/ids';
 import { Card } from '../../components/common/Card';
 import { AnimatedCounter } from '../../components/dashboard/AnimatedCounter';
 import { DashboardSkeleton } from '../../components/dashboard/DashboardSkeleton';
@@ -99,7 +100,7 @@ export function DoctorDashboard() {
 
   useEffect(() => {
     const load = async () => {
-      const docId = user?.id || user?.public_id;
+      const docId = resolveDoctorId(user);
       if (!docId) {
         setLoading(false);
         return;
@@ -128,6 +129,7 @@ export function DoctorDashboard() {
       }
     };
     load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, user?.public_id]);
 
   const totalConsultations = medicalRecords.reduce(
@@ -147,6 +149,10 @@ export function DoctorDashboard() {
     (acc, mr) => acc + (mr.medical_certificates?.length || 0),
     0
   );
+
+  const patientsCount = typeof stats?.patients === 'number' ? stats.patients : patients.length;
+  const recordsCount = typeof stats?.medical_records === 'number' ? stats.medical_records : medicalRecords.length;
+  const consultationsCount = typeof stats?.consultations === 'number' ? stats.consultations : totalConsultations;
 
   const consultationsByWeek = (() => {
     const allDates = medicalRecords.flatMap((mr) =>
@@ -183,23 +189,23 @@ export function DoctorDashboard() {
     {
       label: 'Pacientes',
       Icon: Users,
-      value: stats?.patients ?? patients.length,
+      value: patientsCount,
       to: '/doctor/patients',
       color: 'primary',
-      subtitle: 'cadastrados',
+      subtitle: 'vinculados',
     },
     {
       label: 'Prontuários',
       Icon: FolderOpen,
-      value: stats?.medical_records ?? medicalRecords.length,
+      value: recordsCount,
       to: '/doctor/medical-records',
       color: 'secondary',
-      subtitle: 'ativos',
+      subtitle: 'registros clínicos',
     },
     {
       label: 'Consultas',
       Icon: Stethoscope,
-      value: stats?.consultations ?? totalConsultations,
+      value: consultationsCount,
       to: '/doctor/medical-records',
       color: 'accent',
       subtitle: 'registradas',
@@ -207,7 +213,7 @@ export function DoctorDashboard() {
   ];
 
   const getPatientName = (patientId) => {
-    const p = patients.find((x) => (x.patient_public_id || x.uid || x.id) === String(patientId));
+    const p = findPatientByAnyId(patients, patientId);
     return p?.full_name || 'Paciente';
   };
 
@@ -253,7 +259,7 @@ export function DoctorDashboard() {
     month: 'long',
   });
 
-  const patientLinkId = (p) => p.patient_public_id || p.uid || p.id;
+  const patientLinkId = (p) => resolvePatientRouteId(p);
 
   const getActivityIcon = (type) => {
     switch (type) {
@@ -366,7 +372,7 @@ export function DoctorDashboard() {
             aria-label="Resumo"
             variants={itemVariants}
           >
-            {statsCards.map((stat, index) => {
+            {statsCards.map((stat) => {
               const StatIcon = stat.Icon;
               return (
                 <motion.div key={stat.label} variants={itemVariants}>

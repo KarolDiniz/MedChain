@@ -1,5 +1,6 @@
 import { patientsApi, doctorsApi, medicalRecordsApi, filesApi } from './api';
 import { extractIntegrityFields } from '../utils/blockchain';
+import { resolvePatientPublicId, resolveUserPublicId } from '../utils/ids';
 
 function mapPatient(p) {
   const addr = p.address || {};
@@ -12,14 +13,15 @@ function mapPatient(p) {
     state: addr.state || p.address_state,
   };
   // patient_public_id = Patient.public_id (APIs clínicas/arquivos).
-  // uid = User.public_id (aceito em GET /patients/, mas NÃO em /files/by-patient/).
-  const patientPublicId = p.patient_public_id || null;
-  const userPublicId = p.uid || p.user_public_id || (patientPublicId ? null : p.id) || null;
+  // uid = User.public_id (GET /patients/ aceita ambos; files NÃO).
+  const patientPublicId = resolvePatientPublicId(p);
+  const userPublicId = resolveUserPublicId(p) || (patientPublicId ? null : p.id) || null;
   return {
     id: patientPublicId || userPublicId || p.id,
     uid: userPublicId,
     user_public_id: userPublicId,
-    patient_public_id: patientPublicId || userPublicId,
+    // Nunca preencher patient_public_id com uid — quebra upload/listagem de arquivos
+    patient_public_id: patientPublicId,
     full_name: p.full_name || p.name,
     name: p.name || p.full_name,
     email: p.email,
@@ -396,6 +398,9 @@ export async function addMedicalCertificate(doctorId, patientId, data) {
 export const addPrescription = addConsultation;
 
 export async function addFile(patientUid, file, description) {
+  if (!patientUid) {
+    throw new Error('ID do paciente inválido para anexar arquivo.');
+  }
   const formData = new FormData();
   formData.append('patient_uid', patientUid);
   formData.append('file', file);

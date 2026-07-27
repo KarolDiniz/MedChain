@@ -23,7 +23,13 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // `motion.div` / `motion.span` (framer-motion) não é detectado como uso pelo no-unused-vars.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]|^(motion)$' }],
+      // Contextos exportam hooks (useAuth, useToast) — padrão do React, incompatível com a regra estrita.
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
     },
   },
 ])

@@ -35,6 +35,7 @@ import { ConsultationModal } from '../../components/doctor/ConsultationModal';
 import { DiagnosticModal } from '../../components/doctor/DiagnosticModal';
 import { CertificateModal } from '../../components/doctor/CertificateModal';
 import { FileModal } from '../../components/doctor/FileModal';
+import { resolveDoctorId, resolvePatientPublicId, sameId } from '../../utils/ids';
 import { formatDateBR, resolveItemDate } from '../../utils/dateUtils';
 import './PatientDetailPage.css';
 
@@ -46,6 +47,13 @@ const SORT_OPTIONS = [
   { value: SORT_RECENT, label: 'Mais recentes' },
   { value: SORT_OLDEST, label: 'Mais antigos' },
 ];
+
+const SAVED_MESSAGES = {
+  consultation: 'Consulta registrada com sucesso.',
+  diagnostic: 'Diagnóstico registrado com sucesso.',
+  certificate: 'Atestado emitido com sucesso.',
+  file: 'Arquivo anexado com sucesso.',
+};
 
 export function PatientDetailPage() {
   const { id } = useParams();
@@ -60,8 +68,9 @@ export function PatientDetailPage() {
   const [showFileModal, setShowFileModal] = useState(false);
   const [sortOrder, setSortOrder] = useState(SORT_RECENT);
 
-  const doctorId = user?.id || user?.public_id;
-  const patientId = patient?.patient_public_id || patient?.uid || patient?.id || id;
+  const doctorId = resolveDoctorId(user);
+  // APIs clínicas/arquivos exigem Patient.public_id (não User.uid)
+  const patientId = resolvePatientPublicId(patient) || id;
   const toast = useToast();
 
   const loadData = async () => {
@@ -71,8 +80,8 @@ export function PatientDetailPage() {
         getMedicalRecordsByDoctor(doctorId),
       ]);
       setPatient(p);
-      const pid = p?.patient_public_id || p?.uid || id;
-      const grouped = (allRecords || []).find((r) => String(r.patient_id) === String(pid));
+      const pid = resolvePatientPublicId(p) || id;
+      const grouped = (allRecords || []).find((r) => sameId(r.patient_id, pid));
       let files = grouped?.files || [];
       if (pid) {
         try {
@@ -101,11 +110,12 @@ export function PatientDetailPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, doctorId]);
 
-  const handleSaved = () => {
+  const handleSaved = (kind) => {
     setShowConsultationModal(false);
     setShowDiagnosticModal(false);
     setShowCertificateModal(false);
     setShowFileModal(false);
+    toast.success(SAVED_MESSAGES[kind] || 'Registro salvo com sucesso.');
     loadData();
   };
 
@@ -260,7 +270,7 @@ export function PatientDetailPage() {
         <div className="patient-detail-hero">
           <div className="patient-detail-avatar">
             <Avatar
-              userId={patient.patient_public_id || patient.uid || patient.id}
+              userId={resolvePatientPublicId(patient) || patient.uid || patient.id}
               isDoctor={false}
               size={64}
               editable={false}

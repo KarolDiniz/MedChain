@@ -33,29 +33,39 @@ function persistTokens(accessToken, refreshToken) {
   window.dispatchEvent(new CustomEvent('medchain:user-updated', { detail: next }));
 }
 
-function clearSession() {
+function clearSession(reason = 'logout') {
   localStorage.removeItem('medchain_user');
-  window.dispatchEvent(new CustomEvent('medchain:logout'));
+  window.dispatchEvent(new CustomEvent('medchain:logout', { detail: { reason } }));
 }
 
+let refreshInFlight = null;
+
 async function tryRefreshToken() {
-  const refresh = getRefreshToken();
-  if (!refresh) return false;
-  try {
-    const res = await fetch(`${API_URL}/auth/refresh-token`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${refresh}`,
-      },
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.access_token) return false;
-    persistTokens(data.access_token, data.refresh_token);
-    return true;
-  } catch {
-    return false;
-  }
+  if (refreshInFlight) return refreshInFlight;
+
+  refreshInFlight = (async () => {
+    const refresh = getRefreshToken();
+    if (!refresh) return false;
+    try {
+      const res = await fetch(`${API_URL}/auth/refresh-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${refresh}`,
+        },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.access_token) return false;
+      persistTokens(data.access_token, data.refresh_token);
+      return true;
+    } catch {
+      return false;
+    }
+  })().finally(() => {
+    refreshInFlight = null;
+  });
+
+  return refreshInFlight;
 }
 
 function formatApiError(data) {
@@ -93,7 +103,7 @@ async function request(endpoint, options = {}, retry = true) {
   if (res.status === 401 && retry) {
     const refreshed = await tryRefreshToken();
     if (refreshed) return request(endpoint, options, false);
-    clearSession();
+    clearSession('expired');
   }
 
   const data = await res.json().catch(() => ({}));
@@ -120,7 +130,7 @@ async function authorizedFetch(endpoint, options = {}, retry = true) {
   if (res.status === 401 && retry) {
     const refreshed = await tryRefreshToken();
     if (refreshed) return authorizedFetch(endpoint, options, false);
-    clearSession();
+    clearSession('expired');
   }
   return res;
 }
@@ -218,7 +228,12 @@ export const filesApi = {
       body: formData,
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(formatApiError(data) || 'Upload falhou');
+    if (!res.ok) {
+      const err = new Error(formatApiError(data) || 'Upload falhou');
+      err.status = res.status;
+      err.data = data;
+      throw err;
+    }
     return data;
   },
 };

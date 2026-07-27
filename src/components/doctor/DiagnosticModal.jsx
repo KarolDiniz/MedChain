@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { addDiagnostic } from '../../services/medicalRecordService';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
+import { ModalShell } from './ModalShell';
 import './Modal.css';
 
 export function DiagnosticModal({ doctorId, patientId, onClose, onSaved }) {
@@ -19,12 +20,15 @@ export function DiagnosticModal({ doctorId, patientId, onClose, onSaved }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!doctorId || !patientId) return;
+    if (!doctorId || !patientId) {
+      setError('Paciente ou médico inválido. Recarregue a página e tente novamente.');
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
       await addDiagnostic(doctorId, patientId, form);
-      onSaved();
+      onSaved?.('diagnostic');
     } catch (err) {
       setError(err?.message || 'Erro ao registrar diagnóstico.');
     } finally {
@@ -33,32 +37,27 @@ export function DiagnosticModal({ doctorId, patientId, onClose, onSaved }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content card card--padding" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Novo Diagnóstico</h2>
-          <button type="button" className="modal-close" onClick={onClose}>×</button>
+    <ModalShell title="Novo Diagnóstico" onClose={onClose}>
+      <form onSubmit={handleSubmit} className="modal-form">
+        {error && <p className="modal-error" role="alert">{error}</p>}
+        <Input label="Descrição" name="description" value={form.description} onChange={handleChange} required />
+        <Input label="Data" name="issue_date" type="date" value={form.issue_date} onChange={handleChange} />
+        <div className="input-group">
+          <label className="input-label" htmlFor="diagnostic-result">Resultado</label>
+          <textarea
+            id="diagnostic-result"
+            name="result"
+            value={form.result}
+            onChange={handleChange}
+            className="input-field textarea"
+            rows={3}
+          />
         </div>
-        <form onSubmit={handleSubmit} className="modal-form">
-          {error && <p className="modal-error">{error}</p>}
-          <Input label="Descrição" name="description" value={form.description} onChange={handleChange} required />
-          <Input label="Data" name="issue_date" type="date" value={form.issue_date} onChange={handleChange} />
-          <div className="input-group">
-            <label className="input-label">Resultado</label>
-            <textarea
-              name="result"
-              value={form.result}
-              onChange={handleChange}
-              className="input-field textarea"
-              rows={3}
-            />
-          </div>
-          <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
-            <Button type="submit" disabled={saving}>{saving ? 'Salvando...' : 'Registrar'}</Button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="modal-actions">
+          <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Salvando...' : 'Registrar'}</Button>
+        </div>
+      </form>
+    </ModalShell>
   );
 }

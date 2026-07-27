@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link2, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
+import { resolveDoctorId, resolvePatientPublicId, findPatientByAnyId } from '../../utils/ids';
 import { getAuditTimeline, getPatientsByDoctor } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { IntegrityBadge } from '../../components/common/IntegrityBadge';
@@ -15,8 +16,8 @@ export function AuditPage() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const doctorId = user?.public_id || user?.id;
-  const patientId = user?.patient_public_id || user?.id;
+  const doctorId = resolveDoctorId(user);
+  const patientId = resolvePatientPublicId(user) || user?.id;
 
   useEffect(() => {
     const load = async () => {
@@ -54,8 +55,7 @@ export function AuditPage() {
     };
   }, [events]);
 
-  const patientName = (pid) =>
-    patients.find((p) => String(p.patient_public_id || p.id) === String(pid))?.full_name || 'Paciente';
+  const patientName = (pid) => findPatientByAnyId(patients, pid)?.full_name || 'Paciente';
 
   return (
     <div className="audit-page">

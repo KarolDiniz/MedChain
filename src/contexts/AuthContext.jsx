@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../services/api';
 import { translateApiMessage } from '../utils/blockchain';
+import { useToast } from './ToastContext';
 
 const AuthContext = createContext(null);
 
@@ -35,6 +36,7 @@ function persistUser(userData) {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     let cancelled = false;
@@ -54,7 +56,6 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        // Hidrata imediatamente para não bloquear a UI
         if (!cancelled) setUser(parsed);
 
         try {
@@ -73,9 +74,10 @@ export function AuthProvider({ children }) {
           setUser(next);
           persistUser(next);
         } catch {
-          // Token inválido: api.js já tenta refresh; se falhar, limpa sessão
-          if (!cancelled && !localStorage.getItem('medchain_user')) {
-            setUser(null);
+          if (!cancelled) {
+            if (!localStorage.getItem('medchain_user')) {
+              setUser(null);
+            }
           }
         }
       } catch {
@@ -88,8 +90,11 @@ export function AuthProvider({ children }) {
 
     bootstrap();
 
-    const onLogout = () => {
+    const onLogout = (e) => {
       setUser(null);
+      if (e?.detail?.reason === 'expired') {
+        toast.warning('Sessão expirada. Faça login novamente.');
+      }
     };
     const onUserUpdated = (e) => {
       if (e?.detail) setUser(e.detail);
@@ -101,7 +106,7 @@ export function AuthProvider({ children }) {
       window.removeEventListener('medchain:logout', onLogout);
       window.removeEventListener('medchain:user-updated', onUserUpdated);
     };
-  }, []);
+  }, [toast]);
 
   const login = async (email, password) => {
     try {

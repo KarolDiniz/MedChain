@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { addPatient } from '../../services/medicalRecordService';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
-import { Card } from '../common/Card';
+import { ModalShell } from './ModalShell';
 import './Modal.css';
 
 const GENDERS = [
@@ -28,6 +28,8 @@ export function PatientModal({ doctorId, onClose, onSaved }) {
       state: '',
     },
   });
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,16 +44,13 @@ export function PatientModal({ doctorId, onClose, onSaved }) {
     }
   };
 
-  const [error, setError] = useState('');
-  const [saving, setSaving] = useState(false);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSaving(true);
     try {
       await addPatient(doctorId, form);
-      onSaved();
+      onSaved?.('patient');
     } catch (err) {
       setError(err?.message || 'Erro ao cadastrar paciente.');
     } finally {
@@ -60,51 +59,44 @@ export function PatientModal({ doctorId, onClose, onSaved }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <Card className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Novo Paciente</h2>
-          <button type="button" className="modal-close" onClick={onClose}>×</button>
+    <ModalShell title="Novo Paciente" onClose={onClose}>
+      {error && <p className="modal-error" role="alert">{error}</p>}
+      <p className="modal-note">
+        O paciente fará login com o e-mail e a senha definidos aqui (senha inicial).
+      </p>
+      <form onSubmit={handleSubmit} className="modal-form">
+        <h3>Dados pessoais</h3>
+        <Input label="Nome completo" name="full_name" value={form.full_name} onChange={handleChange} required />
+        <Input label="E-mail" name="email" type="email" value={form.email} onChange={handleChange} required />
+        <Input label="Senha" name="password" type="password" value={form.password} onChange={handleChange} required minLength={6} placeholder="Mínimo 6 caracteres" />
+        <Input label="Telefone" name="cellphone" value={form.cellphone} onChange={handleChange} placeholder="(11) 99999-9999" />
+        <Input label="Data de nascimento" name="birth_date" type="date" value={form.birth_date} onChange={handleChange} />
+        <div className="input-group">
+          <label className="input-label" htmlFor="patient-gender">Gênero</label>
+          <select id="patient-gender" name="gender" value={form.gender} onChange={handleChange} className="input-field">
+            {GENDERS.map((g) => (
+              <option key={g.value} value={g.value}>{g.label}</option>
+            ))}
+          </select>
         </div>
-        {error && <p className="modal-error" style={{ color: 'var(--danger)' }}>{error}</p>}
-        <p className="modal-note">
-          O paciente fará login com o e-mail e a senha definidos aqui (senha inicial).
-          Em produção, o paciente deveria trocar essa senha no primeiro acesso — fluxo fora do escopo atual do TCC.
-        </p>
-        <form onSubmit={handleSubmit} className="modal-form">
-          <h3>Dados pessoais</h3>
-          <Input label="Nome completo" name="full_name" value={form.full_name} onChange={handleChange} required />
-          <Input label="E-mail" name="email" type="email" value={form.email} onChange={handleChange} required />
-          <Input label="Senha" name="password" type="password" value={form.password} onChange={handleChange} required minLength={6} placeholder="Mínimo 6 caracteres" />
-          <Input label="Telefone" name="cellphone" value={form.cellphone} onChange={handleChange} placeholder="(11) 99999-9999" />
-          <Input label="Data de nascimento" name="birth_date" type="date" value={form.birth_date} onChange={handleChange} />
-          <div className="input-group">
-            <label className="input-label">Gênero</label>
-            <select name="gender" value={form.gender} onChange={handleChange} className="input-field">
-              {GENDERS.map((g) => (
-                <option key={g.value} value={g.value}>{g.label}</option>
-              ))}
-            </select>
-          </div>
 
-          <h3>Endereço</h3>
-          <Input label="Rua" name="address.street" value={form.address.street} onChange={handleChange} />
-          <div className="form-row">
-            <Input label="Número" name="address.number" value={form.address.number} onChange={handleChange} />
-            <Input label="Complemento" name="address.complement" value={form.address.complement} onChange={handleChange} />
-          </div>
-          <Input label="Bairro" name="address.neighborhood" value={form.address.neighborhood} onChange={handleChange} />
-          <div className="form-row">
-            <Input label="Cidade" name="address.city" value={form.address.city} onChange={handleChange} />
-            <Input label="Estado" name="address.state" value={form.address.state} onChange={handleChange} placeholder="SP" />
-          </div>
+        <h3>Endereço</h3>
+        <Input label="Rua" name="address.street" value={form.address.street} onChange={handleChange} />
+        <div className="form-row">
+          <Input label="Número" name="address.number" value={form.address.number} onChange={handleChange} />
+          <Input label="Complemento" name="address.complement" value={form.address.complement} onChange={handleChange} />
+        </div>
+        <Input label="Bairro" name="address.neighborhood" value={form.address.neighborhood} onChange={handleChange} />
+        <div className="form-row">
+          <Input label="Cidade" name="address.city" value={form.address.city} onChange={handleChange} />
+          <Input label="Estado" name="address.state" value={form.address.state} onChange={handleChange} placeholder="SP" />
+        </div>
 
-          <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
-            <Button type="submit" disabled={saving}>{saving ? 'Salvando...' : 'Cadastrar'}</Button>
-          </div>
-        </form>
-      </Card>
-    </div>
+        <div className="modal-actions">
+          <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Salvando...' : 'Cadastrar'}</Button>
+        </div>
+      </form>
+    </ModalShell>
   );
 }

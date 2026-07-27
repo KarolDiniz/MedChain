@@ -9,6 +9,7 @@ import {
   getDoctorById,
   getMedicalRecordsByDoctor,
 } from '../../services/medicalRecordService';
+import { resolveDoctorId, sameId } from '../../utils/ids';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { IntegrityBadge } from '../../components/common/IntegrityBadge';
@@ -50,15 +51,15 @@ export function MedicalRecordDetailPage() {
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const sortDropdownRef = useRef(null);
 
-  const doctorId = user?.id || user?.public_id;
-  const isAuthorized = record && String(record.doctor_id) === String(doctorId);
+  const doctorId = resolveDoctorId(user);
+  const isAuthorized = record && sameId(record.doctor_id, doctorId);
 
   const loadData = async () => {
     if (!id) return;
     setLoading(true);
     try {
       const initial = await getMedicalRecordById(id);
-      if (!initial || String(initial.doctor_id) !== String(doctorId)) {
+      if (!initial || !sameId(initial.doctor_id, doctorId)) {
         setRecord(null);
         setPatient(null);
         setDoctor(null);
@@ -70,7 +71,7 @@ export function MedicalRecordDetailPage() {
         getDoctorById(initial.doctor_id),
       ]);
       const group = recordsForDoctor.find(
-        (r) => String(r.patient_id) === String(initial.patient_id)
+        (r) => sameId(r.patient_id, initial.patient_id)
       ) || initial;
       setRecord(group);
       setPatient(p);
@@ -98,11 +99,18 @@ export function MedicalRecordDetailPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSaved = () => {
+  const handleSaved = (kind) => {
     setShowConsultationModal(false);
     setShowDiagnosticModal(false);
     setShowCertificateModal(false);
     setShowFileModal(false);
+    const messages = {
+      consultation: 'Consulta registrada com sucesso.',
+      diagnostic: 'Diagnóstico registrado com sucesso.',
+      certificate: 'Atestado emitido com sucesso.',
+      file: 'Arquivo anexado com sucesso.',
+    };
+    toast.success(messages[kind] || 'Registro salvo com sucesso.');
     loadData();
   };
 

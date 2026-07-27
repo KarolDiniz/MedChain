@@ -42,7 +42,13 @@ export function Sidebar() {
 
   const items = isDoctor() ? doctorNavItems : patientNavItems;
 
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    try {
+      return window.localStorage.getItem('theme') === 'dark';
+    } catch {
+      return false;
+    }
+  });
   const [pinned, setPinned] = useState(() => {
     try {
       return window.localStorage.getItem(PIN_KEY) === '1';
@@ -75,20 +81,11 @@ export function Sidebar() {
   };
 
   useEffect(() => {
-    const stored = window.localStorage.getItem('theme');
-    if (stored === 'dark') {
-      setIsDark(true);
-      document.body.classList.add('theme-dark');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isDark) {
-      document.body.classList.add('theme-dark');
-      window.localStorage.setItem('theme', 'dark');
-    } else {
-      document.body.classList.remove('theme-dark');
-      window.localStorage.setItem('theme', 'light');
+    document.body.classList.toggle('theme-dark', isDark);
+    try {
+      window.localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    } catch {
+      /* ignore */
     }
   }, [isDark]);
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { addConsultation } from '../../services/medicalRecordService';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
-import { Card } from '../common/Card';
+import { ModalShell } from './ModalShell';
 import './Modal.css';
 
 const initialPrescriptionItem = () => ({ medication_name: '', dosage: '', frequency: '', treatment_duration: '' });
@@ -36,7 +36,10 @@ export function ConsultationModal({ doctorId, patientId, onClose, onSaved }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!doctorId || !patientId) return;
+    if (!doctorId || !patientId) {
+      setError('Paciente ou médico inválido. Recarregue a página e tente novamente.');
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
@@ -45,7 +48,7 @@ export function ConsultationModal({ doctorId, patientId, onClose, onSaved }) {
         ...form,
         prescription_items: items.length > 0 ? items : undefined,
       });
-      onSaved();
+      onSaved?.('consultation');
     } catch (err) {
       setError(err?.message || 'Erro ao registrar consulta.');
     } finally {
@@ -54,88 +57,84 @@ export function ConsultationModal({ doctorId, patientId, onClose, onSaved }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <Card className="modal-content modal-content--wide" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Nova Consulta</h2>
-          <button type="button" className="modal-close" onClick={onClose}>×</button>
-        </div>
-        <form onSubmit={handleSubmit} className="modal-form">
-          {error && <p className="modal-error">{error}</p>}
-          <Input
-            label="Queixa principal"
-            name="chief_complaint"
-            value={form.chief_complaint}
+    <ModalShell title="Nova Consulta" onClose={onClose} wide>
+      <form onSubmit={handleSubmit} className="modal-form">
+        {error && <p className="modal-error" role="alert">{error}</p>}
+        <Input
+          label="Queixa principal"
+          name="chief_complaint"
+          value={form.chief_complaint}
+          onChange={handleChange}
+          required
+        />
+        <div className="input-group">
+          <label className="input-label" htmlFor="consultation-hpi">História da doença atual</label>
+          <textarea
+            id="consultation-hpi"
+            name="history_of_present_illness"
+            value={form.history_of_present_illness}
             onChange={handleChange}
-            required
+            className="input-field textarea"
+            rows={3}
           />
-          <div className="input-group">
-            <label className="input-label">História da doença atual</label>
-            <textarea
-              name="history_of_present_illness"
-              value={form.history_of_present_illness}
-              onChange={handleChange}
-              className="input-field textarea"
-              rows={3}
-            />
-          </div>
-          <Input label="Diagnóstico" name="diagnosis" value={form.diagnosis} onChange={handleChange} required />
-          <div className="input-group">
-            <label className="input-label">Plano de tratamento</label>
-            <textarea
-              name="treatment_plan"
-              value={form.treatment_plan}
-              onChange={handleChange}
-              className="input-field textarea"
-              rows={3}
-            />
-          </div>
+        </div>
+        <Input label="Diagnóstico" name="diagnosis" value={form.diagnosis} onChange={handleChange} required />
+        <div className="input-group">
+          <label className="input-label" htmlFor="consultation-plan">Plano de tratamento</label>
+          <textarea
+            id="consultation-plan"
+            name="treatment_plan"
+            value={form.treatment_plan}
+            onChange={handleChange}
+            className="input-field textarea"
+            rows={3}
+          />
+        </div>
 
-          <div className="consultation-modal-prescription">
-            <h3 className="prescription-section-title">Prescrição (opcional)</h3>
-            <p className="prescription-section-hint">A prescrição é registrada junto com a consulta e não poderá ser alterada depois.</p>
-            {prescriptionItems.map((item, i) => (
-              <div key={i} className="prescription-item">
-                <h4>Medicamento {i + 1}</h4>
+        <div className="consultation-modal-prescription">
+          <h3 className="prescription-section-title">Prescrição (opcional)</h3>
+          <p className="prescription-section-hint">A prescrição é registrada junto com a consulta e não poderá ser alterada depois.</p>
+          {prescriptionItems.map((item, i) => (
+            <div key={i} className="prescription-item">
+              <h4>Medicamento {i + 1}</h4>
+              <Input
+                label="Nome do medicamento"
+                value={item.medication_name}
+                onChange={(e) => updatePrescriptionItem(i, 'medication_name', e.target.value)}
+                placeholder="Ex: Paracetamol 750mg"
+              />
+              <div className="form-row">
                 <Input
-                  label="Nome do medicamento"
-                  value={item.medication_name}
-                  onChange={(e) => updatePrescriptionItem(i, 'medication_name', e.target.value)}
-                  placeholder="Ex: Paracetamol 750mg"
+                  label="Dosagem"
+                  value={item.dosage}
+                  onChange={(e) => updatePrescriptionItem(i, 'dosage', e.target.value)}
+                  placeholder="1 comprimido"
                 />
-                <div className="form-row">
-                  <Input
-                    label="Dosagem"
-                    value={item.dosage}
-                    onChange={(e) => updatePrescriptionItem(i, 'dosage', e.target.value)}
-                    placeholder="1 comprimido"
-                  />
-                  <Input
-                    label="Frequência"
-                    value={item.frequency}
-                    onChange={(e) => updatePrescriptionItem(i, 'frequency', e.target.value)}
-                    placeholder="8/8h"
-                  />
-                </div>
                 <Input
-                  label="Duração do tratamento"
-                  value={item.treatment_duration}
-                  onChange={(e) => updatePrescriptionItem(i, 'treatment_duration', e.target.value)}
-                  placeholder="5 dias"
+                  label="Frequência"
+                  value={item.frequency}
+                  onChange={(e) => updatePrescriptionItem(i, 'frequency', e.target.value)}
+                  placeholder="8/8h"
                 />
               </div>
-            ))}
-            <Button type="button" variant="outline" size="sm" onClick={addPrescriptionItem}>
-              + Adicionar medicamento
-            </Button>
-          </div>
+              <Input
+                label="Duração do tratamento"
+                value={item.treatment_duration}
+                onChange={(e) => updatePrescriptionItem(i, 'treatment_duration', e.target.value)}
+                placeholder="5 dias"
+              />
+            </div>
+          ))}
+          <Button type="button" variant="outline" size="sm" onClick={addPrescriptionItem}>
+            + Adicionar medicamento
+          </Button>
+        </div>
 
-          <div className="modal-actions">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
-            <Button type="submit" disabled={saving}>{saving ? 'Salvando...' : 'Registrar consulta'}</Button>
-          </div>
-        </form>
-      </Card>
-    </div>
+        <div className="modal-actions">
+          <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Salvando...' : 'Registrar consulta'}</Button>
+        </div>
+      </form>
+    </ModalShell>
   );
 }
