@@ -115,7 +115,12 @@ export function AuditPage() {
                   </span>
                 </div>
                 {event.kind === 'file' ? (
-                  <IntegrityBadge hash={event.hash} label="Arquivo" showVerify={false} />
+                  <IntegrityBadge
+                    hash={event.hash}
+                    blockchainTxId={event.blockchain_tx_id}
+                    label="Arquivo"
+                    showVerify={false}
+                  />
                 ) : (
                   <IntegrityBadge
                     publicId={event.public_id}

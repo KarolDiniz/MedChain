@@ -304,7 +304,7 @@ export async function getAuditTimeline(doctorId, patientId) {
         doctor_id: group.doctor_id,
         public_id: null,
         hash: f.hash,
-        blockchain_tx_id: null,
+        blockchain_tx_id: f.blockchain_tx_id || null,
         summary: f.description || f.format || 'Arquivo',
         verifyDisabled: true,
       });

@@ -11,7 +11,6 @@ import {
   FileText,
   Calendar,
   RotateCcw,
-  Loader2,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
@@ -177,14 +176,13 @@ export function MedicalRecordsPage() {
               </div>
             </div>
           </div>
-          <div className="records-loading">
-            <Loader2 size={36} className="records-loading-spinner-icon" />
-            <p>Carregando prontuários...</p>
+          <div className="records-loading" aria-busy="true" aria-label="Carregando prontuários">
             <div className="records-grid records-grid--skeleton">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="record-card-skeleton" aria-hidden>
                   <div className="record-card-skeleton-avatar" />
                   <div className="record-card-skeleton-body">
+                    <div className="record-card-skeleton-line record-card-skeleton-line--title" />
                     <div className="record-card-skeleton-line" />
                     <div className="record-card-skeleton-line record-card-skeleton-line--short" />
                   </div>

@@ -226,7 +226,13 @@ export function FileAttachment({ file, showIntegrity = true, compact = false }) 
           {previewError && !modalOpen && <p className="file-attachment-error">{previewError}</p>}
 
           {showIntegrity && (
-            <IntegrityBadge hash={file.hash} label="Arquivo" showVerify={false} compact />
+            <IntegrityBadge
+              hash={file.hash}
+              blockchainTxId={file.blockchain_tx_id}
+              label="Arquivo"
+              showVerify={false}
+              compact
+            />
           )}
         </div>
       </div>
