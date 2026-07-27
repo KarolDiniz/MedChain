@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Stethoscope,
   FileText,
+  FileCheck,
   Calendar,
   RotateCcw,
 } from 'lucide-react';
@@ -27,6 +28,7 @@ import {
   getPaginationMeta,
 } from '../../utils/pagination';
 import '../../components/common/ListToolbar.css';
+import '../../components/common/ListSurface.css';
 import './MedicalRecordsPage.css';
 
 const SORT_RECENT = 'recent';
@@ -147,9 +149,18 @@ export function MedicalRecordsPage() {
   const hasActiveFilters = Boolean(searchQuery.trim());
   const clearAllFilters = () => setSearchQuery('');
 
+  const animationProps = reducedMotion
+    ? { initial: false, animate: false }
+    : { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] } };
+
   return (
-    <div className="medical-records-page">
-      <header className="records-header">
+    <motion.div className="medical-records-page" {...animationProps}>
+      <motion.header
+        className="records-header"
+        initial={reducedMotion ? false : { opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+      >
         <div className="records-header-content">
           <div className="records-header-icon-wrap" aria-hidden>
             <ClipboardList size={28} strokeWidth={1.8} />
@@ -162,29 +173,27 @@ export function MedicalRecordsPage() {
         <Button onClick={() => setShowModal(true)} className="records-btn-new">
           + Abrir ficha
         </Button>
-      </header>
+      </motion.header>
 
       {loading ? (
         <div className="records-content">
-          <div className="list-filters-sticky">
-            <div className="list-toolbar">
-              <div className="list-toolbar-row">
-                <div className="list-search list-search--disabled">
-                  <Search size={18} className="list-search-icon" />
-                  <input type="text" className="list-search-input" placeholder="Buscar..." disabled aria-hidden />
-                </div>
+          <div className="list-toolbar">
+            <div className="list-toolbar-row">
+              <div className="list-search list-search--disabled">
+                <Search size={18} className="list-search-icon" />
+                <input type="text" className="list-search-input" placeholder="Buscar..." disabled aria-hidden />
               </div>
             </div>
           </div>
           <div className="records-loading" aria-busy="true" aria-label="Carregando prontuários">
-            <div className="records-grid records-grid--skeleton">
+            <div className="list-entity-grid">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="record-card-skeleton" aria-hidden>
-                  <div className="record-card-skeleton-avatar" />
-                  <div className="record-card-skeleton-body">
-                    <div className="record-card-skeleton-line record-card-skeleton-line--title" />
-                    <div className="record-card-skeleton-line" />
-                    <div className="record-card-skeleton-line record-card-skeleton-line--short" />
+                <div key={i} className="list-entity-skeleton" aria-hidden>
+                  <div className="list-entity-skeleton-avatar" />
+                  <div className="list-entity-skeleton-body">
+                    <div className="list-entity-skeleton-line list-entity-skeleton-line--title" />
+                    <div className="list-entity-skeleton-line" />
+                    <div className="list-entity-skeleton-line list-entity-skeleton-line--short" />
                   </div>
                 </div>
               ))}
@@ -287,7 +296,7 @@ export function MedicalRecordsPage() {
 
           {filteredRecords.length === 0 ? (
             <Card>
-              <div className="records-no-results">
+              <div className="list-no-results records-no-results">
                 <p>
                   {hasActiveFilters
                     ? `Nenhum prontuário encontrado${searchQuery ? ` para "${searchQuery}"` : ''}.`
@@ -303,7 +312,7 @@ export function MedicalRecordsPage() {
           ) : (
             <>
               <motion.div
-                className="records-grid"
+                className="list-entity-grid records-grid"
                 variants={reducedMotion ? {} : { visible: { transition: { staggerChildren: 0.035, delayChildren: 0.04 } } }}
                 initial={reducedMotion ? false : 'hidden'}
                 animate={reducedMotion ? false : 'visible'}
@@ -326,10 +335,10 @@ export function MedicalRecordsPage() {
                     >
                       <Link
                         to={href}
-                        className="record-card"
+                        className="list-entity-card record-card"
                         aria-label={`Abrir prontuário de ${patient?.full_name || 'paciente'}`}
                       >
-                        <div className="record-card-avatar">
+                        <div className="list-entity-avatar record-card-avatar">
                           <Avatar
                             userId={mr.patient_id}
                             isDoctor={false}
@@ -339,8 +348,8 @@ export function MedicalRecordsPage() {
                             initials={getInitials(patient?.full_name)}
                           />
                         </div>
-                        <div className="record-card-body">
-                          <h3 className="record-card-name">{patient?.full_name || 'Paciente'}</h3>
+                        <div className="list-entity-body record-card-body">
+                          <h3 className="list-entity-name record-card-name">{patient?.full_name || 'Paciente'}</h3>
                           <div className="record-card-date">
                             <Calendar size={14} />
                             <span>
@@ -352,21 +361,33 @@ export function MedicalRecordsPage() {
                             </span>
                           </div>
                           <div className="record-card-badges">
-                            <span className="record-badge record-badge--consult">
-                              <Stethoscope size={12} />
-                              {consultationsCount}
+                            <span
+                              className="record-badge record-badge--consult"
+                              title={`${consultationsCount} consulta${consultationsCount !== 1 ? 's' : ''}`}
+                            >
+                              <Stethoscope size={12} aria-hidden />
+                              <span className="record-badge-text">Consultas</span>
+                              <strong>{consultationsCount}</strong>
                             </span>
-                            <span className="record-badge record-badge--diagnostic">
-                              <FileText size={12} />
-                              {diagnosticsCount}
+                            <span
+                              className="record-badge record-badge--diagnostic"
+                              title={`${diagnosticsCount} diagnóstico${diagnosticsCount !== 1 ? 's' : ''}`}
+                            >
+                              <FileText size={12} aria-hidden />
+                              <span className="record-badge-text">Diag.</span>
+                              <strong>{diagnosticsCount}</strong>
                             </span>
-                            <span className="record-badge record-badge--cert">
-                              <FileText size={12} />
-                              {certificatesCount}
+                            <span
+                              className="record-badge record-badge--cert"
+                              title={`${certificatesCount} atestado${certificatesCount !== 1 ? 's' : ''}`}
+                            >
+                              <FileCheck size={12} aria-hidden />
+                              <span className="record-badge-text">Atest.</span>
+                              <strong>{certificatesCount}</strong>
                             </span>
                           </div>
                         </div>
-                        <div className="record-card-action" aria-hidden>
+                        <div className="list-entity-action record-card-action" aria-hidden>
                           <ChevronRight size={20} />
                         </div>
                       </Link>
@@ -406,6 +427,6 @@ export function MedicalRecordsPage() {
           onSaved={() => setShowModal(false)}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

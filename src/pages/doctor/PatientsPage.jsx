@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Users, Search, X, Mail, Phone, Calendar, ChevronRight, Loader2, ArrowUpDown, RotateCcw } from 'lucide-react';
+import { Users, Search, X, Mail, Phone, Calendar, ChevronRight, ArrowUpDown, RotateCcw } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { getPatientsByDoctor } from '../../services/medicalRecordService';
@@ -17,6 +17,7 @@ import { Avatar } from '../../components/common/Avatar';
 import { Pagination } from '../../components/common/Pagination';
 import { PatientModal } from '../../components/doctor/PatientModal';
 import '../../components/common/ListToolbar.css';
+import '../../components/common/ListSurface.css';
 import './PatientsPage.css';
 
 function getInitials(name) {
@@ -221,19 +222,15 @@ export function PatientsPage() {
               </div>
             </div>
           </div>
-          <div className="patients-loading">
-            <div className="patients-loading-spinner">
-              <Loader2 size={40} strokeWidth={2} />
-            </div>
-            <p>Carregando pacientes...</p>
-            <div className="patients-grid patients-grid--skeleton">
+          <div className="patients-loading" aria-busy="true" aria-label="Carregando pacientes">
+            <div className="list-entity-grid">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="patient-card-skeleton">
-                  <div className="patient-card-skeleton-avatar" />
-                  <div className="patient-card-skeleton-body">
-                    <div className="patient-card-skeleton-line patient-card-skeleton-name" />
-                    <div className="patient-card-skeleton-line patient-card-skeleton-detail" />
-                    <div className="patient-card-skeleton-line patient-card-skeleton-detail patient-card-skeleton-detail--short" />
+                <div key={i} className="list-entity-skeleton" aria-hidden>
+                  <div className="list-entity-skeleton-avatar" />
+                  <div className="list-entity-skeleton-body">
+                    <div className="list-entity-skeleton-line list-entity-skeleton-line--title" />
+                    <div className="list-entity-skeleton-line" />
+                    <div className="list-entity-skeleton-line list-entity-skeleton-line--short" />
                   </div>
                 </div>
               ))}
@@ -385,7 +382,7 @@ export function PatientsPage() {
               transition={reducedMotion ? undefined : { duration: 0.3 }}
             >
               <Card>
-                <div className="patients-no-results">
+                <div className="list-no-results patients-no-results">
                   <p>
                     {hasActiveFilters
                       ? `Nenhum paciente encontrado${searchQuery ? ` para "${searchQuery}"` : ''}${letterFilter ? ` com inicial "${letterFilter}"` : ''}.`
@@ -402,7 +399,7 @@ export function PatientsPage() {
           ) : (
             <>
               <motion.div
-                className="patients-grid"
+                className="list-entity-grid patients-grid"
                 variants={reducedMotion ? {} : {
                   visible: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
                 }}
@@ -420,10 +417,10 @@ export function PatientsPage() {
                   >
                     <Link
                       to={`/doctor/patients/${resolvePatientRouteId(p)}`}
-                      className="patient-card"
+                      className="list-entity-card patient-card"
                       aria-label={`Abrir ficha de ${p.full_name}`}
                     >
-                      <div className="patient-card-avatar">
+                      <div className="list-entity-avatar patient-card-avatar">
                         <Avatar
                           userId={resolvePatientRouteId(p) || p.uid || p.id}
                           isDoctor={false}
@@ -433,8 +430,8 @@ export function PatientsPage() {
                           initials={getInitials(p.full_name)}
                         />
                       </div>
-                      <div className="patient-card-body">
-                        <h3 className="patient-card-name">{p.full_name}</h3>
+                      <div className="list-entity-body patient-card-body">
+                        <h3 className="list-entity-name patient-card-name">{p.full_name}</h3>
                         <div className="patient-card-details">
                           {p.email && (
                             <span className="patient-card-detail">
@@ -456,7 +453,7 @@ export function PatientsPage() {
                           )}
                         </div>
                       </div>
-                      <div className="patient-card-action" aria-hidden>
+                      <div className="list-entity-action patient-card-action" aria-hidden>
                         <ChevronRight size={20} />
                       </div>
                     </Link>
