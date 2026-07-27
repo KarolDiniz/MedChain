@@ -18,15 +18,21 @@
 
 .settings-card--profile {
   grid-column: span 12;
+  padding: 1.5rem 1.75rem;
 }
 
 .settings-card--half {
   grid-column: span 6;
+  padding: 1.35rem 1.5rem;
 }
 
 @media (max-width: 800px) {
   .settings-card--half {
     grid-column: span 12;
+  }
+
+  .settings-card--profile {
+    padding: 1.25rem 1.15rem;
   }
 }
 
@@ -40,89 +46,251 @@
   box-shadow: var(--glow-primary);
 }
 
-.settings-card-header {
+/* ----- Perfil: identidade ----- */
+.settings-profile-top {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.settings-card-icon {
-  color: var(--color-primary);
+.settings-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.settings-profile-identity-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.settings-profile-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem 0.85rem;
+}
+
+.settings-profile-name {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  line-height: 1.25;
+}
+
+.settings-role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: #0f766e;
+  background: rgba(15, 118, 110, 0.12);
+  border: 1px solid rgba(15, 118, 110, 0.2);
+}
+
+body.theme-dark .settings-role-badge {
+  color: #5eead4;
+  background: rgba(45, 212, 191, 0.12);
+  border-color: rgba(45, 212, 191, 0.28);
+}
+
+.settings-profile-subtitle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-text-light);
+  line-height: 1.4;
+}
+
+.settings-profile-section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+@media (max-width: 560px) {
+  .settings-profile-top {
+    flex-direction: column-reverse;
+  }
+
+  .settings-profile-identity {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* ----- Campos em grid ----- */
+.settings-fields {
+  display: grid;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.settings-fields--doctor {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-fields--patient {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 720px) {
+  .settings-fields--doctor,
+  .settings-fields--patient {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1100px) {
+  .settings-fields--doctor {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.settings-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  background: rgba(13, 115, 119, 0.05);
+  border: 1px solid rgba(13, 115, 119, 0.12);
+}
+
+body.theme-dark .settings-field {
+  background: rgba(45, 212, 191, 0.06);
+  border-color: rgba(45, 212, 191, 0.16);
+}
+
+.settings-field-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: #0f766e;
+  background: rgba(15, 118, 110, 0.12);
+}
+
+body.theme-dark .settings-field-icon {
+  color: #5eead4;
+  background: rgba(45, 212, 191, 0.14);
+}
+
+.settings-field-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.settings-field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.settings-field-value {
+  font-size: 0.98rem;
+  font-weight: 550;
+  color: var(--color-text);
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.settings-profile-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: rgba(100, 116, 139, 0.08);
+  border: 1px solid rgba(100, 116, 139, 0.14);
+}
+
+body.theme-dark .settings-profile-note {
+  background: rgba(148, 163, 184, 0.08);
+  border-color: rgba(148, 163, 184, 0.16);
+}
+
+.settings-profile-note-icon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: var(--color-text-light);
+}
+
+.settings-profile-note p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--color-text-light);
+}
+
+/* ----- Cards secundários ----- */
+.settings-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.settings-card-icon-wrap {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #0f766e;
+  background: rgba(15, 118, 110, 0.12);
+}
+
+body.theme-dark .settings-card-icon-wrap {
+  color: #5eead4;
+  background: rgba(45, 212, 191, 0.14);
 }
 
 .settings-card-header h2 {
-  font-size: 1.15rem;
-  font-weight: 600;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 650;
   color: var(--color-text);
+}
+
+.settings-card-lede {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-text-light);
 }
 
 .settings-card-desc {
   font-size: 0.9rem;
   color: var(--color-text-light);
   line-height: 1.5;
-  margin: 1rem 0 0;
-  max-width: 70ch;
-}
-
-.settings-profile {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.settings-profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
-}
-
-.settings-profile-info strong {
-  font-size: 1.2rem;
-  color: var(--color-text);
-}
-
-.settings-profile-info span {
-  font-size: 0.9rem;
-  color: var(--color-text-light);
-}
-
-.settings-profile-role {
-  font-weight: 600;
-  color: var(--color-primary) !important;
-  margin-top: 0.25rem;
-}
-
-.settings-profile-meta {
-  font-size: 0.85rem !important;
-}
-
-.settings-profile-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 0.75rem 1.5rem;
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--color-border);
-  width: 100%;
-}
-
-.settings-detail-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.settings-detail-label {
-  font-size: 0.8rem;
-  color: var(--color-text-light);
-}
-
-.settings-detail-value {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--color-text);
-  word-break: break-word;
+  margin: 0;
+  max-width: 52ch;
 }

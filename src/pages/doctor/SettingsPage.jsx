@@ -1,4 +1,4 @@
-import { User, Palette, Shield } from 'lucide-react';
+import { User, Palette, Shield, Mail, BadgeCheck, Stethoscope, AtSign, Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { authApi } from '../../services/api';
@@ -6,6 +6,24 @@ import { Card } from '../../components/common/Card';
 import { Avatar } from '../../components/common/Avatar';
 import { useToast } from '../../contexts/ToastContext';
 import './SettingsPage.css';
+
+const SPECIALTY_LABELS = {
+  GENERAL: 'Clínica Geral',
+  CARDIOLOGY: 'Cardiologia',
+  DERMATOLOGY: 'Dermatologia',
+  PEDIATRICS: 'Pediatria',
+  ORTHOPEDICS: 'Ortopedia',
+  NEUROLOGY: 'Neurologia',
+  PSYCHIATRY: 'Psiquiatria',
+  GYNECOLOGY: 'Ginecologia',
+  OTHER: 'Outra',
+};
+
+function formatSpecialty(value) {
+  if (!value) return '—';
+  const key = String(value).toUpperCase();
+  return SPECIALTY_LABELS[key] || String(value);
+}
 
 export function SettingsPage() {
   const { user, isDoctor } = useAuth();
@@ -53,80 +71,135 @@ export function SettingsPage() {
   }, []);
 
   const display = profile || user;
+  const doctor = isDoctor();
 
   return (
     <div className="settings-page">
       <header className="page-header">
         <div>
           <h1>Configurações</h1>
-          <p>Dados da conta sincronizados com o servidor{loadingMe ? '…' : ''}</p>
+          <p>
+            Conta e preferências
+            {loadingMe ? ' · sincronizando…' : ''}
+          </p>
         </div>
       </header>
 
       <div className="settings-grid">
         <Card className="settings-card settings-card--profile">
+          <div className="settings-profile-top">
+            <div className="settings-profile-identity">
+              <Avatar
+                userId={display?.id || display?.patient_public_id}
+                isDoctor={doctor}
+                size={88}
+                editable
+                variant="profile"
+              />
+              <div className="settings-profile-identity-text">
+                <div className="settings-profile-title-row">
+                  <h2 className="settings-profile-name">
+                    {display?.full_name || display?.username || 'Usuário'}
+                  </h2>
+                  <span className="settings-role-badge">
+                    {doctor ? 'Médico' : 'Paciente'}
+                  </span>
+                </div>
+                <p className="settings-profile-subtitle">
+                  Clique na foto para alterar o avatar neste dispositivo
+                </p>
+              </div>
+            </div>
+            <div className="settings-profile-section-label" aria-hidden>
+              <User size={16} />
+              <span>Perfil</span>
+            </div>
+          </div>
+
+          <div className={`settings-fields ${doctor ? 'settings-fields--doctor' : 'settings-fields--patient'}`}>
+            <div className="settings-field">
+              <span className="settings-field-icon" aria-hidden>
+                <Mail size={16} />
+              </span>
+              <div className="settings-field-body">
+                <span className="settings-field-label">E-mail</span>
+                <span className="settings-field-value">{display?.email || '—'}</span>
+              </div>
+            </div>
+
+            <div className="settings-field">
+              <span className="settings-field-icon" aria-hidden>
+                <AtSign size={16} />
+              </span>
+              <div className="settings-field-body">
+                <span className="settings-field-label">Usuário</span>
+                <span className="settings-field-value">{display?.username || '—'}</span>
+              </div>
+            </div>
+
+            {doctor && (
+              <div className="settings-field">
+                <span className="settings-field-icon" aria-hidden>
+                  <BadgeCheck size={16} />
+                </span>
+                <div className="settings-field-body">
+                  <span className="settings-field-label">CRM</span>
+                  <span className="settings-field-value">{display?.CRM || '—'}</span>
+                </div>
+              </div>
+            )}
+
+            {doctor && (
+              <div className="settings-field">
+                <span className="settings-field-icon" aria-hidden>
+                  <Stethoscope size={16} />
+                </span>
+                <div className="settings-field-body">
+                  <span className="settings-field-label">Especialidade</span>
+                  <span className="settings-field-value">{formatSpecialty(display?.specialty)}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="settings-profile-note" role="note">
+            <Info size={16} className="settings-profile-note-icon" />
+            <p>
+              A foto fica só neste navegador. Dados cadastrais oficiais vêm do servidor;
+              alterações clínicas de pacientes são feitas nas fichas correspondentes.
+            </p>
+          </div>
+        </Card>
+
+        <Card className="settings-card settings-card--half">
           <div className="settings-card-header">
-            <User size={22} className="settings-card-icon" />
-            <h2>Perfil</h2>
-          </div>
-          <div className="settings-profile">
-            <Avatar
-              userId={display?.id || display?.patient_public_id}
-              isDoctor={isDoctor()}
-              size={72}
-              editable
-              variant="profile"
-            />
-            <div className="settings-profile-info">
-              <strong>{display?.full_name || display?.username || 'Usuário'}</strong>
-              <span className="settings-profile-role">{isDoctor() ? 'Médico' : 'Paciente'}</span>
-            </div>
-          </div>
-          <div className="settings-profile-details">
-            <div className="settings-detail-item">
-              <span className="settings-detail-label">E-mail</span>
-              <span className="settings-detail-value">{display?.email || '—'}</span>
-            </div>
-            {isDoctor() && (
-              <div className="settings-detail-item">
-                <span className="settings-detail-label">CRM</span>
-                <span className="settings-detail-value">{display?.CRM || '—'}</span>
-              </div>
-            )}
-            {isDoctor() && (
-              <div className="settings-detail-item">
-                <span className="settings-detail-label">Especialidade</span>
-                <span className="settings-detail-value">{display?.specialty || '—'}</span>
-              </div>
-            )}
-            <div className="settings-detail-item">
-              <span className="settings-detail-label">Usuário</span>
-              <span className="settings-detail-value">{display?.username || '—'}</span>
+            <span className="settings-card-icon-wrap">
+              <Palette size={20} />
+            </span>
+            <div>
+              <h2>Aparência</h2>
+              <p className="settings-card-lede">Tema do aplicativo</p>
             </div>
           </div>
           <p className="settings-card-desc">
-            Foto de perfil fica apenas neste navegador (local). Edição cadastral completa pode ser feita pelo fluxo clínico do médico.
+            Use o botão Sol/Lua no menu lateral para alternar entre claro e escuro.
+            A preferência é salva neste dispositivo.
           </p>
         </Card>
 
         <Card className="settings-card settings-card--half">
           <div className="settings-card-header">
-            <Palette size={22} className="settings-card-icon" />
-            <h2>Aparência</h2>
-          </div>
-          <p className="settings-card-desc">
-            O tema claro/escuro é alterado no menu lateral (botão Sol/Lua). A preferência é salva neste dispositivo.
-          </p>
-        </Card>
-
-        <Card className="settings-card settings-card--half">
-          <div className="settings-card-header">
-            <Shield size={22} className="settings-card-icon" />
-            <h2>Segurança</h2>
+            <span className="settings-card-icon-wrap">
+              <Shield size={20} />
+            </span>
+            <div>
+              <h2>Segurança</h2>
+              <p className="settings-card-lede">Acesso à conta</p>
+            </div>
           </div>
           <p className="settings-card-desc">
             Troca de senha e autenticação em dois fatores ficam fora do escopo atual do TCC.
-            Pacientes recebem a senha inicial definida no cadastro pelo médico — recomenda-se alterar em produção.
+            Em produção, recomenda-se forçar troca da senha inicial.
           </p>
         </Card>
       </div>
