@@ -13,6 +13,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { getPatientsByDoctor, getMedicalRecordsByDoctor } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
@@ -41,6 +42,7 @@ function getInitials(name) {
 
 export function MedicalRecordsPage() {
   const { user } = useAuth();
+  const toast = useToast();
   const [searchParams] = useSearchParams();
   const patientId = searchParams.get('patient');
   const [patients, setPatients] = useState([]);
@@ -64,6 +66,10 @@ export function MedicalRecordsPage() {
         ]);
         setPatients(p || []);
         setRecords(r || []);
+      } catch (err) {
+        setPatients([]);
+        setRecords([]);
+        toast.error(err?.message || 'Não foi possível carregar os prontuários.');
       } finally {
         setLoading(false);
       }
@@ -165,10 +171,13 @@ export function MedicalRecordsPage() {
               <div className="records-empty-icon-wrap" aria-hidden>
                 <ClipboardList size={56} strokeWidth={1.5} />
               </div>
-              <h3>Nenhum prontuário cadastrado</h3>
-              <p>Crie um prontuário vinculado a um paciente para começar a registrar consultas, diagnósticos e atestados.</p>
+              <h3>Nenhum registro clínico ainda</h3>
+              <p>
+                Abra a ficha de um paciente para registrar consultas, diagnósticos e atestados.
+                O prontuário é criado automaticamente ao salvar o primeiro registro.
+              </p>
               <Button onClick={() => setShowModal(true)} className="records-empty-cta">
-                + Criar Prontuário
+                + Abrir ficha do paciente
               </Button>
             </div>
           </Card>
@@ -284,7 +293,7 @@ export function MedicalRecordsPage() {
                   )}
                 </AnimatePresence>
                 </div>
-                <Button onClick={() => setShowModal(true)}>+ Novo Prontuário</Button>
+                <Button onClick={() => setShowModal(true)}>+ Abrir ficha do paciente</Button>
               </div>
             </div>
           </div>

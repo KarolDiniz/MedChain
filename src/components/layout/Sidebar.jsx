@@ -12,6 +12,8 @@ import {
   Info,
   Settings,
   Shield,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../common/Button';
@@ -33,16 +35,44 @@ const patientNavItems = [
   { to: '/patient/auditoria', label: 'Auditoria', Icon: Shield },
 ];
 
+const PIN_KEY = 'medchain_sidebar_pinned';
+
 export function Sidebar() {
   const { user, logout, isDoctor } = useAuth();
 
   const items = isDoctor() ? doctorNavItems : patientNavItems;
 
   const [isDark, setIsDark] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [pinned, setPinned] = useState(() => {
+    try {
+      return window.localStorage.getItem(PIN_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
+  const [hovered, setHovered] = useState(false);
 
-  const handleMouseEnter = useCallback(() => setIsExpanded(true), []);
-  const handleMouseLeave = useCallback(() => setIsExpanded(false), []);
+  const isExpanded = pinned || hovered;
+
+  const handleMouseEnter = useCallback(() => {
+    if (!pinned) setHovered(true);
+  }, [pinned]);
+  const handleMouseLeave = useCallback(() => {
+    if (!pinned) setHovered(false);
+  }, [pinned]);
+
+  const togglePinned = () => {
+    setPinned((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(PIN_KEY, next ? '1' : '0');
+      } catch {
+        /* ignore */
+      }
+      if (next) setHovered(false);
+      return next;
+    });
+  };
 
   useEffect(() => {
     const stored = window.localStorage.getItem('theme');
@@ -68,7 +98,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`sidebar ${isExpanded ? 'sidebar--expanded' : 'sidebar--collapsed'}`}
+      className={`sidebar ${isExpanded ? 'sidebar--expanded' : 'sidebar--collapsed'}${pinned ? ' sidebar--pinned' : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -79,8 +109,18 @@ export function Sidebar() {
           </span>
           <span className="sidebar-logo-text">MedChain</span>
         </h1>
+        <button
+          type="button"
+          className="sidebar-pin"
+          onClick={togglePinned}
+          aria-pressed={pinned}
+          aria-label={pinned ? 'Recolher menu' : 'Fixar menu expandido'}
+          title={pinned ? 'Recolher menu' : 'Fixar menu expandido'}
+        >
+          {pinned ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
+        </button>
       </div>
-      <nav className="sidebar-nav">
+      <nav className="sidebar-nav" aria-label="Navegação principal">
         {items.map((item) => {
           const Icon = item.Icon;
           return (
@@ -89,6 +129,7 @@ export function Sidebar() {
               to={item.to}
               end={item.to === '/doctor' || item.to === '/patient'}
               className={({ isActive }) => `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`}
+              title={item.label}
             >
               <span className="sidebar-link-icon">
                 <Icon size={20} strokeWidth={2} />

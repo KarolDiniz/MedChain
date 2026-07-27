@@ -19,6 +19,23 @@
   --dash-cyan: #06b6d4;
 }
 
+.dashboard-load-error {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 0.9rem;
+  z-index: 2;
+}
+
+body.theme-dark .dashboard-load-error {
+  background: rgba(127, 29, 29, 0.35);
+  border-color: rgba(252, 165, 165, 0.35);
+  color: #fecaca;
+}
+
 /* ----- Partículas flutuantes ----- */
 .dashboard-particles {
   position: absolute;

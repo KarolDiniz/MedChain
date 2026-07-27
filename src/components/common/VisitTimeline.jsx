@@ -53,7 +53,7 @@ function ConsultationBlock({ item }) {
           ))}
         </div>
       )}
-      <IntegrityBadge item={item} label="Consulta" compact />
+      <IntegrityBadge item={item} label="Consulta" compact showVerify />
     </div>
   );
 }
@@ -68,7 +68,7 @@ function DiagnosticBlock({ item }) {
       <DoctorLine item={item} />
       <div><span>Descrição:</span> {item.description || '-'}</div>
       <div><span>Resultado:</span> {item.result || '-'}</div>
-      <IntegrityBadge item={item} label="Diagnóstico" compact />
+      <IntegrityBadge item={item} label="Diagnóstico" compact showVerify />
     </div>
   );
 }
@@ -85,7 +85,7 @@ function CertificateBlock({ item, patient }) {
       </div>
       <DoctorLine item={item} />
       <div>{item.purpose || '-'} — {item.period_of_leave ?? '-'} dia(s)</div>
-      <IntegrityBadge item={item} label="Atestado" compact />
+      <IntegrityBadge item={item} label="Atestado" compact showVerify />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Filter } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import {
   getMedicalRecordById,
   getPatientById,
@@ -35,6 +36,7 @@ const SORT_OPTIONS = [
 export function MedicalRecordDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
+  const toast = useToast();
   const [record, setRecord] = useState(null);
   const [patient, setPatient] = useState(null);
   const [doctor, setDoctor] = useState(null);
@@ -73,8 +75,9 @@ export function MedicalRecordDetailPage() {
       setRecord(group);
       setPatient(p);
       setDoctor(d);
-    } catch {
+    } catch (err) {
       setRecord(null);
+      toast.error(err?.message || 'Não foi possível carregar o prontuário.');
     } finally {
       setLoading(false);
     }

@@ -19,6 +19,7 @@ import {
   HeartPulse,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { getPatientsByDoctor, getMedicalRecordsByDoctor, getDoctorById, getDashboardStats } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { AnimatedCounter } from '../../components/dashboard/AnimatedCounter';
@@ -88,11 +89,13 @@ function buildLastWeeks(count) {
 export function DoctorDashboard() {
   const { user } = useAuth();
   const prefersReducedMotion = useReducedMotion();
+  const toast = useToast();
   const [doctor, setDoctor] = useState(null);
   const [patients, setPatients] = useState([]);
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -101,6 +104,7 @@ export function DoctorDashboard() {
         setLoading(false);
         return;
       }
+      setLoadError('');
       try {
         const [d, p, mr, st] = await Promise.all([
           getDoctorById(docId),
@@ -112,10 +116,13 @@ export function DoctorDashboard() {
         setPatients(p || []);
         setMedicalRecords(mr || []);
         setStats(st || null);
-      } catch {
+      } catch (err) {
         setPatients([]);
         setMedicalRecords([]);
         setStats(null);
+        const msg = err?.message || 'Não foi possível carregar o dashboard.';
+        setLoadError(msg);
+        toast.error(msg);
       } finally {
         setLoading(false);
       }
@@ -284,6 +291,11 @@ export function DoctorDashboard() {
       animate={shouldAnimate ? 'visible' : false}
       variants={shouldAnimate ? containerVariants : {}}
     >
+      {loadError && (
+        <div className="dashboard-load-error" role="alert">
+          {loadError}
+        </div>
+      )}
       {/* Partículas flutuantes decorativas */}
       {shouldAnimate && (
         <div className="dashboard-particles" aria-hidden>
@@ -415,7 +427,7 @@ export function DoctorDashboard() {
                   <span className="dashboard-shortcut-icon">
                     <FileText size={22} strokeWidth={2} />
                   </span>
-                  <span>Novo Prontuário</span>
+                  <span>Abrir ficha do paciente</span>
                 </Link>
               </motion.div>
               <motion.div

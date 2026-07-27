@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link2, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { getAuditTimeline, getPatientsByDoctor } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { IntegrityBadge } from '../../components/common/IntegrityBadge';
@@ -9,6 +10,7 @@ import './AuditPage.css';
 
 export function AuditPage() {
   const { user, isDoctor } = useAuth();
+  const toast = useToast();
   const [events, setEvents] = useState([]);
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,8 +34,9 @@ export function AuditPage() {
           setEvents(timeline || []);
           setPatients([]);
         }
-      } catch {
+      } catch (err) {
         setEvents([]);
+        toast.error(err?.message || 'Não foi possível carregar a auditoria.');
       } finally {
         setLoading(false);
       }

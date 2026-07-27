@@ -68,7 +68,8 @@ export function PatientModal({ doctorId, onClose, onSaved }) {
         </div>
         {error && <p className="modal-error" style={{ color: 'var(--danger)' }}>{error}</p>}
         <p className="modal-note">
-          O paciente poderá fazer login com o e-mail e a senha cadastrados.
+          O paciente fará login com o e-mail e a senha definidos aqui (senha inicial).
+          Em produção, o paciente deveria trocar essa senha no primeiro acesso — fluxo fora do escopo atual do TCC.
         </p>
         <form onSubmit={handleSubmit} className="modal-form">
           <h3>Dados pessoais</h3>

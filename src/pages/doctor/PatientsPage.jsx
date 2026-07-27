@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Users, Search, X, Mail, Phone, Calendar, ChevronRight, ChevronLeft, Loader2, ArrowUpDown, RotateCcw } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { getPatientsByDoctor } from '../../services/medicalRecordService';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
@@ -53,6 +54,7 @@ function getPageItems(currentPage, totalPages) {
 
 export function PatientsPage() {
   const { user } = useAuth();
+  const toast = useToast();
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -77,9 +79,15 @@ export function PatientsPage() {
 
   useEffect(() => {
     const load = async () => {
-      const list = await getPatientsByDoctor(user?.id || user?.public_id);
-      setPatients(list || []);
-      setLoading(false);
+      try {
+        const list = await getPatientsByDoctor(user?.id || user?.public_id);
+        setPatients(list || []);
+      } catch (err) {
+        setPatients([]);
+        toast.error(err?.message || 'Não foi possível carregar os pacientes.');
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, [user?.id, user?.public_id]);
@@ -541,7 +549,9 @@ export function PatientsPage() {
           onClose={() => setShowModal(false)}
           onSaved={() => {
             setShowModal(false);
-            getPatientsByDoctor(user?.id || user?.public_id).then(setPatients);
+            getPatientsByDoctor(user?.id || user?.public_id)
+              .then(setPatients)
+              .catch((err) => toast.error(err?.message || 'Não foi possível atualizar a lista.'));
           }}
         />
       )}

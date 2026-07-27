@@ -93,6 +93,14 @@ export function LoginPage() {
   }, []);
 
   useEffect(() => {
+    if (user?.type === 'doctor') {
+      navigate('/doctor', { replace: true });
+    } else if (user?.type === 'patient') {
+      navigate('/patient', { replace: true });
+    }
+  }, [user?.type, navigate]);
+
+  useEffect(() => {
     if (!redirectTo || !user) return;
     const expectedType = redirectTo === '/doctor' ? 'doctor' : 'patient';
     if (user.type === expectedType) {
@@ -280,8 +288,10 @@ export function LoginPage() {
 
           <form onSubmit={handleLogin} className="login-form">
             <div className="login-input-wrap">
-              <Mail className="login-input-icon" size={20} strokeWidth={2} />
+              <label className="login-sr-only" htmlFor="login-email">E-mail</label>
+              <Mail className="login-input-icon" size={20} strokeWidth={2} aria-hidden />
               <input
+                id="login-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -292,8 +302,10 @@ export function LoginPage() {
               />
             </div>
             <div className="login-input-wrap">
-              <Lock className="login-input-icon" size={20} strokeWidth={2} />
+              <label className="login-sr-only" htmlFor="login-password">Senha</label>
+              <Lock className="login-input-icon" size={20} strokeWidth={2} aria-hidden />
               <input
+                id="login-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

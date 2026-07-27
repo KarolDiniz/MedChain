@@ -66,6 +66,43 @@ body.theme-dark .sidebar::before {
   min-height: 64px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sidebar-pin {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-primary, #0d7377);
+  cursor: pointer;
+}
+
+.sidebar-pin:hover,
+.sidebar-pin[aria-pressed='true'] {
+  background: rgba(13, 115, 119, 0.12);
+  border-color: rgba(13, 115, 119, 0.25);
+}
+
+.sidebar--collapsed .sidebar-pin {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sidebar--collapsed .sidebar-logo-text {
+  display: none;
+}
+
+.sidebar--collapsed .sidebar-header {
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .sidebar-logo {

@@ -17,6 +17,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import {
   getPatientById,
   getMedicalRecordsByDoctor,
@@ -61,31 +62,38 @@ export function PatientDetailPage() {
 
   const doctorId = user?.id || user?.public_id;
   const patientId = patient?.patient_public_id || patient?.uid || patient?.id || id;
+  const toast = useToast();
 
   const loadData = async () => {
-    const [p, allRecords] = await Promise.all([
-      getPatientById(id),
-      getMedicalRecordsByDoctor(doctorId),
-    ]);
-    setPatient(p);
-    const pid = p?.patient_public_id || p?.uid || id;
-    const grouped = (allRecords || []).find((r) => String(r.patient_id) === String(pid));
-    // Arquivos exigem Patient.public_id — nunca User.public_id
-    let files = grouped?.files || [];
-    if (pid) {
-      try {
-        const listed = await getFilesByPatient(pid);
-        if (listed?.length) files = listed;
-      } catch {
-        /* mantém files do agrupamento */
+    try {
+      const [p, allRecords] = await Promise.all([
+        getPatientById(id),
+        getMedicalRecordsByDoctor(doctorId),
+      ]);
+      setPatient(p);
+      const pid = p?.patient_public_id || p?.uid || id;
+      const grouped = (allRecords || []).find((r) => String(r.patient_id) === String(pid));
+      let files = grouped?.files || [];
+      if (pid) {
+        try {
+          const listed = await getFilesByPatient(pid);
+          if (listed?.length) files = listed;
+        } catch {
+          /* mantém files do agrupamento */
+        }
       }
+      setRecord(
+        grouped
+          ? { ...grouped, files }
+          : { consultations: [], diagnostics: [], medical_certificates: [], files }
+      );
+    } catch (err) {
+      setPatient(null);
+      setRecord({ consultations: [], diagnostics: [], medical_certificates: [], files: [] });
+      toast.error(err?.message || 'Não foi possível carregar o paciente.');
+    } finally {
+      setLoading(false);
     }
-    setRecord(
-      grouped
-        ? { ...grouped, files }
-        : { consultations: [], diagnostics: [], medical_certificates: [], files }
-    );
-    setLoading(false);
   };
 
   useEffect(() => {

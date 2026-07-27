@@ -2,6 +2,56 @@
   max-width: 800px;
 }
 
+.page-header--with-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.patient-records-integrity-banner {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(15, 118, 110, 0.25);
+  background: rgba(240, 253, 250, 0.7);
+}
+
+.patient-records-integrity-icon {
+  flex-shrink: 0;
+  color: #0f766e;
+  margin-top: 0.15rem;
+}
+
+.patient-records-integrity-banner strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #134e4a;
+}
+
+.patient-records-integrity-banner p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+body.theme-dark .patient-records-integrity-banner {
+  background: rgba(15, 118, 110, 0.15);
+  border-color: rgba(45, 212, 191, 0.3);
+}
+
+body.theme-dark .patient-records-integrity-banner strong {
+  color: #99f6e4;
+}
+
+body.theme-dark .patient-records-integrity-banner p {
+  color: #cbd5e1;
+}
+
 .records-accordion {
   display: flex;
   flex-direction: column;

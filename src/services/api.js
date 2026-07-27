@@ -107,6 +107,24 @@ async function request(endpoint, options = {}, retry = true) {
   return data;
 }
 
+/** Fetch autenticado com retry de refresh (upload/blob sem Content-Type JSON). */
+async function authorizedFetch(endpoint, options = {}, retry = true) {
+  const url = `${API_URL}${endpoint}`;
+  const token = getToken();
+  const headers = {
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...options.headers,
+  };
+  const res = await fetch(url, { ...options, headers });
+
+  if (res.status === 401 && retry) {
+    const refreshed = await tryRefreshToken();
+    if (refreshed) return authorizedFetch(endpoint, options, false);
+    clearSession();
+  }
+  return res;
+}
+
 export const api = {
   get: (path) => request(path, { method: 'GET' }),
   post: (path, body) => request(path, { method: 'POST', body: JSON.stringify(body) }),
@@ -173,14 +191,7 @@ export const filesApi = {
   get: (fileId) => api.get(`/files/${fileId}/`),
 
   fetchContent: async (fileId) => {
-    const token = getToken();
-    const url = `${API_URL}/files/${fileId}/content/`;
-    const res = await fetch(url, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-    if (res.status === 401) {
-      clearSession();
-    }
+    const res = await authorizedFetch(`/files/${fileId}/content/`);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       throw new Error(formatApiError(data) || 'Falha ao carregar arquivo');
@@ -200,17 +211,13 @@ export const filesApi = {
     URL.revokeObjectURL(objectUrl);
   },
 
-  upload: (formData) => {
-    const token = getToken();
-    const url = `${API_URL}/files/upload/`;
-    return fetch(url, {
+  upload: async (formData) => {
+    const res = await authorizedFetch('/files/upload/', {
       method: 'POST',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
-    }).then(async (r) => {
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(formatApiError(data) || 'Upload falhou');
-      return data;
     });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(formatApiError(data) || 'Upload falhou');
+    return data;
   },
 };

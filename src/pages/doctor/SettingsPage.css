@@ -75,3 +75,7 @@
   color: var(--color-primary) !important;
   margin-top: 0.25rem;
 }
+
+.settings-profile-meta {
+  font-size: 0.85rem !important;
+}

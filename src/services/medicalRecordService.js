@@ -52,22 +52,14 @@ function withIntegrity(item) {
 }
 
 export async function getPatientsByDoctor(doctorId) {
-  try {
-    if (!doctorId) return [];
-    const list = await doctorsApi.getPatients(doctorId);
-    return (list || []).map(mapPatient);
-  } catch {
-    return [];
-  }
+  if (!doctorId) return [];
+  const list = await doctorsApi.getPatients(doctorId);
+  return (list || []).map(mapPatient);
 }
 
 export async function getPatientById(id) {
-  try {
-    const p = await patientsApi.get(id);
-    return mapPatient(p);
-  } catch {
-    return null;
-  }
+  const p = await patientsApi.get(id);
+  return mapPatient(p);
 }
 
 export async function addPatient(doctorId, patientData) {
@@ -181,86 +173,70 @@ async function loadFilesForPatients(patientIds) {
 }
 
 export async function getMedicalRecordsByPatient(patientId) {
-  try {
-    const data = await medicalRecordsApi.list();
-    const consultations = data?.consultations || [];
-    const diagnostics = data?.diagnostics || [];
-    const certificates = data?.medical_certificates || [];
-    const patientIdStr = String(patientId);
-    const filterByPatient = (item) => {
-      const pid = item.medical_record?.patient_id ?? item.patient_id ?? item.patient?.public_id;
-      return pid && String(pid) === patientIdStr;
-    };
-    const files = await loadFilesForPatients([patientId]);
-    return groupRecordsByDoctorPatient(
-      consultations.filter(filterByPatient),
-      diagnostics.filter(filterByPatient),
-      certificates.filter(filterByPatient),
-      files
-    );
-  } catch {
-    return [];
-  }
+  const data = await medicalRecordsApi.list();
+  const consultations = data?.consultations || [];
+  const diagnostics = data?.diagnostics || [];
+  const certificates = data?.medical_certificates || [];
+  const patientIdStr = String(patientId);
+  const filterByPatient = (item) => {
+    const pid = item.medical_record?.patient_id ?? item.patient_id ?? item.patient?.public_id;
+    return pid && String(pid) === patientIdStr;
+  };
+  const files = await loadFilesForPatients([patientId]);
+  return groupRecordsByDoctorPatient(
+    consultations.filter(filterByPatient),
+    diagnostics.filter(filterByPatient),
+    certificates.filter(filterByPatient),
+    files
+  );
 }
 
 export async function getMedicalRecordsByDoctor(doctorId) {
-  try {
-    if (!doctorId) return [];
-    const data = await medicalRecordsApi.list(null, doctorId);
-    const consultations = data?.consultations || [];
-    const diagnostics = data?.diagnostics || [];
-    const certificates = data?.medical_certificates || [];
-    const patientIds = [
-      ...consultations.map((c) => c.medical_record?.patient_id ?? c.patient_id),
-      ...diagnostics.map((d) => d.medical_record?.patient_id ?? d.patient_id),
-      ...certificates.map((c) => c.medical_record?.patient_id ?? c.patient_id),
-    ];
-    const files = await loadFilesForPatients(patientIds);
-    const doctorFiles = (files || []).filter(
-      (f) => String(f.doctor_uid || f.doctor_id) === String(doctorId)
-    );
-    return groupRecordsByDoctorPatient(consultations, diagnostics, certificates, doctorFiles);
-  } catch {
-    return [];
-  }
+  if (!doctorId) return [];
+  const data = await medicalRecordsApi.list(null, doctorId);
+  const consultations = data?.consultations || [];
+  const diagnostics = data?.diagnostics || [];
+  const certificates = data?.medical_certificates || [];
+  const patientIds = [
+    ...consultations.map((c) => c.medical_record?.patient_id ?? c.patient_id),
+    ...diagnostics.map((d) => d.medical_record?.patient_id ?? d.patient_id),
+    ...certificates.map((c) => c.medical_record?.patient_id ?? c.patient_id),
+  ];
+  const files = await loadFilesForPatients(patientIds);
+  const doctorFiles = (files || []).filter(
+    (f) => String(f.doctor_uid || f.doctor_id) === String(doctorId)
+  );
+  return groupRecordsByDoctorPatient(consultations, diagnostics, certificates, doctorFiles);
 }
 
 export async function getFilesByPatient(patientId) {
-  try {
-    if (!patientId) return [];
-    return await filesApi.listByPatient(patientId);
-  } catch {
-    return [];
-  }
+  if (!patientId) return [];
+  return await filesApi.listByPatient(patientId);
 }
 
 export async function getMedicalRecordById(id) {
+  const mr = await medicalRecordsApi.get(id);
+  if (!mr) return null;
+  const consultation = mr.consultation ? withIntegrity({ ...mr.consultation, medical_record: mr }) : null;
+  const diagnostic = mr.diagnostic ? withIntegrity({ ...mr.diagnostic, medical_record: mr }) : null;
+  const certificate = mr.certificate ? withIntegrity({ ...mr.certificate, medical_record: mr }) : null;
+  let files = [];
   try {
-    const mr = await medicalRecordsApi.get(id);
-    if (!mr) return null;
-    const consultation = mr.consultation ? withIntegrity({ ...mr.consultation, medical_record: mr }) : null;
-    const diagnostic = mr.diagnostic ? withIntegrity({ ...mr.diagnostic, medical_record: mr }) : null;
-    const certificate = mr.certificate ? withIntegrity({ ...mr.certificate, medical_record: mr }) : null;
-    let files = [];
-    try {
-      files = await filesApi.listByPatient(mr.patient_id);
-    } catch {
-      files = [];
-    }
-    return {
-      ...mr,
-      id: mr.public_id ?? mr.id,
-      hash: mr.hash,
-      blockchain_tx_id: mr.blockchain_tx_id,
-      anchored: Boolean(mr.hash && mr.blockchain_tx_id),
-      consultations: consultation ? [consultation] : [],
-      diagnostics: diagnostic ? [diagnostic] : [],
-      medical_certificates: certificate ? [certificate] : [],
-      files: files || [],
-    };
+    files = await filesApi.listByPatient(mr.patient_id);
   } catch {
-    return null;
+    files = [];
   }
+  return {
+    ...mr,
+    id: mr.public_id ?? mr.id,
+    hash: mr.hash,
+    blockchain_tx_id: mr.blockchain_tx_id,
+    anchored: Boolean(mr.hash && mr.blockchain_tx_id),
+    consultations: consultation ? [consultation] : [],
+    diagnostics: diagnostic ? [diagnostic] : [],
+    medical_certificates: certificate ? [certificate] : [],
+    files: files || [],
+  };
 }
 
 export async function verifyMedicalRecord(publicId) {

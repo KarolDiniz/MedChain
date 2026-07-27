@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Layout } from './components/layout/Layout';
 import { LoginPage } from './pages/auth/LoginPage';
-import { RegisterPage } from './pages/auth/RegisterPage';
 import { DoctorDashboard } from './pages/doctor/DoctorDashboard';
 import { PatientsPage } from './pages/doctor/PatientsPage';
 import { PatientDetailPage } from './pages/doctor/PatientDetailPage';
@@ -18,45 +18,47 @@ import { AuditPage } from './pages/shared/AuditPage';
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/register" element={<Navigate to="/" replace />} />
 
-          <Route
-            path="/doctor"
-            element={
-              <ProtectedRoute requireDoctor>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<DoctorDashboard />} />
-            <Route path="patients" element={<PatientsPage />} />
-            <Route path="patients/:id" element={<PatientDetailPage />} />
-            <Route path="medical-records" element={<MedicalRecordsPage />} />
-            <Route path="medical-records/:id" element={<MedicalRecordDetailPage />} />
-            <Route path="auditoria" element={<AuditPage />} />
-            <Route path="sobre" element={<SobrePage />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Route>
+            <Route
+              path="/doctor"
+              element={
+                <ProtectedRoute requireDoctor>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<DoctorDashboard />} />
+              <Route path="patients" element={<PatientsPage />} />
+              <Route path="patients/:id" element={<PatientDetailPage />} />
+              <Route path="medical-records" element={<MedicalRecordsPage />} />
+              <Route path="medical-records/:id" element={<MedicalRecordDetailPage />} />
+              <Route path="auditoria" element={<AuditPage />} />
+              <Route path="sobre" element={<SobrePage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
 
-          <Route
-            path="/patient"
-            element={
-              <ProtectedRoute requirePatient>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<PatientProfile />} />
-            <Route path="medical-records" element={<PatientMedicalRecords />} />
-            <Route path="auditoria" element={<AuditPage />} />
-          </Route>
+            <Route
+              path="/patient"
+              element={
+                <ProtectedRoute requirePatient>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<PatientProfile />} />
+              <Route path="medical-records" element={<PatientMedicalRecords />} />
+              <Route path="auditoria" element={<AuditPage />} />
+            </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }
