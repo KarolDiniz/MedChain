@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Filter,
+  CalendarDays,
   Stethoscope,
   ClipboardList,
   FileCheck,
@@ -19,12 +20,14 @@ import {
   getDoctorById,
   getMedicalRecordsByDoctor,
 } from '../../services/medicalRecordService';
+import { groupRecordItemsByVisitDate } from '../../utils/groupByVisitDate';
 import { resolveDoctorId, resolvePatientPublicId, sameId } from '../../utils/ids';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Avatar } from '../../components/common/Avatar';
 import { IntegrityBadge } from '../../components/common/IntegrityBadge';
 import { FileAttachment } from '../../components/common/FileAttachment';
+import { VisitTimeline } from '../../components/common/VisitTimeline';
 import { CertificateDownloadButton } from '../../components/common/CertificateDownloadButton';
 import { formatDateBR, resolveItemDate } from '../../utils/dateUtils';
 import { ConsultationModal } from '../../components/doctor/ConsultationModal';
@@ -53,6 +56,7 @@ function getInitials(name) {
 }
 
 const TAB_ICONS = {
+  visits: CalendarDays,
   consultations: Stethoscope,
   diagnostics: ClipboardList,
   certificates: FileCheck,
@@ -67,7 +71,7 @@ export function MedicalRecordDetailPage() {
   const [patient, setPatient] = useState(null);
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('consultations');
+  const [activeTab, setActiveTab] = useState('visits');
   const [showConsultationModal, setShowConsultationModal] = useState(false);
   const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
   const [showCertificateModal, setShowCertificateModal] = useState(false);
@@ -139,7 +143,16 @@ export function MedicalRecordDetailPage() {
     loadData();
   };
 
+  const visitSortOrder = sortOrder === SORT_OLDEST ? SORT_OLDEST : SORT_RECENT;
+
+  const { visits, undatedFiles } = useMemo(
+    () => groupRecordItemsByVisitDate(record, visitSortOrder),
+    [record, visitSortOrder]
+  );
+  const visitsCount = visits.length;
+
   const tabs = useMemo(() => ([
+    { id: 'visits', label: 'Atendimentos', count: null },
     { id: 'consultations', label: 'Consultas', count: record?.consultations?.length || 0 },
     { id: 'diagnostics', label: 'Diagnósticos', count: record?.diagnostics?.length || 0 },
     { id: 'certificates', label: 'Atestados', count: record?.medical_certificates?.length || 0 },
@@ -310,13 +323,70 @@ export function MedicalRecordDetailPage() {
             >
               {TabIcon ? <TabIcon size={18} strokeWidth={2} aria-hidden /> : null}
               {tab.label}
-              <span className="tab-count">{tab.count}</span>
+              <span className="tab-count">{tab.id === 'visits' ? visitsCount : tab.count}</span>
             </button>
           );
         })}
       </div>
 
       <div className="tab-content">
+        {activeTab === 'visits' && (
+          <section>
+            <div className="section-header section-header--with-sort">
+              <div>
+                <h2>Atendimentos por dia</h2>
+                <p className="section-subtitle">
+                  Consulta, diagnóstico, atestado e anexos do mesmo dia aparecem juntos.
+                </p>
+              </div>
+              <div className="section-actions">
+                {(visits.length > 0 || undatedFiles.length > 0) && (
+                  <div className="sort-dropdown-wrap" ref={sortDropdownRef}>
+                    <button
+                      type="button"
+                      className={`sort-trigger-btn ${sortDropdownOpen ? 'sort-trigger-btn--open' : ''}`}
+                      onClick={() => setSortDropdownOpen((v) => !v)}
+                      aria-expanded={sortDropdownOpen}
+                      aria-label={`Ordenar: ${sortOrder === SORT_OLDEST ? 'Mais antigos' : 'Mais recentes'}`}
+                    >
+                      <Filter size={18} />
+                      {sortOrder === SORT_OLDEST ? 'Antigos' : 'Recentes'}
+                    </button>
+                    {sortDropdownOpen && (
+                      <ul className="sort-dropdown-list" role="listbox">
+                        {[
+                          { value: SORT_RECENT, label: 'Mais recentes' },
+                          { value: SORT_OLDEST, label: 'Mais antigos' },
+                        ].map((opt) => (
+                          <li key={opt.value} role="option" aria-selected={visitSortOrder === opt.value}>
+                            <button
+                              type="button"
+                              className={`sort-dropdown-item ${visitSortOrder === opt.value ? 'sort-dropdown-item--active' : ''}`}
+                              onClick={() => {
+                                setSortOrder(opt.value);
+                                setSortDropdownOpen(false);
+                              }}
+                            >
+                              {opt.label}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+                <Button onClick={() => setShowConsultationModal(true)}>+ Nova Consulta</Button>
+              </div>
+            </div>
+            <VisitTimeline
+              visits={visits}
+              undatedFiles={undatedFiles}
+              patient={patient}
+              emptyMessage="Nenhum atendimento registrado para este paciente."
+            />
+          </section>
+        )}
+
         {activeTab === 'consultations' && (
           <section>
             <div className="section-header section-header--with-sort">

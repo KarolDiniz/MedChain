@@ -162,8 +162,8 @@ export function AuditPage() {
   };
 
   const subtitle = doctorView
-    ? 'Prova de integridade dos registros clínicos dos seus pacientes (SHA-256 + Solana).'
-    : 'Prova de integridade dos seus registros clínicos (SHA-256 + Solana).';
+    ? 'Acompanhe a verificação dos registros clínicos dos seus pacientes e confirme que nada foi alterado indevidamente.'
+    : 'Acompanhe a verificação dos seus registros clínicos e confirme que eles permanecem íntegros.';
 
   return (
     <div className="audit-page">
@@ -178,7 +178,8 @@ export function AuditPage() {
           </div>
         </div>
         <p className="audit-header-note">
-          Os dados clínicos ficam no banco; a blockchain guarda a prova imutável do hash.
+          Os dados clínicos permanecem sob proteção do sistema. A blockchain guarda apenas
+          uma evidência imutável de que o registro não foi adulterado.
         </p>
       </header>
 

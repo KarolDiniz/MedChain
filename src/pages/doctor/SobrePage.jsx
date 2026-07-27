@@ -11,7 +11,7 @@ export function SobrePage() {
       <header className="page-header">
         <div>
           <h1>Sobre</h1>
-          <p>Informações do sistema MedChain</p>
+          <p>Conheça a plataforma MedChain</p>
         </div>
       </header>
 
@@ -25,9 +25,9 @@ export function SobrePage() {
               <h2>MedChain</h2>
               <p className="sobre-version">Versão {SYSTEM_VERSION}</p>
               <p className="sobre-desc">
-                Prontuário eletrônico com prova de integridade: o conteúdo clínico fica no banco de dados;
-                um hash SHA-256 é ancorado na blockchain Solana (devnet) via Memo Program.
-                Qualquer alteração no registro quebra a verificação.
+                Prontuário eletrônico pensado para a rotina clínica: organizar atendimentos,
+                preservar o histórico do paciente e oferecer uma forma transparente de
+                comprovar que os registros permanecem íntegros ao longo do tempo.
               </p>
             </div>
           </div>
@@ -37,27 +37,39 @@ export function SobrePage() {
           <Card className="sobre-feature-card">
             <FileText size={24} className="sobre-feature-icon" />
             <h3>Prontuários</h3>
-            <p>Consultas, diagnósticos, atestados e arquivos vinculados ao paciente — modelo append-only (sem edição/exclusão clínica).</p>
+            <p>
+              Consultas, diagnósticos, atestados e anexos em um só lugar, com histórico
+              contínuo e sem sobrescrita de informações clínicas já registradas.
+            </p>
           </Card>
           <Card className="sobre-feature-card">
             <Database size={24} className="sobre-feature-icon" />
-            <h3>Off-chain + on-chain</h3>
-            <p>Dados sensíveis permanecem off-chain (PostgreSQL/arquivos cifrados). Na Solana fica apenas o hash + ID, não o prontuário completo.</p>
+            <h3>Privacidade dos dados</h3>
+            <p>
+              O conteúdo clínico permanece sob controle do sistema. Na rede pública é
+              registrada apenas uma evidência criptográfica — nunca o prontuário completo.
+            </p>
           </Card>
           <Card className="sobre-feature-card">
             <Shield size={24} className="sobre-feature-icon" />
             <h3>Verificação</h3>
-            <p>Use Auditoria ou o botão “Verificar integridade” para recomputar o hash e comparar com a transação no Explorer.</p>
+            <p>
+              Em Auditoria ou em cada registro, você pode confirmar se o conteúdo
+              ainda corresponde à evidência registrada no momento da criação.
+            </p>
           </Card>
         </div>
 
         <Card className="sobre-tech-card">
-          <h3>Arquitetura em uma frase</h3>
+          <h3>Como a integridade é garantida</h3>
           <p className="sobre-tech-flow">
             <Link2 size={16} />
-            Conteúdo clínico → SHA-256 → Memo Solana → prova pública de integridade
+            Registro clínico → evidência criptográfica → comprovação pública imutável
           </p>
-          <p>Stack: React, Vite, FastAPI, PostgreSQL, Redis, Solana Devnet</p>
+          <p>
+            Assim, qualquer alteração posterior no conteúdo deixa de coincidir com a
+            evidência original e pode ser detectada na verificação.
+          </p>
         </Card>
       </div>
 

@@ -79,7 +79,7 @@ export function SettingsPage() {
         <div>
           <h1>Configurações</h1>
           <p>
-            Conta e preferências
+            Gerencie sua conta e preferências
             {loadingMe ? ' · sincronizando…' : ''}
           </p>
         </div>
@@ -165,8 +165,8 @@ export function SettingsPage() {
           <div className="settings-profile-note" role="note">
             <Info size={16} className="settings-profile-note-icon" />
             <p>
-              A foto fica só neste navegador. Dados cadastrais oficiais vêm do servidor;
-              alterações clínicas de pacientes são feitas nas fichas correspondentes.
+              A foto de perfil fica salva apenas neste dispositivo. Os dados cadastrais
+              oficiais são mantidos pelo sistema e podem ser consultados nesta página.
             </p>
           </div>
         </Card>
@@ -182,8 +182,8 @@ export function SettingsPage() {
             </div>
           </div>
           <p className="settings-card-desc">
-            Use o botão Sol/Lua no menu lateral para alternar entre claro e escuro.
-            A preferência é salva neste dispositivo.
+            Alterne entre o tema claro e o escuro pelo botão Sol/Lua no menu lateral.
+            A preferência é lembrada automaticamente neste dispositivo.
           </p>
         </Card>
 
@@ -198,8 +198,9 @@ export function SettingsPage() {
             </div>
           </div>
           <p className="settings-card-desc">
-            Troca de senha e autenticação em dois fatores ficam fora do escopo atual do TCC.
-            Em produção, recomenda-se forçar troca da senha inicial.
+            Proteja o acesso à sua conta mantendo a senha em sigilo e evitando
+            compartilhar credenciais. Não solicite dados sensíveis por canais externos
+            à plataforma.
           </p>
         </Card>
       </div>

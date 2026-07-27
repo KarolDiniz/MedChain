@@ -341,6 +341,13 @@ body.theme-dark .record-detail-page .tab--active {
   letter-spacing: -0.02em;
 }
 
+.record-detail-page .tab-content .section-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-light, #64748b);
+  font-weight: 400;
+}
+
 .record-detail-page .tab-content .section-actions {
   display: flex;
   align-items: center;
