@@ -10,8 +10,8 @@
 }
 
 body.theme-dark .integrity-badge {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.55);
+  border-color: rgba(148, 163, 184, 0.28);
 }
 
 .integrity-badge--compact {
@@ -28,7 +28,12 @@ body.theme-dark .integrity-badge {
 
 .integrity-label {
   font-size: 0.75rem;
-  color: var(--text-secondary, #5a6a7a);
+  font-weight: 500;
+  color: var(--color-text-light, #5a6a7a);
+}
+
+body.theme-dark .integrity-label {
+  color: #cbd5e1;
 }
 
 .integrity-status {
@@ -45,20 +50,29 @@ body.theme-dark .integrity-badge {
 
 body.theme-dark .integrity-status--success { color: #5eead4; }
 body.theme-dark .integrity-status--warning { color: #fbbf24; }
+body.theme-dark .integrity-status--neutral { color: #e2e8f0; }
 
 .integrity-hash {
   display: block;
   font-size: 0.72rem;
   line-height: 1.4;
   word-break: break-all;
-  color: var(--text-primary, #1e293b);
+  color: var(--color-text, #1e293b);
   background: transparent;
+}
+
+body.theme-dark .integrity-hash {
+  color: #e2e8f0;
 }
 
 .integrity-empty {
   margin: 0;
   font-size: 0.8rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--color-text-light, #64748b);
+}
+
+body.theme-dark .integrity-empty {
+  color: #cbd5e1;
 }
 
 .integrity-actions {
@@ -79,16 +93,23 @@ body.theme-dark .integrity-status--warning { color: #fbbf24; }
   padding: 0.3rem 0.55rem;
   border: 1px solid var(--border-color, #cbd5e1);
   background: #fff;
-  color: var(--text-primary, #0f172a);
+  color: var(--color-text, #0f172a);
   cursor: pointer;
   text-decoration: none;
 }
 
 body.theme-dark .integrity-link,
 body.theme-dark .integrity-verify-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
-  color: #e2e8f0;
+  background: rgba(45, 212, 191, 0.1);
+  border-color: rgba(45, 212, 191, 0.35);
+  color: #99f6e4;
+}
+
+body.theme-dark .integrity-link:hover,
+body.theme-dark .integrity-verify-btn:hover {
+  background: rgba(45, 212, 191, 0.18);
+  border-color: rgba(45, 212, 191, 0.5);
+  color: #ccfbf1;
 }
 
 .integrity-verify-btn:disabled {
