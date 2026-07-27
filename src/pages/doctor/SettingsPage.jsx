@@ -64,7 +64,7 @@ export function SettingsPage() {
       </header>
 
       <div className="settings-grid">
-        <Card className="settings-card">
+        <Card className="settings-card settings-card--profile">
           <div className="settings-card-header">
             <User size={22} className="settings-card-icon" />
             <h2>Perfil</h2>
@@ -73,20 +73,35 @@ export function SettingsPage() {
             <Avatar
               userId={display?.id || display?.patient_public_id}
               isDoctor={isDoctor()}
-              size={64}
+              size={72}
               editable
               variant="profile"
             />
             <div className="settings-profile-info">
               <strong>{display?.full_name || display?.username || 'Usuário'}</strong>
-              <span>{display?.email}</span>
               <span className="settings-profile-role">{isDoctor() ? 'Médico' : 'Paciente'}</span>
-              {isDoctor() && display?.CRM && (
-                <span className="settings-profile-meta">CRM {display.CRM}</span>
-              )}
-              {isDoctor() && display?.specialty && (
-                <span className="settings-profile-meta">{display.specialty}</span>
-              )}
+            </div>
+          </div>
+          <div className="settings-profile-details">
+            <div className="settings-detail-item">
+              <span className="settings-detail-label">E-mail</span>
+              <span className="settings-detail-value">{display?.email || '—'}</span>
+            </div>
+            {isDoctor() && (
+              <div className="settings-detail-item">
+                <span className="settings-detail-label">CRM</span>
+                <span className="settings-detail-value">{display?.CRM || '—'}</span>
+              </div>
+            )}
+            {isDoctor() && (
+              <div className="settings-detail-item">
+                <span className="settings-detail-label">Especialidade</span>
+                <span className="settings-detail-value">{display?.specialty || '—'}</span>
+              </div>
+            )}
+            <div className="settings-detail-item">
+              <span className="settings-detail-label">Usuário</span>
+              <span className="settings-detail-value">{display?.username || '—'}</span>
             </div>
           </div>
           <p className="settings-card-desc">
@@ -94,7 +109,7 @@ export function SettingsPage() {
           </p>
         </Card>
 
-        <Card className="settings-card">
+        <Card className="settings-card settings-card--half">
           <div className="settings-card-header">
             <Palette size={22} className="settings-card-icon" />
             <h2>Aparência</h2>
@@ -104,7 +119,7 @@ export function SettingsPage() {
           </p>
         </Card>
 
-        <Card className="settings-card">
+        <Card className="settings-card settings-card--half">
           <div className="settings-card-header">
             <Shield size={22} className="settings-card-icon" />
             <h2>Segurança</h2>

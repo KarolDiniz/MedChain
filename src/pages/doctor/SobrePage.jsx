@@ -53,7 +53,7 @@ export function SobrePage() {
 
         <Card className="sobre-tech-card">
           <h3>Arquitetura em uma frase</h3>
-          <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <p className="sobre-tech-flow">
             <Link2 size={16} />
             Conteúdo clínico → SHA-256 → Memo Solana → prova pública de integridade
           </p>

@@ -1,5 +1,11 @@
 .sobre-page {
-  max-width: 1000px;
+  width: 100%;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
 }
 
 .sobre-content {
@@ -7,21 +13,41 @@
   flex-direction: column;
   gap: 1.5rem;
   margin-top: 1.5rem;
+  width: 100%;
 }
 
 .sobre-hero-card {
   margin-bottom: 0;
+  width: 100%;
 }
 
 .sobre-hero {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: flex-start;
   gap: 1.5rem;
 }
 
+@media (max-width: 560px) {
+  .sobre-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
 .sobre-hero-icon-wrap {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: rgba(13, 115, 119, 0.12);
   color: var(--color-primary);
+}
+
+body.theme-dark .sobre-hero-icon-wrap {
+  background: rgba(45, 212, 191, 0.12);
 }
 
 .sobre-hero-text h2 {
@@ -43,21 +69,24 @@
   color: var(--color-text-light);
   line-height: 1.6;
   margin: 0;
+  max-width: 72ch;
 }
 
 .sobre-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
+  width: 100%;
 }
 
-@media (min-width: 640px) {
+@media (max-width: 960px) {
   .sobre-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 
 .sobre-feature-card {
+  height: 100%;
   transition: transform 0.3s var(--transition-smooth), box-shadow 0.3s var(--transition-smooth);
 }
 
@@ -85,11 +114,26 @@
   margin: 0;
 }
 
+.sobre-tech-card {
+  width: 100%;
+}
+
 .sobre-tech-card h3 {
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--color-text);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.sobre-tech-flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
 }
 
 .sobre-tech-card p {
@@ -100,6 +144,10 @@
 
 .sobre-actions {
   margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 1.75rem;
+  align-items: center;
 }
 
 .sobre-back-link {
