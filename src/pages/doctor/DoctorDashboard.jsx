@@ -181,8 +181,9 @@ export function DoctorDashboard() {
   ];
   const contentMax = Math.max(...contentData.map((d) => d.value), 1);
 
-  const displayName = doctor?.full_name || user?.full_name || user?.username || 'Médico';
-  const firstName = displayName.split(' ')[0] || displayName;
+  const rawName = doctor?.full_name || user?.full_name || user?.username || 'Médico';
+  const hasTitle = /^(dr\.?|dra\.?|dr\(a\)\.?)\s/i.test(rawName.trim());
+  const displayName = hasTitle ? rawName.trim() : `Dr(a). ${rawName.trim()}`;
   const specialty = doctor?.specialty || 'Medicina';
 
   const statsCards = [
@@ -354,7 +355,7 @@ export function DoctorDashboard() {
                 {getGreeting()}
               </motion.p>
               <h1 className="dashboard-hero-title dashboard-hero-title--shimmer">
-                Dr(a). {firstName}
+                {displayName}
               </h1>
               <p className="dashboard-hero-subtitle">
                 {specialty} · {todayFormatted}

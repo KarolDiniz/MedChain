@@ -2,7 +2,7 @@
  * Helpers de paginação client-side (listagens).
  */
 
-export const DEFAULT_PAGE_SIZE_OPTIONS = [12, 24, 48, 96];
+export const DEFAULT_PAGE_SIZE_OPTIONS = [9, 12, 24, 48, 96];
 export const DEFAULT_PAGE_SIZE = 12;
 
 /** Números de página com reticências (1 … 4 5 6 … 20). */
