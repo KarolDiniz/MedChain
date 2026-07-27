@@ -105,26 +105,9 @@ body.theme-dark .patients-header-icon-wrap {
   overflow: auto;
 }
 
-/* ----- Filtros SEMPRE acima dos cards (sticky) ----- */
-.patients-filters-sticky {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  margin-bottom: 1.25rem;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  background: linear-gradient(180deg, var(--color-background) 0%, var(--color-background) 70%, transparent 100%);
-  padding-bottom: 0.5rem;
-  isolation: isolate;
-}
+/* ----- Filtros sticky + toolbar: ver ListToolbar.css ----- */
 
-body.theme-dark .patients-filters-sticky {
-  background: linear-gradient(180deg, var(--color-background) 0%, var(--color-background) 75%, transparent 100%);
-}
-
-/* Barra A-Z compacta — uma linha */
+/* Barra A-Z compacta — exclusiva da listagem de pacientes */
 .patients-letter-bar {
   display: flex;
   align-items: center;
@@ -243,244 +226,7 @@ body.theme-dark .empty-state--patients .empty-state-icon-wrap {
   transform: translateY(-1px);
 }
 
-/* ----- Barra de busca e contagem ----- */
-.patients-toolbar {
-  position: relative;
-  z-index: 1100;
-  flex-shrink: 0;
-  padding: 0.75rem 1.25rem;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(13, 115, 119, 0.12);
-  border-radius: 18px;
-  backdrop-filter: blur(20px) saturate(1.1);
-  -webkit-backdrop-filter: blur(20px) saturate(1.1);
-  box-shadow: 0 4px 24px rgba(13, 115, 119, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-body.theme-dark .patients-toolbar {
-  background: rgba(18, 42, 62, 0.6);
-  border-color: rgba(13, 115, 119, 0.25);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-}
-
-.patients-toolbar-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  justify-content: space-between;
-}
-
-.patients-toolbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-
-.patients-sort-dropdown {
-  position: relative;
-  z-index: 1100;
-}
-
-.patients-sort-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  border-radius: 10px;
-  color: var(--color-text);
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
-  font-family: inherit;
-}
-
-.patients-sort-trigger--labeled {
-  width: auto;
-  min-height: 40px;
-  height: auto;
-  gap: 0.45rem;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.patients-sort-trigger-label {
-  line-height: 1.2;
-}
-
-.patients-sort-trigger:hover,
-.patients-sort-trigger--open {
-  border-color: var(--color-primary);
-  background: rgba(13, 115, 119, 0.08);
-  color: var(--color-primary);
-}
-
-.patients-sort-dropdown-list {
-  position: absolute;
-  top: calc(100% + 0.35rem);
-  right: 0;
-  min-width: 200px;
-  margin: 0;
-  padding: 0.35rem;
-  list-style: none;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  box-shadow: var(--shadow-md);
-  z-index: 1200;
-  transform-origin: top right;
-}
-
-/* Dropdown abre ACIMA do botão (sempre visível) */
-.patients-sort-dropdown-list--above {
-  top: auto;
-  bottom: calc(100% + 0.5rem);
-  transform-origin: bottom right;
-  box-shadow: 0 -4px 20px rgba(13, 115, 119, 0.15);
-}
-
-body.theme-dark .patients-sort-dropdown-list--above {
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
-}
-
-.patients-sort-dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  font-size: 0.9rem;
-  font-family: inherit;
-  text-align: left;
-  color: var(--color-text);
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.patients-sort-dropdown-item:hover {
-  background: rgba(13, 115, 119, 0.1);
-}
-
-.patients-sort-dropdown-item--active {
-  background: rgba(13, 115, 119, 0.12);
-  color: var(--color-primary);
-  font-weight: 500;
-}
-
-body.theme-dark .patients-sort-dropdown-list {
-  background: var(--color-surface);
-  border-color: var(--color-border);
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-width: 260px;
-  flex: 1;
-  max-width: 500px;
-  padding: 0.45rem 1rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  transition: border-color 0.25s, box-shadow 0.25s, background 0.2s;
-}
-
-body.theme-dark .search-bar {
-  background: rgba(6, 23, 38, 0.6);
-}
-
-.search-bar:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.12), 0 2px 8px rgba(13, 115, 119, 0.06);
-  background: var(--color-surface);
-}
-
-body.theme-dark .search-bar:focus-within {
-  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.2);
-}
-
-.search-icon {
-  flex-shrink: 0;
-  color: var(--color-text-light);
-}
-
-.search-input {
-  flex: 1;
-  min-width: 0;
-  padding: 0.2rem 0;
-  border: none;
-  background: transparent;
-  font-size: 0.95rem;
-  font-family: inherit;
-  color: var(--color-text);
-}
-
-.search-input::placeholder {
-  color: var(--color-text-light);
-}
-
-.search-input:focus {
-  outline: none;
-}
-
-.search-clear {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.35rem;
-  border: none;
-  background: transparent;
-  color: var(--color-text-light);
-  cursor: pointer;
-  border-radius: 8px;
-  transition: color 0.2s, background 0.2s;
-}
-
-.search-clear:hover {
-  color: var(--color-primary);
-  background: rgba(13, 115, 119, 0.1);
-}
-
-.search-bar--disabled {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.patients-clear-filters {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-surface);
-  color: var(--color-primary);
-  font-size: 0.8rem;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: border-color 0.2s, background 0.2s;
-}
-
-.patients-clear-filters:hover {
-  border-color: var(--color-primary);
-  background: rgba(13, 115, 119, 0.1);
-}
-
-body.theme-dark .patients-clear-filters {
-  background: var(--color-surface);
-  border-color: var(--color-border);
-}
+/* ----- Busca/ordenação: ver ListToolbar.css ----- */
 
 /* ----- Loading ----- */
 .patients-loading {
@@ -619,12 +365,6 @@ body.theme-dark .patient-card-skeleton-line {
   }
 }
 
-.patients-sort-trigger--active {
-  border-color: var(--color-primary);
-  background: rgba(13, 115, 119, 0.12);
-  color: var(--color-primary);
-}
-
 .patients-letter-chip {
   display: inline-flex;
   flex-direction: row;
@@ -697,21 +437,6 @@ body.theme-dark .patients-letter-chip {
 
 body.theme-dark .patients-letter-chip:not(.patients-letter-chip--disabled):hover {
   background: rgba(13, 115, 119, 0.2);
-}
-
-.patients-toolbar-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  flex-shrink: 0;
-}
-
-.filter-count {
-  color: var(--color-text-light);
-  font-weight: 500;
-  white-space: nowrap;
 }
 
 .filter-clear-btn {
@@ -972,30 +697,7 @@ body.theme-dark .patients-no-results {
 /* ----- Paginação: ver components/common/Pagination.css ----- */
 
 @media (max-width: 768px) {
-  .patients-toolbar {
-    padding: 0.6rem 1rem;
-  }
-
-  .patients-toolbar-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .patients-toolbar-actions {
-    justify-content: space-between;
-  }
-
-  .search-bar {
-    max-width: none;
-  }
-
-  .patients-sort-trigger-label {
-    max-width: 9rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .patients-filters-sticky {
+  .list-filters-sticky {
     gap: 0.6rem;
   }
 

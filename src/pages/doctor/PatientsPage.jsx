@@ -16,6 +16,7 @@ import { Button } from '../../components/common/Button';
 import { Avatar } from '../../components/common/Avatar';
 import { Pagination } from '../../components/common/Pagination';
 import { PatientModal } from '../../components/doctor/PatientModal';
+import '../../components/common/ListToolbar.css';
 import './PatientsPage.css';
 
 function getInitials(name) {
@@ -212,11 +213,11 @@ export function PatientsPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="patients-toolbar">
-            <div className="patients-toolbar-row">
-              <div className="search-bar search-bar--disabled">
-                <Search size={20} className="search-icon" />
-                <input type="text" className="search-input" placeholder="Buscar..." disabled aria-hidden />
+          <div className="list-toolbar">
+            <div className="list-toolbar-row">
+              <div className="list-search list-search--disabled">
+                <Search size={20} className="list-search-icon" />
+                <input type="text" className="list-search-input" placeholder="Buscar..." disabled aria-hidden />
               </div>
             </div>
           </div>
@@ -264,42 +265,42 @@ export function PatientsPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="patients-filters-sticky">
-            <div className="patients-toolbar">
-              <div className="patients-toolbar-row">
-                <div className="search-bar">
-                  <Search size={18} className="search-icon" />
+          <div className="list-filters-sticky">
+            <div className="list-toolbar">
+              <div className="list-toolbar-row">
+                <div className="list-search">
+                  <Search size={18} className="list-search-icon" />
                   <input
                     type="text"
-                    className="search-input"
+                    className="list-search-input"
                     placeholder="Buscar por nome, e-mail, telefone ou data..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     aria-label="Buscar pacientes"
                   />
                   {searchQuery && (
-                    <button type="button" className="search-clear" onClick={() => setSearchQuery('')} aria-label="Limpar busca">
+                    <button type="button" className="list-search-clear" onClick={() => setSearchQuery('')} aria-label="Limpar busca">
                       <X size={16} />
                     </button>
                   )}
                 </div>
 
-                <div className="patients-toolbar-actions">
-                  <div className="patients-sort-dropdown" ref={sortDropdownRef}>
+                <div className="list-toolbar-actions">
+                  <div className="list-sort" ref={sortDropdownRef}>
                     <button
                       type="button"
-                      className={`patients-sort-trigger patients-sort-trigger--labeled ${sortDropdownOpen ? 'patients-sort-trigger--open' : ''}`}
+                      className={`list-sort-trigger${sortDropdownOpen ? ' list-sort-trigger--open' : ''}`}
                       onClick={() => setSortDropdownOpen((v) => !v)}
                       aria-expanded={sortDropdownOpen}
                       aria-label={`Ordenar por: ${currentSortLabel}`}
                     >
                       <ArrowUpDown size={16} />
-                      <span className="patients-sort-trigger-label">{currentSortLabel}</span>
+                      <span className="list-sort-trigger-label">{currentSortLabel}</span>
                     </button>
                     <AnimatePresence>
                       {sortDropdownOpen && (
                         <motion.ul
-                          className="patients-sort-dropdown-list"
+                          className="list-sort-menu"
                           role="listbox"
                           initial={reducedMotion ? false : { opacity: 0, y: 8, scale: 0.96 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -310,7 +311,7 @@ export function PatientsPage() {
                             <li key={opt.value} role="option">
                               <button
                                 type="button"
-                                className={`patients-sort-dropdown-item ${sortBy === opt.value ? 'patients-sort-dropdown-item--active' : ''}`}
+                                className={`list-sort-item${sortBy === opt.value ? ' list-sort-item--active' : ''}`}
                                 onClick={() => {
                                   setSortBy(opt.value);
                                   setSortDropdownOpen(false);
@@ -325,14 +326,14 @@ export function PatientsPage() {
                     </AnimatePresence>
                   </div>
 
-                  <div className="patients-toolbar-meta">
-                    <span className="filter-count">
+                  <div className="list-toolbar-meta">
+                    <span className="list-filter-count">
                       {filteredPatients.length} de {patients.length} paciente{patients.length !== 1 ? 's' : ''}
                     </span>
                     {hasActiveFilters && (
                       <button
                         type="button"
-                        className="patients-clear-filters"
+                        className="list-clear-filters"
                         onClick={clearAllFilters}
                         title="Limpar filtros"
                       >

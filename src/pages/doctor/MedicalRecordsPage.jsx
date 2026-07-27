@@ -27,6 +27,7 @@ import {
   DEFAULT_PAGE_SIZE_OPTIONS,
   getPaginationMeta,
 } from '../../utils/pagination';
+import '../../components/common/ListToolbar.css';
 import './MedicalRecordsPage.css';
 
 const SORT_RECENT = 'recent';
@@ -166,12 +167,12 @@ export function MedicalRecordsPage() {
 
       {loading ? (
         <div className="records-content">
-          <div className="records-filters-sticky">
-            <div className="records-toolbar">
-              <div className="records-toolbar-row">
-                <div className="records-search-bar records-search-bar--disabled">
-                  <Search size={18} className="records-search-icon" />
-                  <input type="text" className="records-search-input" placeholder="Buscar..." disabled aria-hidden />
+          <div className="list-filters-sticky">
+            <div className="list-toolbar">
+              <div className="list-toolbar-row">
+                <div className="list-search list-search--disabled">
+                  <Search size={18} className="list-search-icon" />
+                  <input type="text" className="list-search-input" placeholder="Buscar..." disabled aria-hidden />
                 </div>
               </div>
             </div>
@@ -211,41 +212,41 @@ export function MedicalRecordsPage() {
         </div>
       ) : (
         <div className="records-content">
-          <div className="records-filters-sticky">
-            <div className="records-toolbar">
-              <div className="records-toolbar-row">
-                <div className="records-search-bar">
-                  <Search size={18} className="records-search-icon" />
+          <div className="list-filters-sticky">
+            <div className="list-toolbar">
+              <div className="list-toolbar-row">
+                <div className="list-search">
+                  <Search size={18} className="list-search-icon" />
                   <input
                     type="text"
-                    className="records-search-input"
+                    className="list-search-input"
                     placeholder="Buscar por paciente, e-mail ou data..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     aria-label="Buscar prontuários"
                   />
                   {searchQuery && (
-                    <button type="button" className="records-search-clear" onClick={() => setSearchQuery('')} aria-label="Limpar busca">
+                    <button type="button" className="list-search-clear" onClick={() => setSearchQuery('')} aria-label="Limpar busca">
                       <X size={16} />
                     </button>
                   )}
                 </div>
-                <div className="records-toolbar-actions">
-                  <div className="records-sort-wrap" ref={sortDropdownRef}>
+                <div className="list-toolbar-actions">
+                  <div className="list-sort" ref={sortDropdownRef}>
                     <button
                       type="button"
-                      className={`records-sort-trigger records-sort-trigger--labeled ${sortDropdownOpen ? 'records-sort-trigger--open' : ''}`}
+                      className={`list-sort-trigger${sortDropdownOpen ? ' list-sort-trigger--open' : ''}`}
                       onClick={() => setSortDropdownOpen((v) => !v)}
                       aria-expanded={sortDropdownOpen}
                       aria-label={`Ordenar por: ${currentSortLabel}`}
                     >
                       <ArrowUpDown size={16} />
-                      <span>{currentSortLabel}</span>
+                      <span className="list-sort-trigger-label">{currentSortLabel}</span>
                     </button>
                     <AnimatePresence>
                       {sortDropdownOpen && (
                         <motion.ul
-                          className="records-sort-dropdown"
+                          className="list-sort-menu"
                           role="listbox"
                           initial={reducedMotion ? false : { opacity: 0, y: 8, scale: 0.96 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -256,7 +257,7 @@ export function MedicalRecordsPage() {
                             <li key={opt.value} role="option">
                               <button
                                 type="button"
-                                className={`records-sort-item ${sameId(sortOrder, opt.value) ? 'records-sort-item--active' : ''}`}
+                                className={`list-sort-item${sameId(sortOrder, opt.value) ? ' list-sort-item--active' : ''}`}
                                 onClick={() => {
                                   setSortOrder(opt.value);
                                   setSortDropdownOpen(false);
@@ -270,12 +271,12 @@ export function MedicalRecordsPage() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="records-toolbar-meta">
-                    <span className="records-filter-count">
+                  <div className="list-toolbar-meta">
+                    <span className="list-filter-count">
                       {filteredRecords.length} de {records.length} prontuário{records.length !== 1 ? 's' : ''}
                     </span>
                     {hasActiveFilters && (
-                      <button type="button" className="records-clear-filters" onClick={clearAllFilters} title="Limpar filtros">
+                      <button type="button" className="list-clear-filters" onClick={clearAllFilters} title="Limpar filtros">
                         <RotateCcw size={14} />
                         Limpar
                       </button>
