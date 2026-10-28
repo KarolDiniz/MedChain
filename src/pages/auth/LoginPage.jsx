@@ -1,27 +1,47 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stethoscope, User, Mail, Lock, BadgeCheck, GraduationCap } from 'lucide-react';
-import { PolygonBackground, createTheme } from 'polygon-background';
+import {
+  Stethoscope,
+  User,
+  Mail,
+  Lock,
+  BadgeCheck,
+  GraduationCap,
+  ShieldCheck,
+  AlertCircle,
+  Sun,
+  Moon,
+  ArrowRight,
+} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import humanBlockchainImg from '../../assets/human-blockchain-saude.png';
+import doctorImg from '../../assets/auth-doctor.jpg';
 import './LoginPage.css';
 
-const medchainTheme = createTheme('ocean', {
-  gradientStart: '#152a45',
-  gradientEnd: '#163842',
-  backgroundColor: '#152a45',
-  strokeColor: 'rgba(0, 255, 255, 0.1)',
-  strokeWidth: 0.35,
-  lightColor: 'rgba(0, 255, 255, 0.35)',
-  pointColor: 'rgba(0, 255, 255, 0.2)',
-  fillOpacity: 0.2,
-});
+function AuthField({ id, label, icon, className = '', ...inputProps }) {
+  const Icon = icon;
+  return (
+    <div className="auth-field">
+      <label className="auth-sr-only" htmlFor={id}>{label}</label>
+      <div className="auth-input-wrap">
+        <Icon className="auth-input-icon" size={18} strokeWidth={2} aria-hidden />
+        <input id={id} className={`auth-input ${className}`.trim()} {...inputProps} />
+      </div>
+    </div>
+  );
+}
+
+function AuthError({ message }) {
+  return (
+    <p className="auth-error" role="alert">
+      <AlertCircle size={16} strokeWidth={2.25} aria-hidden />
+      <span>{message}</span>
+    </p>
+  );
+}
 
 export function LoginPage() {
   const [userType, setUserType] = useState('patient'); // 'patient' | 'doctor'
-  const [isSwapping, setIsSwapping] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-  const meshRef = useRef(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -36,61 +56,24 @@ export function LoginPage() {
     CRM: '',
     specialty: '',
   });
+  const [isDark, setIsDark] = useState(() => {
+    try {
+      return window.localStorage.getItem('theme') === 'dark';
+    } catch {
+      return false;
+    }
+  });
   const { user, login, registerDoctor } = useAuth();
   const navigate = useNavigate();
 
-  const panelDots = useMemo(() => {
-    const dots = [];
-    for (let i = 0; i < 72; i++) {
-      const a = (i * 137.508) % 360;
-      const r = 35 + ((i * 41 + 17) % 25);
-      const t = 50 + r * Math.sin((a * Math.PI) / 180) + ((i * 7) % 11) - 5;
-      const l = 50 + r * Math.cos((a * Math.PI) / 180) + ((i * 13) % 9) - 4;
-      dots.push({
-        t: Math.max(2, Math.min(98, t)),
-        l: Math.max(2, Math.min(98, l)),
-        s: 1 + ((i * 23 + i) % 4),
-        lum: 0.35 + ((i * 67 + 31) % 8) / 12,
-      });
-    }
-    return dots;
-  }, []);
-
-  const illusDots = useMemo(() => {
-    const dots = [];
-    for (let i = 0; i < 110; i++) {
-      const a = (i * 99.73 + 127) % 360;
-      const r = 20 + ((i * 53 + 7) % 38);
-      const t = 50 + r * Math.sin((a * Math.PI) / 180) + ((i * 19) % 13) - 6;
-      const l = 50 + r * Math.cos((a * Math.PI) / 180) + ((i * 29) % 11) - 5;
-      dots.push({
-        t: Math.max(2, Math.min(98, t)),
-        l: Math.max(2, Math.min(98, l)),
-        s: 2 + ((i * 17 + i * 3) % 4),
-        lum: 0.55 + ((i * 43 + 19) % 10) / 12,
-      });
-    }
-    return dots;
-  }, []);
-
   useEffect(() => {
-    if (!meshRef.current) return;
-    const bg = new PolygonBackground(meshRef.current, {
-      theme: medchainTheme,
-      pointCount: 100,
-      speed: 0.2,
-      mouse: {
-        enabled: true,
-        mode: 'push',
-        strength: 28,
-        radius: 160,
-        springBack: 0.02,
-        velocityInfluence: 0.1,
-      },
-      interaction: { clickShockwave: false, holdGravityWell: false },
-    });
-    return () => bg.destroy();
-  }, []);
+    document.body.classList.toggle('theme-dark', isDark);
+    try {
+      window.localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    } catch {
+      /* ignore */
+    }
+  }, [isDark]);
 
   useEffect(() => {
     if (user?.type === 'doctor') {
@@ -110,16 +93,9 @@ export function LoginPage() {
 
   const handleTypeSwitch = (type) => {
     if (type === userType) return;
-    setIsSwapping(true);
     setError('');
-    // Imagem some (200ms) + login desliza (400ms) = ~600ms total
-    const FADE_MS = 200;
-    const SLIDE_MS = 400;
-    setTimeout(() => {
-      setFormKey((k) => k + 1);
-      setUserType(type);
-      setIsSwapping(false);
-    }, FADE_MS + SLIDE_MS);
+    setFormKey((k) => k + 1);
+    setUserType(type);
   };
 
   const handleRegisterChange = (e) => {
@@ -163,316 +139,273 @@ export function LoginPage() {
     }
   };
 
+  const passwordState = `${registerForm.password.length >= 6 ? 'has-success' : ''} ${registerForm.password.length > 0 && registerForm.password.length < 6 ? 'has-error' : ''}`.trim();
+  const confirmState = `${error && registerForm.confirmPassword ? 'has-error' : ''} ${registerForm.confirmPassword && registerForm.password === registerForm.confirmPassword && registerForm.confirmPassword.length >= 6 ? 'has-success' : ''}`.trim();
+
   return (
     <div className="login-page">
-      <div className="login-bg">
-        <div className="login-bg-gradient" />
-        <div className="login-bg-mesh" />
-        <div ref={meshRef} className="login-bg-polygon-mesh" aria-hidden />
-        <div className="login-bg-grid" />
+      <div className="auth-backdrop" aria-hidden>
+        <span className="auth-blob auth-blob--a" />
+        <span className="auth-blob auth-blob--b" />
+        <span className="auth-blob auth-blob--c" />
       </div>
 
-      <div className={`login-panel ${showRegister ? 'login-panel--register' : ''} ${isSwapping ? 'login-panel--swapping' : ''}`}>
-        {!showRegister && <div className="login-panel-bg" aria-hidden />}
-        {!showRegister && (
-        <div className="login-panel-dots" aria-hidden>
-          {panelDots.map((d, i) => (
-            <div
-              key={i}
-              className="login-panel-dot"
-              style={{ '--pt': d.t, '--pl': d.l, '--ps': d.s, '--plum': d.lum, '--pi': i }}
-            />
-          ))}
-        </div>
-        )}
-        <aside className={`login-illustration ${showRegister ? 'login-illustration--hidden' : `login-illustration--${userType}`}`} aria-hidden>
-          <div className="login-illus-wrapper">
-            <img
-              src={humanBlockchainImg}
-              alt=""
-              className="login-illus-img"
-            />
-            {/* Nós blockchain + linhas conectando */}
-            <svg className="login-illus-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="blockchainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#00ffff" />
-                  <stop offset="100%" stopColor="#32465f" />
-                </linearGradient>
-                <filter id="nodeGlow">
-                  <feGaussianBlur stdDeviation="0.5" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <g className="login-illus-lines">
-                <line x1="15" y1="20" x2="45" y2="35" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c1" />
-                <line x1="50" y1="40" x2="75" y2="25" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c2" />
-                <line x1="25" y1="55" x2="55" y2="70" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c3" />
-                <line x1="60" y1="75" x2="85" y2="60" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c4" />
-                <line x1="20" y1="45" x2="80" y2="50" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c5" />
-                <line x1="35" y1="15" x2="70" y2="55" stroke="url(#blockchainGrad)" strokeWidth="0.3" fill="none" className="conn c6" />
-              </g>
-            </svg>
-            <div className="login-illus-dots" aria-hidden>
-              {illusDots.map((d, i) => (
-                <div
-                  key={i}
-                  className="login-illus-dot"
-                  style={{ '--dt': d.t, '--dl': d.l, '--ds': d.s, '--dlum': d.lum, '--di': i }}
-                />
-              ))}
-            </div>
+      <div className={`auth-card ${showRegister ? 'auth-card--register' : ''}`}>
+        <aside className="auth-photo">
+          <div className="auth-photo-media" aria-hidden>
+            <img src={doctorImg} alt="" className="auth-photo-img" />
           </div>
+
+          <div className="auth-photo-logo">
+            <span className="auth-photo-mark" aria-hidden>
+              <Stethoscope size={16} strokeWidth={2.25} />
+            </span>
+            <span>MedChain</span>
+          </div>
+
+          <span className="auth-photo-chip" aria-hidden>
+            <ShieldCheck size={14} strokeWidth={2.25} />
+            Registro verificado · SHA-256
+          </span>
+
+          <blockquote className="auth-photo-quote">
+            <span className="auth-photo-quote-mark" aria-hidden>“</span>
+            <p>
+              Prontuários médicos com integridade <em>garantida</em> por blockchain.
+            </p>
+          </blockquote>
+
+          <svg className="auth-photo-curve" viewBox="0 0 60 600" preserveAspectRatio="none" aria-hidden>
+            <path d="M60 0 L22 0 C 52 150, 0 250, 30 380 C 52 470, 18 540, 34 600 L60 600 Z" />
+          </svg>
         </aside>
 
-      <div className={`login-wrapper ${showRegister ? 'login-wrapper--full' : `login-wrapper--${userType}`}`}>
-        {!showRegister ? (
-        <div className={`login-container login-fade-in login-container--${userType}`} data-user-type={userType}>
-          <header className="login-header">
-            <div className="login-logo">
-              <span className="login-logo-icon">
-                <Stethoscope size={44} strokeWidth={1.8} />
+        <main className="auth-form-area">
+          <div className="auth-topbar">
+            <div className="auth-mobile-logo">
+              <span className="auth-mobile-mark" aria-hidden>
+                <Stethoscope size={20} strokeWidth={2} />
               </span>
+              <span>MedChain</span>
             </div>
-            <h1 className="login-title">MedChain</h1>
-            <p className="login-tagline">
-              Prontuários médicos com integridade garantida por blockchain
-            </p>
-          </header>
-
-          <div className={`login-type-selector ${isSwapping ? 'is-disabled' : ''}`}>
-            <div className="login-type-track">
-              <div
-                className="login-type-indicator"
-                data-active={userType}
-                aria-hidden
-              />
-              <button
-                type="button"
-                className={`login-type-btn ${userType === 'patient' ? 'is-active' : ''}`}
-                onClick={() => handleTypeSwitch('patient')}
-              >
-                <User size={18} strokeWidth={2.5} />
-                <span>Paciente</span>
-              </button>
-              <span className="login-type-divider" aria-hidden />
-              <button
-                type="button"
-                className={`login-type-btn ${userType === 'doctor' ? 'is-active' : ''}`}
-                onClick={() => handleTypeSwitch('doctor')}
-              >
-                <Stethoscope size={18} strokeWidth={2.5} />
-                <span>Doutor</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              className="auth-theme-toggle"
+              onClick={() => setIsDark((prev) => !prev)}
+              aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+              title={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+            >
+              {isDark ? <Sun size={18} strokeWidth={2} aria-hidden /> : <Moon size={18} strokeWidth={2} aria-hidden />}
+            </button>
           </div>
 
-          <div
-            key={formKey}
-            className={`login-message login-message--${userType}`}
-          >
-            {userType === 'patient' ? (
-              <p>
-                Pacientes só podem fazer login. O cadastro é realizado pelo
-                médico.
-              </p>
+          <div className="auth-form-main">
+            {!showRegister ? (
+              <div className="auth-form-container">
+                <header className="auth-header">
+                  <h1 className="auth-title">Bem-vindo de volta!</h1>
+                  <p key={formKey} className="auth-subtitle">
+                    {userType === 'patient'
+                      ? 'Pacientes só podem fazer login. O cadastro é realizado pelo médico.'
+                      : 'Entre ou cadastre-se como médico para gerenciar prontuários.'}
+                  </p>
+                </header>
+
+                <div className="auth-segmented" role="group" aria-label="Tipo de acesso">
+                  <span className="auth-segmented-indicator" data-active={userType} aria-hidden />
+                  <button
+                    type="button"
+                    className={`auth-segmented-btn ${userType === 'patient' ? 'is-active' : ''}`}
+                    onClick={() => handleTypeSwitch('patient')}
+                    aria-pressed={userType === 'patient'}
+                  >
+                    <User size={17} strokeWidth={2.25} aria-hidden />
+                    <span>Paciente</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`auth-segmented-btn ${userType === 'doctor' ? 'is-active' : ''}`}
+                    onClick={() => handleTypeSwitch('doctor')}
+                    aria-pressed={userType === 'doctor'}
+                  >
+                    <Stethoscope size={17} strokeWidth={2.25} aria-hidden />
+                    <span>Doutor</span>
+                  </button>
+                </div>
+
+                <form onSubmit={handleLogin} className="auth-form">
+                  <AuthField
+                    id="login-email"
+                    label="E-mail"
+                    icon={Mail}
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="E-mail"
+                    required
+                    autoComplete="email"
+                  />
+                  <AuthField
+                    id="login-password"
+                    label="Senha"
+                    icon={Lock}
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Senha"
+                    className={error ? 'has-error' : ''}
+                    required
+                    autoComplete="current-password"
+                  />
+                  {error && <AuthError message={error} />}
+                  <button type="submit" className="auth-submit" disabled={loading}>
+                    <span>{loading ? 'Entrando...' : 'Entrar'}</span>
+                    {!loading && <ArrowRight size={18} strokeWidth={2.25} aria-hidden />}
+                  </button>
+                </form>
+
+                {userType === 'doctor' && (
+                  <p className="auth-footer">
+                    Não tem conta?{' '}
+                    <button
+                      type="button"
+                      className="auth-link"
+                      onClick={() => setShowRegister(true)}
+                    >
+                      Cadastre-se como doutor
+                    </button>
+                  </p>
+                )}
+              </div>
             ) : (
-              <p>
-                Entre ou cadastre-se como médico para gerenciar prontuários.
-              </p>
+              <div className="auth-form-container auth-form-container--wide">
+                <header className="auth-header">
+                  <h1 className="auth-title">Cadastro de médico</h1>
+                  <p className="auth-subtitle">
+                    Crie sua conta para gerenciar prontuários com segurança blockchain
+                  </p>
+                </header>
+
+                <form onSubmit={handleRegister} className="auth-form auth-form--register">
+                  <fieldset className="auth-section">
+                    <legend className="auth-sr-only">Informações pessoais</legend>
+                    <div className="auth-grid">
+                      <AuthField
+                        id="register-full-name"
+                        label="Nome completo"
+                        icon={User}
+                        type="text"
+                        name="full_name"
+                        value={registerForm.full_name}
+                        onChange={handleRegisterChange}
+                        placeholder="Nome completo"
+                        required
+                        autoComplete="name"
+                      />
+                      <AuthField
+                        id="register-email"
+                        label="E-mail"
+                        icon={Mail}
+                        type="email"
+                        name="email"
+                        value={registerForm.email}
+                        onChange={handleRegisterChange}
+                        placeholder="E-mail"
+                        required
+                        autoComplete="email"
+                      />
+                    </div>
+                  </fieldset>
+
+                  <fieldset className="auth-section">
+                    <legend className="auth-sr-only">Informações profissionais</legend>
+                    <div className="auth-grid">
+                      <AuthField
+                        id="register-crm"
+                        label="CRM"
+                        icon={BadgeCheck}
+                        type="text"
+                        name="CRM"
+                        value={registerForm.CRM}
+                        onChange={handleRegisterChange}
+                        placeholder="CRM (ex: 12345-SP)"
+                        required
+                      />
+                      <AuthField
+                        id="register-specialty"
+                        label="Especialidade"
+                        icon={GraduationCap}
+                        type="text"
+                        name="specialty"
+                        value={registerForm.specialty}
+                        onChange={handleRegisterChange}
+                        placeholder="Especialidade"
+                        required
+                      />
+                    </div>
+                  </fieldset>
+
+                  <fieldset className="auth-section">
+                    <legend className="auth-sr-only">Segurança</legend>
+                    <div className="auth-grid">
+                      <AuthField
+                        id="register-password"
+                        label="Senha"
+                        icon={Lock}
+                        type="password"
+                        name="password"
+                        value={registerForm.password}
+                        onChange={handleRegisterChange}
+                        placeholder="Senha (mín. 6)"
+                        className={passwordState}
+                        required
+                        autoComplete="new-password"
+                      />
+                      <AuthField
+                        id="register-confirm-password"
+                        label="Confirmar senha"
+                        icon={Lock}
+                        type="password"
+                        name="confirmPassword"
+                        value={registerForm.confirmPassword}
+                        onChange={handleRegisterChange}
+                        placeholder="Confirmar senha"
+                        className={confirmState}
+                        required
+                        autoComplete="new-password"
+                      />
+                    </div>
+                  </fieldset>
+
+                  {error && <AuthError message={error} />}
+
+                  <button type="submit" className="auth-submit" disabled={loading}>
+                    <span>{loading ? 'Cadastrando...' : 'Criar conta médica'}</span>
+                    {!loading && <ArrowRight size={18} strokeWidth={2.25} aria-hidden />}
+                  </button>
+
+                  <p className="auth-register-trust">
+                    Seus dados clínicos ficam protegidos no servidor; a integridade é comprovada por hash na blockchain.
+                  </p>
+                </form>
+
+                <p className="auth-footer">
+                  Já possui uma conta?{' '}
+                  <button
+                    type="button"
+                    className="auth-link"
+                    onClick={() => { setShowRegister(false); setError(''); }}
+                  >
+                    Fazer login
+                  </button>
+                </p>
+              </div>
             )}
           </div>
-
-          <form onSubmit={handleLogin} className="login-form">
-            <div className="login-input-wrap">
-              <label className="login-sr-only" htmlFor="login-email">E-mail</label>
-              <Mail className="login-input-icon" size={20} strokeWidth={2} aria-hidden />
-              <input
-                id="login-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="E-mail"
-                className="login-input"
-                required
-                autoComplete="email"
-              />
-            </div>
-            <div className="login-input-wrap">
-              <label className="login-sr-only" htmlFor="login-password">Senha</label>
-              <Lock className="login-input-icon" size={20} strokeWidth={2} aria-hidden />
-              <input
-                id="login-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Senha"
-                className={`login-input ${error ? 'has-error' : ''}`}
-                required
-                autoComplete="current-password"
-              />
-            </div>
-            {error && <p className="login-error">{error}</p>}
-            <button
-              type="submit"
-              className="login-submit"
-              disabled={loading}
-            >
-              <span className="login-submit-text">
-                {loading ? 'Entrando...' : 'Entrar'}
-              </span>
-            </button>
-          </form>
-
-          {userType === 'patient' && (
-            <p className="login-register-hint" style={{ visibility: 'hidden' }} aria-hidden>
-              Não tem conta? Cadastre-se como paciente
-            </p>
-          )}
-          {userType === 'doctor' && (
-            <p className="login-register-hint">
-              Não tem conta?{' '}
-              <button
-                type="button"
-                className="login-register-link"
-                onClick={() => setShowRegister(true)}
-              >
-                Cadastre-se como doutor
-              </button>
-            </p>
-          )}
-
-        </div>
-        ) : (
-        <div className="login-container login-container--register login-fade-in">
-          <div className="login-register-dots" aria-hidden />
-          <header className="login-register-header">
-            <div className="login-register-logo">
-              <Stethoscope size={26} strokeWidth={1.8} />
-            </div>
-            <h1 className="login-register-title">Cadastro de médico</h1>
-            <p className="login-register-subtitle">
-              Crie sua conta para gerenciar prontuários com segurança blockchain
-            </p>
-          </header>
-
-          <form onSubmit={handleRegister} className="login-form login-form--register">
-            <section className="login-register-block">
-              <h3 className="login-register-block-title">Informações pessoais</h3>
-              <div className="login-form-grid">
-                <div className="login-input-wrap">
-                  <User className="login-input-icon" size={18} strokeWidth={2} />
-                  <input
-                    type="text"
-                    name="full_name"
-                    value={registerForm.full_name}
-                    onChange={handleRegisterChange}
-                    placeholder="Nome completo"
-                    className="login-input"
-                    required
-                  />
-                </div>
-                <div className="login-input-wrap">
-                  <Mail className="login-input-icon" size={18} strokeWidth={2} />
-                  <input
-                    type="email"
-                    name="email"
-                    value={registerForm.email}
-                    onChange={handleRegisterChange}
-                    placeholder="E-mail"
-                    className="login-input"
-                    required
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="login-register-block">
-              <h3 className="login-register-block-title">Informações profissionais</h3>
-              <div className="login-form-grid">
-                <div className="login-input-wrap">
-                  <BadgeCheck className="login-input-icon" size={18} strokeWidth={2} />
-                  <input
-                    type="text"
-                    name="CRM"
-                    value={registerForm.CRM}
-                    onChange={handleRegisterChange}
-                    placeholder="CRM (ex: 12345-SP)"
-                    className="login-input"
-                    required
-                  />
-                </div>
-                <div className="login-input-wrap">
-                  <GraduationCap className="login-input-icon" size={18} strokeWidth={2} />
-                  <input
-                    type="text"
-                    name="specialty"
-                    value={registerForm.specialty}
-                    onChange={handleRegisterChange}
-                    placeholder="Especialidade"
-                    className="login-input"
-                    required
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="login-register-block">
-              <h3 className="login-register-block-title">Segurança</h3>
-              <div className="login-form-grid">
-                <div className="login-input-wrap">
-                  <Lock className="login-input-icon" size={18} strokeWidth={2} />
-                  <input
-                    type="password"
-                    name="password"
-                    value={registerForm.password}
-                    onChange={handleRegisterChange}
-                    placeholder="Senha (mín. 6 caracteres)"
-                    className={`login-input ${registerForm.password.length >= 6 ? 'has-success' : ''} ${registerForm.password.length > 0 && registerForm.password.length < 6 ? 'has-error' : ''}`}
-                    required
-                  />
-                </div>
-                <div className="login-input-wrap">
-                  <Lock className="login-input-icon" size={18} strokeWidth={2} />
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    value={registerForm.confirmPassword}
-                    onChange={handleRegisterChange}
-                    placeholder="Confirmar senha"
-                    className={`login-input ${error && registerForm.confirmPassword ? 'has-error' : ''} ${registerForm.confirmPassword && registerForm.password === registerForm.confirmPassword && registerForm.confirmPassword.length >= 6 ? 'has-success' : ''}`}
-                    required
-                  />
-                </div>
-              </div>
-            </section>
-
-            {error && <p className="login-error">{error}</p>}
-
-            <button type="submit" className="login-submit login-submit--register" disabled={loading}>
-              <span className="login-submit-text">
-                {loading ? 'Cadastrando...' : 'Criar conta médica'}
-              </span>
-            </button>
-
-            <p className="login-register-trust">
-              Seus dados clínicos ficam protegidos no servidor; a integridade é comprovada por hash na blockchain.
-            </p>
-          </form>
-
-          <p className="login-register-footer">
-            Já possui uma conta?{' '}
-            <button type="button" className="login-register-link login-register-link--back" onClick={() => { setShowRegister(false); setError(''); }}>
-              Fazer login
-            </button>
-          </p>
-        </div>
-        )}
+        </main>
       </div>
-      </div>
+
+      <p className="auth-legal">© {new Date().getFullYear()} MedChain · Prontuários com integridade verificável</p>
     </div>
   );
 }
