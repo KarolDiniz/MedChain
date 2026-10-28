@@ -10,43 +10,41 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
+  align-items: flex-end;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.65rem;
   flex-shrink: 0;
 }
 
 .patients-header-content {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0;
 }
 
 .patients-header-icon-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: var(--primary-soft);
-  border: 1px solid var(--border);
-  color: var(--primary);
-  flex-shrink: 0;
+  display: none;
 }
 
 .patients-header-title h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: var(--text);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 .patients-header-title p {
-  margin-top: 0.25rem;
-  font-size: 0.9375rem;
+  margin-top: 0.3rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
+  max-width: 28rem;
+  line-height: 1.45;
+}
+
+.patients-btn-new {
+  flex-shrink: 0;
+  box-shadow: none;
 }
 
 .patients-content {
@@ -57,41 +55,46 @@
 .patients-letter-bar {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.65rem 0.85rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  gap: 0.55rem;
+  padding: 0.1rem 0 0.15rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  min-width: 0;
 }
 
 .patients-letter-label {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-subtle);
   flex-shrink: 0;
 }
 
 .patients-letter-strip {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
+  flex-wrap: nowrap;
+  gap: 0.15rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 0.1rem;
 }
 
 .patients-letter-chip {
-  min-width: 32px;
-  height: 32px;
-  padding: 0 0.55rem;
-  border: 1px solid transparent;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 0.4rem;
+  border: none;
   border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--text-muted);
-  font-size: 0.75rem;
+  color: var(--text-subtle);
+  font-size: 0.6875rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+  flex-shrink: 0;
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 .patients-letter-chip:hover:not(:disabled) {
@@ -102,35 +105,35 @@
 .patients-letter-chip--active {
   background: var(--primary-soft);
   color: var(--primary);
-  border-color: transparent;
 }
 
 .patients-letter-chip--disabled {
-  opacity: 0.35;
+  opacity: 0.28;
   cursor: not-allowed;
 }
 
 .patients-letter-chip--all {
-  padding: 0 0.75rem;
+  padding: 0 0.55rem;
 }
 
 .patients-empty-card {
-  padding: 1rem;
+  padding: 0.5rem;
+  box-shadow: none;
 }
 
 .empty-state--patients {
-  padding: 3rem 1.5rem;
+  padding: 2.75rem 1.5rem;
 }
 
 .empty-state-icon-wrap {
   display: flex;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
   color: var(--primary);
 }
 
 .empty-state-cta {
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
 }
 
 .patients-no-results {
@@ -142,11 +145,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border);
+  width: 32px;
+  height: 32px;
+  border: none;
   border-radius: var(--radius-pill);
-  background: var(--surface);
+  background: transparent;
   color: var(--primary);
   cursor: pointer;
 }
@@ -158,16 +161,22 @@
 .patient-card-details {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.15rem;
 }
 
 .patient-card-detail {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.8125rem;
+  gap: 0.35rem;
+  font-size: 0.78125rem;
   color: var(--text-muted);
   min-width: 0;
+}
+
+.patient-card-detail svg {
+  flex-shrink: 0;
+  opacity: 0.65;
+  color: var(--text-subtle);
 }
 
 .patient-card-detail span {
@@ -177,8 +186,17 @@
 }
 
 @media (max-width: 640px) {
+  .patients-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .patients-header-title h1 {
     font-size: 1.5rem;
+  }
+
+  .patients-btn-new {
+    width: 100%;
   }
 
   .patients-letter-bar {

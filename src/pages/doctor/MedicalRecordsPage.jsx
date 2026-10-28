@@ -342,7 +342,7 @@ export function MedicalRecordsPage() {
                           <Avatar
                             userId={mr.patient_id}
                             isDoctor={false}
-                            size={52}
+                            size={44}
                             editable={false}
                             variant="profile"
                             initials={getInitials(patient?.full_name)}

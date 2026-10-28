@@ -426,7 +426,7 @@ export function PatientsPage() {
                         <Avatar
                           userId={resolvePatientRouteId(p) || p.uid || p.id}
                           isDoctor={false}
-                          size={52}
+                          size={44}
                           editable={false}
                           variant="profile"
                           initials={getInitials(p.full_name)}

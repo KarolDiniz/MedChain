@@ -10,43 +10,41 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
+  align-items: flex-end;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.65rem;
   flex-shrink: 0;
 }
 
 .records-header-content {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0;
 }
 
 .records-header-icon-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: var(--primary-soft);
-  border: 1px solid var(--border);
-  color: var(--primary);
-  flex-shrink: 0;
+  display: none;
 }
 
 .records-header-title h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: var(--text);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 .records-header-title p {
-  margin-top: 0.25rem;
-  font-size: 0.9375rem;
+  margin-top: 0.3rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
+  max-width: 28rem;
+  line-height: 1.45;
+}
+
+.records-btn-new {
+  flex-shrink: 0;
+  box-shadow: none;
 }
 
 .records-content {
@@ -60,36 +58,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2rem;
+  padding: 2.5rem 1.5rem;
+  box-shadow: none;
 }
 
 .records-empty-state {
   text-align: center;
-  max-width: 420px;
+  max-width: 380px;
 }
 
 .records-empty-icon-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 1.25rem;
-  border-radius: var(--radius-lg);
-  background: var(--primary-soft);
+  width: auto;
+  height: auto;
+  margin: 0 auto 0.85rem;
+  border-radius: 0;
+  background: transparent;
+  border: none;
   color: var(--primary);
+  box-shadow: none;
 }
 
 .records-empty-state h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 650;
   color: var(--text);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .records-empty-state p {
   color: var(--text-muted);
-  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  margin-bottom: 1.1rem;
+  line-height: 1.5;
 }
 
 .records-loading {
@@ -102,12 +105,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-pill);
-  background: var(--surface);
+  background: transparent;
   color: var(--primary);
   cursor: pointer;
 }
@@ -119,43 +122,67 @@
 .record-card-date {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 0.7rem;
+  gap: 0.35rem;
+  font-size: 0.78125rem;
+  color: var(--text-subtle);
+  margin-bottom: 0.45rem;
 }
 
 .record-card-date svg {
-  color: var(--primary);
+  color: var(--text-subtle);
+  opacity: 0.75;
 }
 
 .record-card-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.3rem;
 }
 
 .record-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.72rem;
-  font-weight: 600;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 550;
   border-radius: var(--radius-pill);
-  background: var(--primary-soft);
-  color: var(--primary);
-  line-height: 1;
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  line-height: 1.2;
+  border: none;
 }
 
-.record-badge--diagnostic {
-  background: var(--info-soft);
-  color: var(--info);
+.record-badge svg {
+  opacity: 0.7;
 }
 
+.record-badge strong {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.record-badge--consult,
+.record-badge--diagnostic,
 .record-badge--cert {
-  background: var(--success-soft);
-  color: var(--success);
+  background: var(--surface-muted);
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .records-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .records-header-title h1 {
+    font-size: 1.5rem;
+  }
+
+  .records-btn-new {
+    width: 100%;
+  }
 }
 
 @media (max-width: 420px) {
