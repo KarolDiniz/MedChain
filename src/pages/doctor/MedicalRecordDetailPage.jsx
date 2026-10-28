@@ -1,9 +1,9 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowLeft,
-  Filter,
+  ArrowUpDown,
   CalendarDays,
   Stethoscope,
   ClipboardList,
@@ -79,6 +79,7 @@ export function MedicalRecordDetailPage() {
   const [sortOrder, setSortOrder] = useState(SORT_RECENT);
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const sortDropdownRef = useRef(null);
+  const reducedMotion = useReducedMotion();
 
   const doctorId = resolveDoctorId(user);
   const isAuthorized = record && sameId(record.doctor_id, doctorId);
@@ -221,7 +222,7 @@ export function MedicalRecordDetailPage() {
     return (
       <motion.div
         className="record-detail-page record-detail-page--loading"
-        initial={{ opacity: 0 }}
+        initial={reducedMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
@@ -238,7 +239,7 @@ export function MedicalRecordDetailPage() {
     return (
       <motion.div
         className="record-detail-page record-detail-page--not-found"
-        initial={{ opacity: 0 }}
+        initial={reducedMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
       >
         <div className="record-detail-not-found">
@@ -261,8 +262,8 @@ export function MedicalRecordDetailPage() {
   return (
     <motion.div
       className="record-detail-page"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={reducedMotion ? false : { opacity: 0 }}
+      animate={reducedMotion ? false : { opacity: 1 }}
       transition={{ duration: 0.35 }}
     >
       <header className="record-detail-header">
@@ -349,7 +350,7 @@ export function MedicalRecordDetailPage() {
                       aria-expanded={sortDropdownOpen}
                       aria-label={`Ordenar: ${sortOrder === SORT_OLDEST ? 'Mais antigos' : 'Mais recentes'}`}
                     >
-                      <Filter size={18} />
+                      <ArrowUpDown size={18} />
                       {sortOrder === SORT_OLDEST ? 'Antigos' : 'Recentes'}
                     </button>
                     {sortDropdownOpen && (
@@ -399,8 +400,9 @@ export function MedicalRecordDetailPage() {
                       className={`sort-trigger-btn ${sortDropdownOpen ? 'sort-trigger-btn--open' : ''}`}
                       onClick={() => setSortDropdownOpen((v) => !v)}
                       aria-expanded={sortDropdownOpen}
+                      aria-label={`Ordenar por ${sortOrder === SORT_RECENT ? 'mais recentes' : 'mais antigos'}`}
                     >
-                      <Filter size={18} />
+                      <ArrowUpDown size={18} />
                     </button>
                     {sortDropdownOpen && (
                       <ul className="sort-dropdown-list" role="listbox">

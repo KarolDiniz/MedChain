@@ -350,6 +350,7 @@ export function PatientsPage() {
                   type="button"
                   className={`patients-letter-chip patients-letter-chip--all ${!letterFilter ? 'patients-letter-chip--active' : ''}`}
                   onClick={() => setLetterFilter('')}
+                  aria-pressed={!letterFilter}
                   title="Todos os pacientes"
                 >
                   Todos
@@ -365,6 +366,7 @@ export function PatientsPage() {
                       className={`patients-letter-chip ${!isAvailable ? 'patients-letter-chip--disabled' : ''} ${isActive ? 'patients-letter-chip--active' : ''}`}
                       onClick={() => isAvailable && setLetterFilter(isActive ? '' : l)}
                       disabled={!isAvailable}
+                      aria-pressed={isActive}
                       title={isAvailable ? `${count} paciente${count !== 1 ? 's' : ''} com nome em "${l}"` : `Nenhum paciente em "${l}"`}
                     >
                       <span className="patients-letter-char">{l}</span>
@@ -389,7 +391,7 @@ export function PatientsPage() {
                       : 'Nenhum paciente cadastrado.'}
                   </p>
                   {hasActiveFilters && (
-                    <button type="button" className="filter-clear-btn" onClick={clearAllFilters} title="Limpar filtros">
+                    <button type="button" className="filter-clear-btn" onClick={clearAllFilters} title="Limpar filtros" aria-label="Limpar filtros">
                       <RotateCcw size={16} />
                     </button>
                   )}

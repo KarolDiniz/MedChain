@@ -1,11 +1,9 @@
 .patient-records {
   width: 100%;
-  max-width: none;
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  position: relative;
 }
 
 .patient-records .visit-timeline {
@@ -20,30 +18,12 @@
   gap: 1.25rem;
   margin-bottom: 1.35rem;
   flex-shrink: 0;
-  position: relative;
-}
-
-.patient-records-header::before {
-  content: '';
-  position: absolute;
-  top: -2rem;
-  right: -4rem;
-  width: 280px;
-  height: 280px;
-  background: radial-gradient(circle, rgba(13, 115, 119, 0.06) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-body.theme-dark .patient-records-header::before {
-  background: radial-gradient(circle, rgba(50, 224, 196, 0.04) 0%, transparent 70%);
 }
 
 .patient-records-header-content {
   display: flex;
   align-items: flex-start;
-  gap: 1.25rem;
-  position: relative;
-  z-index: 1;
+  gap: 1rem;
   min-width: 0;
 }
 
@@ -51,107 +31,80 @@ body.theme-dark .patient-records-header::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
-  background: linear-gradient(145deg, rgba(13, 115, 119, 0.15) 0%, rgba(50, 224, 196, 0.08) 50%);
-  border: 1px solid rgba(13, 115, 119, 0.25);
-  color: var(--color-primary);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--primary-soft);
+  border: 1px solid var(--border);
+  color: var(--primary);
   flex-shrink: 0;
-  box-shadow: 0 8px 24px rgba(13, 115, 119, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-body.theme-dark .patient-records-header-icon {
-  background: linear-gradient(145deg, rgba(13, 115, 119, 0.22) 0%, rgba(50, 224, 196, 0.08) 100%);
-  border-color: rgba(13, 115, 119, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 .patient-records-header-text h1 {
   margin: 0 0 0.25rem;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--color-text);
+  letter-spacing: -0.02em;
+  color: var(--text);
 }
 
 .patient-records-header-text p {
   margin: 0;
   max-width: 36rem;
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
   line-height: 1.45;
-  color: var(--color-text-light);
+  color: var(--text-muted);
 }
 
 .patient-records-export {
-  position: relative;
-  z-index: 1;
   flex-shrink: 0;
 }
 
 .patient-records-stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-bottom: 1rem;
-}
-
-@media (max-width: 900px) {
-  .patient-records-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 480px) {
-  .patient-records-stats {
-    grid-template-columns: 1fr;
-  }
+  padding: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 
 .patient-records-stat {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.9rem 1rem;
-  border-radius: 14px;
-  background: rgba(13, 115, 119, 0.05);
-  border: 1px solid rgba(13, 115, 119, 0.12);
-}
-
-body.theme-dark .patient-records-stat {
-  background: rgba(45, 212, 191, 0.06);
-  border-color: rgba(45, 212, 191, 0.14);
+  gap: 0.65rem;
+  flex: 1;
+  min-width: 140px;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-md);
 }
 
 .patient-records-stat-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 11px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
   flex-shrink: 0;
-  color: var(--color-primary);
-  background: rgba(13, 115, 119, 0.1);
-}
-
-body.theme-dark .patient-records-stat-icon {
-  background: rgba(45, 212, 191, 0.12);
-  color: #99f6e4;
+  color: var(--primary);
+  background: var(--primary-soft);
 }
 
 .patient-records-stat strong {
   display: block;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.1;
-  color: var(--color-text);
+  color: var(--text);
 }
 
 .patient-records-stat span {
-  font-size: 0.78rem;
-  color: var(--color-text-light);
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 .patient-records-integrity-banner {
@@ -160,14 +113,9 @@ body.theme-dark .patient-records-stat-icon {
   align-items: flex-start;
   margin-bottom: 1.1rem;
   padding: 1.05rem 1.2rem;
-  border-radius: 16px;
-  border: 1px solid rgba(15, 118, 110, 0.2);
-  background: linear-gradient(
-    135deg,
-    rgba(240, 253, 250, 0.95) 0%,
-    rgba(236, 254, 255, 0.7) 100%
-  );
-  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--primary-soft);
 }
 
 .patient-records-integrity-icon {
@@ -176,65 +124,29 @@ body.theme-dark .patient-records-stat-icon {
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   flex-shrink: 0;
-  color: #0f766e;
-  background: rgba(15, 118, 110, 0.12);
+  color: var(--primary);
+  background: var(--surface);
 }
 
 .patient-records-integrity-body strong {
   display: block;
   margin-bottom: 0.25rem;
   font-size: 0.95rem;
-  color: #134e4a;
+  color: var(--text);
 }
 
 .patient-records-integrity-body p {
   margin: 0;
   font-size: 0.88rem;
-  color: #475569;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
 .patient-records-integrity-body a {
-  color: #0f766e;
+  color: var(--primary);
   font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.patient-records-integrity-body a:hover {
-  color: #115e59;
-}
-
-body.theme-dark .patient-records-integrity-banner {
-  background: linear-gradient(
-    135deg,
-    rgba(15, 118, 110, 0.2) 0%,
-    rgba(15, 118, 110, 0.1) 100%
-  );
-  border-color: rgba(45, 212, 191, 0.28);
-}
-
-body.theme-dark .patient-records-integrity-icon {
-  background: rgba(45, 212, 191, 0.14);
-  color: #99f6e4;
-}
-
-body.theme-dark .patient-records-integrity-body strong {
-  color: #99f6e4;
-}
-
-body.theme-dark .patient-records-integrity-body p {
-  color: #cbd5e1;
-}
-
-body.theme-dark .patient-records-integrity-body a {
-  color: #5eead4;
-}
-
-.patient-records-empty-card {
-  margin-top: 0.25rem;
 }
 
 .patient-records-empty {
@@ -249,21 +161,19 @@ body.theme-dark .patient-records-integrity-body a {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 88px;
-  height: 88px;
+  width: 72px;
+  height: 72px;
   margin-bottom: 1.1rem;
-  border-radius: 24px;
-  color: var(--color-primary);
-  background: linear-gradient(145deg, rgba(13, 115, 119, 0.12), rgba(50, 224, 196, 0.08));
-  border: 1px solid rgba(13, 115, 119, 0.18);
+  border-radius: var(--radius-lg);
+  color: var(--primary);
+  background: var(--primary-soft);
 }
 
 .patient-records-empty h3 {
   margin: 0 0 0.45rem;
   font-size: 1.2rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--color-text);
+  color: var(--text);
 }
 
 .patient-records-empty p {
@@ -271,7 +181,7 @@ body.theme-dark .patient-records-integrity-body a {
   max-width: 26rem;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: var(--color-text-light);
+  color: var(--text-muted);
 }
 
 .patient-records-loading {
@@ -281,25 +191,9 @@ body.theme-dark .patient-records-integrity-body a {
 }
 
 .patient-records-skeleton {
-  border-radius: 16px;
-  background: linear-gradient(
-    90deg,
-    rgba(13, 115, 119, 0.06) 0%,
-    rgba(13, 115, 119, 0.12) 50%,
-    rgba(13, 115, 119, 0.06) 100%
-  );
-  background-size: 200% 100%;
-  animation: patient-records-shimmer 1.4s ease-in-out infinite;
-}
-
-body.theme-dark .patient-records-skeleton {
-  background: linear-gradient(
-    90deg,
-    rgba(45, 212, 191, 0.05) 0%,
-    rgba(45, 212, 191, 0.12) 50%,
-    rgba(45, 212, 191, 0.05) 100%
-  );
-  background-size: 200% 100%;
+  border-radius: var(--radius-lg);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
 }
 
 .patient-records-skeleton--banner {
@@ -316,19 +210,8 @@ body.theme-dark .patient-records-skeleton {
   gap: 0.75rem;
 }
 
-@keyframes patient-records-shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
-}
-
 @media (max-width: 640px) {
-  .patient-records-header-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-  }
-
   .patient-records-header-text h1 {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
   }
 }

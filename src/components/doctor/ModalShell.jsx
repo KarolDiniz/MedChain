@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from 'react';
+import { X } from 'lucide-react';
 import './Modal.css';
 
 /**
@@ -48,7 +49,7 @@ export function ModalShell({
     <div className={`modal-overlay ${className}`.trim()} onClick={onClose} role="presentation">
       <div
         ref={panelRef}
-        className={`modal-content card card--padding ${wide ? 'modal-content--wide' : ''} ${contentClassName}`.trim()}
+        className={`modal-content ${wide ? 'modal-content--wide' : ''} ${contentClassName}`.trim()}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -58,7 +59,7 @@ export function ModalShell({
         <div className="modal-header">
           <h2 id={titleId}>{title}</h2>
           <button type="button" className="modal-close" onClick={onClose} aria-label="Fechar">
-            ×
+            <X size={18} strokeWidth={2} aria-hidden />
           </button>
         </div>
         {children}

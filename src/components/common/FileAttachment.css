@@ -13,16 +13,11 @@
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  background: var(--surface-muted, #eef2f6);
-  border: 1px solid var(--border-color, #d8e0e8);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
   cursor: pointer;
-}
-
-body.theme-dark .file-attachment-preview {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .file-attachment-thumb {
@@ -40,13 +35,13 @@ body.theme-dark .file-attachment-preview {
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 600;
 }
 
 .file-attachment-placeholder--pdf {
-  color: #b91c1c;
+  color: var(--danger);
 }
 
 .file-attachment-loading {
@@ -55,7 +50,7 @@ body.theme-dark .file-attachment-preview {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.45);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
 }
 
 .file-attachment-body {
@@ -69,19 +64,19 @@ body.theme-dark .file-attachment-preview {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--primary);
 }
 
 .file-attachment-desc {
   font-size: 0.92rem;
   font-weight: 600;
-  color: var(--text-primary, #0f172a);
+  color: var(--text);
   word-break: break-word;
 }
 
 .file-attachment-date {
   font-size: 0.78rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-muted);
 }
 
 .file-attachment-actions {
@@ -95,20 +90,19 @@ body.theme-dark .file-attachment-preview {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border: 1px solid var(--border-color, #cbd5e1);
-  background: #fff;
-  color: var(--text-primary, #0f172a);
-  border-radius: 6px;
-  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.7rem;
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
 }
 
-body.theme-dark .file-action-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
-  color: #e2e8f0;
+.file-action-btn:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .file-action-btn:disabled {
@@ -119,7 +113,7 @@ body.theme-dark .file-action-btn {
 .file-attachment-error {
   margin: 0;
   font-size: 0.78rem;
-  color: #b91c1c;
+  color: var(--danger);
 }
 
 .file-spin {
@@ -134,7 +128,7 @@ body.theme-dark .file-action-btn {
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: rgba(15, 23, 42, 0.65);
+  background: rgba(7, 17, 23, 0.62);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,17 +140,13 @@ body.theme-dark .file-action-btn {
   position: relative;
   width: min(960px, calc(100vw - 2rem));
   max-height: min(90vh, 900px);
-  background: #fff;
-  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
-}
-
-body.theme-dark .file-viewer-modal {
-  background: #0f172a;
-  color: #e2e8f0;
+  box-shadow: var(--shadow-pop);
 }
 
 .file-viewer-header {
@@ -165,7 +155,7 @@ body.theme-dark .file-viewer-modal {
   gap: 1rem;
   align-items: flex-start;
   padding: 0.9rem 1rem;
-  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  border-bottom: 1px solid var(--border);
 }
 
 .file-viewer-header h3 {
@@ -176,7 +166,7 @@ body.theme-dark .file-viewer-modal {
 .file-viewer-header p {
   margin: 0.2rem 0 0;
   font-size: 0.8rem;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-muted);
 }
 
 .file-viewer-header-actions {
@@ -192,7 +182,7 @@ body.theme-dark .file-viewer-modal {
   color: inherit;
   display: inline-flex;
   padding: 0.35rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
 .file-viewer-body {
@@ -218,11 +208,17 @@ body.theme-dark .file-viewer-modal {
 }
 
 .file-viewer-empty {
-  color: #cbd5e1;
+  color: var(--text-muted);
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   align-items: center;
   padding: 2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .file-spin {
+    animation: none;
+  }
 }

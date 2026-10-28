@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowLeft,
   Mail,
@@ -14,7 +14,7 @@ import {
   ClipboardList,
   FileCheck,
   Paperclip,
-  Filter,
+  ArrowUpDown,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
@@ -72,6 +72,7 @@ export function PatientDetailPage() {
   // APIs clínicas/arquivos exigem Patient.public_id (não User.uid)
   const patientId = resolvePatientPublicId(patient) || id;
   const toast = useToast();
+  const reducedMotion = useReducedMotion();
 
   const loadData = async () => {
     try {
@@ -177,8 +178,9 @@ export function PatientDetailPage() {
         type="button"
         className="sort-trigger-btn"
         onClick={() => setSortOrder((o) => (o === SORT_RECENT ? SORT_OLDEST : SORT_RECENT))}
+        aria-label={`Ordenar por ${sortOrder === SORT_RECENT ? 'mais recentes' : 'mais antigos'}`}
       >
-        <Filter size={18} />
+        <ArrowUpDown size={18} />
         {sortOrder === SORT_RECENT ? 'Recentes' : 'Antigos'}
       </button>
     </div>
@@ -223,8 +225,8 @@ export function PatientDetailPage() {
     return (
       <motion.div
         className="patient-detail patient-detail--loading"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={reducedMotion ? false : { opacity: 0 }}
+        animate={reducedMotion ? false : { opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
         <div className="patient-detail-skeleton">
@@ -286,35 +288,13 @@ export function PatientDetailPage() {
       </header>
 
       <Card className="patient-info-card">
-        <div className="patient-info-card-accent" />
         <div className="patient-info-header">
           <h2 className="patient-info-title">Dados do paciente</h2>
           <p className="patient-info-subtitle">Informações cadastrais</p>
         </div>
         <div className="patient-info-grid">
           <div className="patient-info-row patient-info-row--name-email">
-            <motion.div
-              className="patient-info-item"
-              data-variant="name"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.05, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              <div className="patient-info-icon">
-                <User size={20} strokeWidth={1.75} />
-              </div>
-              <div className="patient-info-content">
-                <span className="patient-info-label">Nome</span>
-                <span className="patient-info-value">{patient.full_name}</span>
-              </div>
-            </motion.div>
-            <motion.div
-              className="patient-info-item"
-              data-variant="mail"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.09, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
+            <div className="patient-info-item" data-variant="mail">
               <div className="patient-info-icon">
                 <Mail size={20} strokeWidth={1.75} />
               </div>
@@ -322,7 +302,7 @@ export function PatientDetailPage() {
                 <span className="patient-info-label">E-mail</span>
                 <span className="patient-info-value">{patient.email}</span>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           <div className="patient-info-row">
@@ -385,13 +365,15 @@ export function PatientDetailPage() {
         </div>
       </Card>
 
-      <div className="tabs">
+      <div className="tabs" role="tablist" aria-label="Seções do prontuário">
         {tabs.map((tab) => {
           const Icon = tabIcons[tab.id];
           return (
             <button
               key={tab.id}
               type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
               className={`tab ${activeTab === tab.id ? 'tab--active' : ''}`}
               onClick={() => setActiveTab(tab.id)}
             >

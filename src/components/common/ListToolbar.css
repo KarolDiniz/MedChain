@@ -1,41 +1,26 @@
-/* Toolbar de listagem compartilhada (pacientes, prontuários, etc.) */
-
 .list-filters-sticky {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 20;
   margin-bottom: 1.25rem;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  /* Sem fundo próprio — só os retângulos (toolbar / A–Z) devem aparecer */
   background: transparent;
   padding: 0;
 }
 
 .list-toolbar {
   position: relative;
-  z-index: 1100;
+  z-index: 21;
   flex-shrink: 0;
   margin: 0;
-  padding: 0.85rem 1.25rem;
-  background: var(--glass-bg, rgba(255, 255, 255, 0.78));
-  border: 1px solid var(--glass-border, rgba(13, 115, 119, 0.14));
-  border-radius: 18px;
-  backdrop-filter: blur(22px) saturate(1.15);
-  -webkit-backdrop-filter: blur(22px) saturate(1.15);
-  box-shadow:
-    0 4px 24px rgba(13, 115, 119, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
-}
-
-body.theme-dark .list-toolbar {
-  background: rgba(18, 42, 62, 0.72);
-  border-color: rgba(13, 115, 119, 0.3);
-  box-shadow:
-    0 6px 28px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(50, 224, 196, 0.05);
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .list-toolbar-row {
@@ -61,27 +46,18 @@ body.theme-dark .list-toolbar {
   min-width: 260px;
   flex: 1;
   max-width: 500px;
-  padding: 0.45rem 1rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  transition: border-color 0.25s, box-shadow 0.25s, background 0.2s;
-}
-
-body.theme-dark .list-search {
-  background: rgba(6, 23, 38, 0.6);
+  padding: 0.35rem 1rem;
+  min-height: 44px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
 
 .list-search:focus-within {
-  border-color: var(--color-primary);
-  box-shadow:
-    0 0 0 3px rgba(13, 115, 119, 0.12),
-    0 2px 8px rgba(13, 115, 119, 0.06);
-  background: var(--color-surface);
-}
-
-body.theme-dark .list-search:focus-within {
-  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-ring);
+  background: var(--surface);
 }
 
 .list-search--disabled {
@@ -91,7 +67,7 @@ body.theme-dark .list-search:focus-within {
 
 .list-search-icon {
   flex-shrink: 0;
-  color: var(--color-text-light);
+  color: var(--text-subtle);
 }
 
 .list-search-input {
@@ -100,13 +76,13 @@ body.theme-dark .list-search:focus-within {
   padding: 0.2rem 0;
   border: none;
   background: transparent;
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
   font-family: inherit;
-  color: var(--color-text);
+  color: var(--text);
 }
 
 .list-search-input::placeholder {
-  color: var(--color-text-light);
+  color: var(--text-subtle);
 }
 
 .list-search-input:focus {
@@ -120,20 +96,20 @@ body.theme-dark .list-search:focus-within {
   padding: 0.35rem;
   border: none;
   background: transparent;
-  color: var(--color-text-light);
+  color: var(--text-subtle);
   cursor: pointer;
-  border-radius: 8px;
-  transition: color 0.2s, background 0.2s;
+  border-radius: var(--radius-pill);
+  transition: color 150ms ease, background-color 150ms ease;
 }
 
 .list-search-clear:hover {
-  color: var(--color-primary);
-  background: rgba(13, 115, 119, 0.1);
+  color: var(--primary);
+  background: var(--primary-soft);
 }
 
 .list-sort {
   position: relative;
-  z-index: 1100;
+  z-index: 22;
 }
 
 .list-sort-trigger {
@@ -142,15 +118,13 @@ body.theme-dark .list-search:focus-within {
   justify-content: center;
   gap: 0.45rem;
   min-height: 40px;
-  width: auto;
-  height: auto;
-  padding: 0.45rem 0.85rem;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  border-radius: 10px;
-  color: var(--color-text);
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  border-radius: var(--radius-pill);
+  color: var(--text);
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
   font-family: inherit;
   font-size: 0.875rem;
   font-weight: 500;
@@ -159,9 +133,9 @@ body.theme-dark .list-search:focus-within {
 
 .list-sort-trigger:hover,
 .list-sort-trigger--open {
-  border-color: var(--color-primary);
-  background: rgba(13, 115, 119, 0.08);
-  color: var(--color-primary);
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .list-sort-trigger-label {
@@ -176,17 +150,12 @@ body.theme-dark .list-search:focus-within {
   margin: 0;
   padding: 0.35rem;
   list-style: none;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  box-shadow: var(--shadow-md);
-  z-index: 1200;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  z-index: 30;
   transform-origin: top right;
-}
-
-body.theme-dark .list-sort-menu {
-  background: var(--color-surface);
-  border-color: var(--color-border);
 }
 
 .list-sort-item {
@@ -194,24 +163,24 @@ body.theme-dark .list-sort-menu {
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: transparent;
   font-size: 0.9rem;
   font-family: inherit;
   text-align: left;
-  color: var(--color-text);
+  color: var(--text);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background-color 150ms ease;
 }
 
 .list-sort-item:hover {
-  background: rgba(13, 115, 119, 0.1);
+  background: var(--primary-soft);
 }
 
 .list-sort-item--active {
-  background: rgba(13, 115, 119, 0.12);
-  color: var(--color-primary);
-  font-weight: 500;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
 }
 
 .list-toolbar-meta {
@@ -224,7 +193,7 @@ body.theme-dark .list-sort-menu {
 }
 
 .list-filter-count {
-  color: var(--color-text-light);
+  color: var(--text-muted);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -233,32 +202,27 @@ body.theme-dark .list-sort-menu {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-surface);
-  color: var(--color-primary);
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--primary);
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   white-space: nowrap;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color 150ms ease, background-color 150ms ease;
 }
 
 .list-clear-filters:hover {
-  border-color: var(--color-primary);
-  background: rgba(13, 115, 119, 0.1);
-}
-
-body.theme-dark .list-clear-filters {
-  background: var(--color-surface);
-  border-color: var(--color-border);
+  border-color: var(--primary);
+  background: var(--primary-soft);
 }
 
 @media (max-width: 768px) {
   .list-toolbar {
-    padding: 0.6rem 1rem;
+    padding: 0.6rem 0.85rem;
   }
 
   .list-toolbar-row {
@@ -272,6 +236,7 @@ body.theme-dark .list-clear-filters {
 
   .list-search {
     max-width: none;
+    min-width: 0;
   }
 
   .list-sort-trigger-label {

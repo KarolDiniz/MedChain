@@ -7,31 +7,68 @@
 }
 
 :root {
-  --color-primary: #0d7377;
-  --color-primary-dark: #0a5c5f;
-  --color-primary-light: #14a3a8;
-  --color-secondary: #32e0c4;
-  --color-accent: #5b8def;
-  --color-background: #f0f7f7;
-  --color-surface: #ffffff;
-  --color-text: #2d3436;
-  --color-text-light: #636e72;
-  --color-border: #dfe6e9;
-  --color-success: #00b894;
-  --color-warning: #fdcb6e;
-  --color-error: #e17055;
+  /* Tokens semânticos (mesma linguagem do Login) */
+  --surface-page: #eef5f5;
+  --surface: #ffffff;
+  --surface-muted: #f3f6f7;
+  --surface-raised: #ffffff;
+  --border: #e3eaec;
+  --border-strong: #cfdadd;
+  --text: #0f2a33;
+  --text-muted: #5f7179;
+  --text-subtle: #93a3a9;
+  --primary: #12898e;
+  --primary-hover: #0d7377;
+  --primary-contrast: #ffffff;
+  --primary-soft: rgba(18, 137, 142, 0.09);
+  --primary-soft-strong: rgba(18, 137, 142, 0.16);
+  --primary-ring: rgba(43, 179, 174, 0.22);
+  --accent: #2bb3ae;
+  --success: #0e9f6e;
+  --success-soft: rgba(14, 159, 110, 0.1);
+  --warning: #b7791f;
+  --warning-soft: rgba(183, 121, 31, 0.1);
+  --danger: #c4553b;
+  --danger-soft: rgba(225, 112, 85, 0.1);
+  --info: #3b6fd8;
+  --info-soft: rgba(59, 111, 216, 0.1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(15, 42, 51, 0.04), 0 4px 16px -8px rgba(15, 42, 51, 0.08);
+  --shadow-pop: 0 24px 48px -16px rgba(15, 42, 51, 0.22), 0 8px 16px -8px rgba(15, 42, 51, 0.1);
   --font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Instrument Serif', 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --shadow-sm: 0 2px 4px rgba(13, 115, 119, 0.08);
-  --shadow-md: 0 4px 12px rgba(13, 115, 119, 0.12);
-  --shadow-lg: 0 8px 24px rgba(13, 115, 119, 0.15);
-  --border-radius: 10px;
-  /* Design tokens futurista / SaaS */
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glow-primary: 0 0 20px rgba(13, 115, 119, 0.25);
-  --glow-primary-strong: 0 0 32px rgba(13, 115, 119, 0.35);
-  --glow-secondary: 0 0 20px rgba(50, 224, 196, 0.2);
+
+  /* Nomes legados (apelidos dos tokens acima) */
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-hover);
+  --color-primary-light: var(--accent);
+  --color-secondary: var(--accent);
+  --color-accent: var(--info);
+  --color-background: var(--surface-page);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-text-light: var(--text-muted);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--danger);
+  --border-color: var(--border);
+  --text-primary: var(--text);
+  --text-secondary: var(--text-muted);
+  --shadow-sm: 0 1px 2px rgba(15, 42, 51, 0.05);
+  --shadow-md: var(--shadow-card);
+  --shadow-lg: var(--shadow-pop);
+  --border-radius: var(--radius-md);
+  --glass-bg: var(--surface);
+  --glass-border: var(--border);
+  --glow-primary: 0 0 0 transparent;
+  --glow-primary-strong: 0 0 0 transparent;
+  --glow-secondary: 0 0 0 transparent;
   --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --sidebar-width: 260px;
@@ -55,19 +92,51 @@ body {
 }
 
 body.theme-dark {
-  --color-background: #050b12;
-  --color-surface: rgba(6, 23, 38, 0.98);
-  --color-text: #e6f4ff;
-  --color-text-light: #a9c4d8;
-  --color-border: rgba(255, 255, 255, 0.12);
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.6);
-  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.7);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.8);
-  --glass-bg: rgba(6, 23, 38, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glow-primary: 0 0 24px rgba(13, 115, 119, 0.3);
-  --glow-primary-strong: 0 0 40px rgba(13, 115, 119, 0.4);
-  --glow-secondary: 0 0 24px rgba(50, 224, 196, 0.15);
+  --surface-page: #071117;
+  --surface: #0e1a22;
+  --surface-muted: #13232d;
+  --surface-raised: #152835;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text: #e8f1f6;
+  --text-muted: #9fb3c2;
+  --text-subtle: #647b8b;
+  --primary: #17a2a7;
+  --primary-hover: #1bb5ba;
+  --primary-contrast: #ffffff;
+  --primary-soft: rgba(79, 216, 196, 0.12);
+  --primary-soft-strong: rgba(79, 216, 196, 0.2);
+  --primary-ring: rgba(79, 216, 196, 0.22);
+  --accent: #4fd8c4;
+  --success: #34d399;
+  --success-soft: rgba(52, 211, 153, 0.12);
+  --warning: #f5c16c;
+  --warning-soft: rgba(245, 193, 108, 0.12);
+  --danger: #f29a83;
+  --danger-soft: rgba(242, 154, 131, 0.12);
+  --info: #93c5fd;
+  --info-soft: rgba(147, 197, 253, 0.12);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -12px rgba(0, 0, 0, 0.55);
+  --shadow-pop: 0 24px 48px -16px rgba(0, 0, 0, 0.7);
+
+  --color-background: var(--surface-page);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-text-light: var(--text-muted);
+  --color-border: var(--border);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: var(--shadow-card);
+  --shadow-lg: var(--shadow-pop);
+  --glass-bg: var(--surface);
+  --glass-border: var(--border);
+  --glow-primary: 0 0 0 transparent;
+  --glow-primary-strong: 0 0 0 transparent;
+  --glow-secondary: 0 0 0 transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 #root {
@@ -114,7 +183,7 @@ a:hover {
 }
 
 .page-header h1 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-text);
   margin-bottom: 0.25rem;

@@ -6,14 +6,8 @@ export function Layout() {
   return (
     <div className="layout">
       <div className="layout-bg" aria-hidden>
-        <div className="layout-bg-base" />
-        <div className="layout-bg-orb layout-bg-orb--1" />
-        <div className="layout-bg-orb layout-bg-orb--2" />
-        <div className="layout-bg-orb layout-bg-orb--3" />
-        <div className="layout-bg-orb layout-bg-orb--4" />
-        <div className="layout-bg-mesh" />
-        <div className="layout-bg-fade" />
-        <div className="layout-bg-grid" />
+        <span className="layout-blob layout-blob--a" />
+        <span className="layout-blob layout-blob--b" />
       </div>
       <Sidebar />
       <main className="layout-main">

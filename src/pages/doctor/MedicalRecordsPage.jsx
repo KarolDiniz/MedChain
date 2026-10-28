@@ -303,7 +303,7 @@ export function MedicalRecordsPage() {
                     : 'Nenhum prontuário cadastrado.'}
                 </p>
                 {hasActiveFilters && (
-                  <button type="button" className="records-filter-clear-btn" onClick={clearAllFilters} title="Limpar filtros">
+                  <button type="button" className="records-filter-clear-btn" onClick={clearAllFilters} title="Limpar filtros" aria-label="Limpar filtros">
                     <RotateCcw size={16} />
                   </button>
                 )}
