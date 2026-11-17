@@ -7,13 +7,16 @@ import './Modal.css';
  */
 export function ModalShell({
   title,
+  subtitle,
   onClose,
   children,
   wide = false,
   className = '',
   contentClassName = '',
+  initialFocusSelector,
 }) {
   const titleId = useId();
+  const subtitleId = useId();
   const panelRef = useRef(null);
   const previousFocus = useRef(null);
 
@@ -30,9 +33,14 @@ export function ModalShell({
 
     const panel = panelRef.current;
     if (panel) {
-      const focusable = panel.querySelector(
-        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
+      const preferred = initialFocusSelector
+        ? panel.querySelector(initialFocusSelector)
+        : null;
+      const focusable =
+        preferred ||
+        panel.querySelector(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
       (focusable || panel).focus?.();
     }
 
@@ -43,7 +51,7 @@ export function ModalShell({
         prev.focus();
       }
     };
-  }, [onClose]);
+  }, [onClose, initialFocusSelector]);
 
   return (
     <div className={`modal-overlay ${className}`.trim()} onClick={onClose} role="presentation">
@@ -54,10 +62,18 @@ export function ModalShell({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={subtitle ? subtitleId : undefined}
         tabIndex={-1}
       >
         <div className="modal-header">
-          <h2 id={titleId}>{title}</h2>
+          <div className="modal-header-text">
+            <h2 id={titleId}>{title}</h2>
+            {subtitle ? (
+              <p id={subtitleId} className="modal-subtitle">
+                {subtitle}
+              </p>
+            ) : null}
+          </div>
           <button type="button" className="modal-close" onClick={onClose} aria-label="Fechar">
             <X size={18} strokeWidth={2} aria-hidden />
           </button>

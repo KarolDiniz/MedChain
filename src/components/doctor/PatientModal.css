@@ -1,0 +1,222 @@
+.patient-modal {
+  max-width: 640px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: min(90vh, 820px);
+  overflow: hidden;
+}
+
+.patient-modal .modal-header {
+  margin: 0;
+  padding: 1.25rem 1.35rem 1rem;
+  flex-shrink: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary-soft) 55%, var(--surface)) 0%,
+    var(--surface) 100%
+  );
+  border-bottom: 1px solid var(--border);
+}
+
+.patient-modal .modal-header h2 {
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+
+.patient-modal .modal-close {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  border-color: transparent;
+  background: color-mix(in srgb, var(--surface-muted) 80%, transparent);
+}
+
+.patient-modal .modal-close:hover {
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-color: transparent;
+}
+
+.patient-modal-error {
+  margin: 0.85rem 1.35rem 0;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--danger, #c0392b) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--danger, #c0392b) 28%, var(--border));
+}
+
+.patient-modal-callout {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin: 1rem 1.35rem 0;
+  padding: 0.85rem 0.95rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+}
+
+.patient-modal-callout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--primary);
+  border: 1px solid var(--border);
+}
+
+.patient-modal-callout-body strong {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.patient-modal-callout-body p {
+  margin: 0.2rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.patient-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.35rem 1.35rem 0;
+  scrollbar-width: thin;
+}
+
+.patient-modal-section {
+  padding: 1.05rem 0 1.15rem;
+}
+
+.patient-modal-section + .patient-modal-section {
+  border-top: 1px solid var(--border);
+}
+
+.patient-modal-section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-bottom: 0.95rem;
+}
+
+.patient-modal-section-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.patient-modal-section-head h3 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.patient-modal-section-head p {
+  margin: 0.15rem 0 0;
+  font-size: 0.78125rem;
+  color: var(--text-subtle);
+  line-height: 1.4;
+}
+
+.patient-modal-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.patient-modal-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.patient-modal-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.patient-modal-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.patient-modal-grid--address-line {
+  grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 1.1fr);
+}
+
+.patient-modal-grid--city {
+  grid-template-columns: minmax(0, 1fr) 5.5rem;
+}
+
+.patient-modal-actions {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  margin-left: -1.35rem;
+  margin-right: -1.35rem;
+  padding: 0.95rem 1.35rem 1.15rem;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
+  gap: 0.65rem;
+}
+
+.patient-modal-actions .btn {
+  min-height: 42px;
+}
+
+@media (max-width: 640px) {
+  .patient-modal {
+    max-width: 100%;
+    max-height: 92vh;
+  }
+
+  .patient-modal .modal-header,
+  .patient-modal-callout,
+  .patient-modal-form {
+    padding-left: 1.05rem;
+    padding-right: 1.05rem;
+  }
+
+  .patient-modal-error {
+    margin-left: 1.05rem;
+    margin-right: 1.05rem;
+  }
+
+  .patient-modal-grid--2,
+  .patient-modal-grid--3,
+  .patient-modal-grid--address-line,
+  .patient-modal-grid--city {
+    grid-template-columns: 1fr;
+  }
+
+  .patient-modal-actions {
+    margin-left: -1.05rem;
+    margin-right: -1.05rem;
+    padding-left: 1.05rem;
+    padding-right: 1.05rem;
+    flex-direction: column-reverse;
+  }
+
+  .patient-modal-actions .btn {
+    width: 100%;
+  }
+}
