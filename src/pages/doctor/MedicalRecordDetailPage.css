@@ -248,6 +248,7 @@
 .record-detail-page .certificate-card,
 .record-detail-page .file-card {
   padding: 1.15rem 1.25rem;
+  min-width: 0;
 }
 
 .consultation-header,
@@ -286,10 +287,22 @@
   color: var(--text-muted);
 }
 
-.files-grid {
+/* Precisa vencer .record-detail-page .items-list { display:flex },
+   senão os previews ocupam 100% da largura e ficam enormes. */
+.record-detail-page .items-list.files-grid,
+.record-detail-page .files-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
+  align-content: start;
+}
+
+.record-detail-page .file-card {
+  overflow: hidden;
+}
+
+.record-detail-page .file-attachment-preview {
+  max-height: 168px;
 }
 
 .empty-state.small {

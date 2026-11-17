@@ -296,10 +296,22 @@
   color: var(--text-muted);
 }
 
+.patient-detail .items-list.files-grid,
 .files-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
+  align-content: start;
+}
+
+.patient-detail .file-card,
+.file-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.patient-detail .file-attachment-preview {
+  max-height: 168px;
 }
 
 .empty-state--enhanced {
